@@ -1,0 +1,60 @@
+{% extends 'myapp/index.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0">✏️ Edit Quiz for {{ quiz.course.title }}</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+
+                {% for question in quiz.questions.all %}
+<div class="mb-4">
+    <h5>Question {{ forloop.counter }}</h5>
+    <input type="text" name="question_{{ question.id }}" 
+           value="{{ question.text }}" 
+           class="form-control mb-2" required>
+
+    <input type="text" name="option1_{{ question.id }}" 
+           value="{{ question.option_a }}" 
+           class="form-control mb-1" required>
+    <input type="text" name="option2_{{ question.id }}" 
+           value="{{ question.option_b }}" 
+           class="form-control mb-1" required>
+    <input type="text" name="option3_{{ question.id }}" 
+           value="{{ question.option_c }}" 
+           class="form-control mb-1" required>
+    <input type="text" name="option4_{{ question.id }}" 
+           value="{{ question.option_d }}" 
+           class="form-control mb-1" required>
+
+    <select name="correct_{{ question.id }}" class="form-select mt-2" required>
+        <option value="">-- Select Correct Answer --</option>
+        <option value="1" {% if question.correct_answer == "1" %}selected{% endif %}>Option 1</option>
+        <option value="2" {% if question.correct_answer == "2" %}selected{% endif %}>Option 2</option>
+        <option value="3" {% if question.correct_answer == "3" %}selected{% endif %}>Option 3</option>
+        <option value="4" {% if question.correct_answer == "4" %}selected{% endif %}>Option 4</option>
+    </select>
+</div>
+<hr>
+{% endfor %}
+
+
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-check-circle"></i> Update Quiz
+                </button>
+                <a href="{% url 'myapp:course_detail' quiz.course.id %}" class="btn btn-secondary">Cancel</a>
+            </form>
+
+            <div class="mt-3">
+                <small class="text-muted">
+                    You can edit existing questions here.  
+                    Currently, this quiz has {{ quiz.questions.count }} questions.
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

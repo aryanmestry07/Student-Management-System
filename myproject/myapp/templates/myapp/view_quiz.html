@@ -1,0 +1,30 @@
+{% extends 'myapp/index.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4>{{ quiz.title }}</h4>
+        </div>
+        <div class="card-body">
+            <p>{{ quiz.description }}</p>
+            <hr>
+            <h5>Questions</h5>
+            {% for question in quiz.questions.all %}
+                <div class="mb-3">
+                    <strong>Q{{ forloop.counter }}. {{ question.text }}</strong>
+                    <ul>
+                        <li>A. {{ question.option_a }}</li>
+                        <li>B. {{ question.option_b }}</li>
+                        <li>C. {{ question.option_c }}</li>
+                        <li>D. {{ question.option_d }}</li>
+                    </ul>
+                    <small class="text-success">Correct: {{ question.get_correct_answer_display }}</small>
+                </div>
+            {% empty %}
+                <p class="text-muted">No questions yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

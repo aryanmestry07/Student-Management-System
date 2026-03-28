@@ -1,0 +1,21 @@
+{% extends 'myapp/index.html' %}
+{% block content %}
+
+<div class="card shadow-sm p-4">
+    <h3 class="mb-3">Assign Course to {{ student.user.first_name }} {{ student.last_name }}</h3>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Select Course</label>
+            <select name="course_id" class="form-control">
+                {% for course in courses %}
+                <option value="{{ course.id }}">{{ course.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Assign Course</button>
+        <a href="{% url 'myapp:students' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+{% endblock %}

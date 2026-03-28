@@ -1,0 +1,218 @@
+{% extends 'visitors/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard | ICE Institute{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --ice-primary: #004aad;
+        --ice-secondary: #002e6e;
+        --ice-accent: #00c6ff;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        background: radial-gradient(at 0% 0%, hsla(214,100%,34%,1) 0, transparent 50%), 
+                    radial-gradient(at 100% 0%, hsla(214,100%,22%,1) 0, transparent 50%);
+        background-color: var(--ice-primary);
+        color: white;
+        border-radius: 1.5rem;
+        padding: 60px 20px;
+    }
+
+    /* Modern Course Cards */
+    .course-card {
+        border: 1px solid #eee;
+        border-radius: 1rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .course-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 25px rgba(0,0,0,0.08);
+        border-color: var(--ice-accent);
+    }
+
+    .badge-category {
+        background: rgba(0, 74, 173, 0.08);
+        color: var(--ice-primary);
+        font-weight: 600;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+    }
+
+    /* Chatbot Styles */
+    #chatbot-btn {
+        width: 55px; height: 55px; border-radius: 50%;
+        background: var(--ice-primary); color: white; border: none;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1000;
+    }
+    #chatbot-box {
+        width: 320px; border-radius: 1rem; overflow: hidden;
+        z-index: 1000; bottom: 90px !important;
+    }
+    .chat-bubble { padding: 8px 12px; border-radius: 15px; margin-bottom: 8px; font-size: 0.85rem; }
+    .user-message { background: var(--ice-primary); color: white; align-self: flex-end; }
+    .bot-message { background: #f1f1f1; color: #333; align-self: flex-start; }
+</style>
+
+<div class="container mt-4">
+    <div class="hero-section text-center shadow-lg">
+        <h1 class="display-4 fw-bold mb-3">Ignite Your Future at ICE</h1>
+        <p class="lead mb-4 opacity-75">Join the next generation of industry leaders with our certified programs.</p>
+        <a href="#courses" class="btn btn-light btn-lg px-5 fw-bold rounded-pill">View Catalog</a>
+    </div>
+</div>
+
+<section id="courses" class="container py-5">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">Featured Courses</h2>
+            <p class="text-muted">Hand-picked programs for your career growth</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for course in courses|slice:":3" %}
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 course-card">
+                <div class="card-body p-4 d-flex flex-column">
+                    <span class="badge badge-category mb-3 w-fit">{{ course.category }}</span>
+                    <h5 class="fw-bold">{{ course.name }}</h5>
+                    <p class="text-muted small flex-grow-1">{{ course.description|truncatewords:15 }}</p>
+                    <div class="pt-3 border-top mt-3 d-flex justify-content-between align-items-center">
+                        <span class="small text-secondary"><i class="bi bi-clock"></i> {{ course.duration }} hrs</span>
+                        <a href="#contact" class="btn btn-sm btn-outline-primary px-3">Enquire</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if courses|length > 3 %}
+    <div class="collapse" id="moreCourses">
+        <div class="row g-4 mt-1">
+            {% for course in courses|slice:"3:" %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 course-card">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <span class="badge badge-category mb-3 w-fit">{{ course.category }}</span>
+                        <h5 class="fw-bold">{{ course.name }}</h5>
+                        <p class="text-muted small flex-grow-1">{{ course.description|truncatewords:15 }}</p>
+                        <div class="pt-3 border-top mt-3 d-flex justify-content-between align-items-center">
+                            <span class="small text-secondary">{{ course.duration }} hrs</span>
+                            <a href="#contact" class="btn btn-sm btn-outline-primary px-3">Enquire</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="text-center mt-5">
+        <button class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm" 
+                type="button" 
+                data-bs-toggle="collapse" 
+                data-bs-target="#moreCourses" 
+                aria-expanded="false" 
+                id="viewMoreBtn"
+                onclick="toggleBtnText()">
+            View All Courses
+        </button>
+    </div>
+    {% endif %}
+</section>
+
+<section class="bg-light py-5">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-5">Why Choose ICE?</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="p-4 bg-white rounded-3 shadow-sm h-100">
+                    <h5 class="fw-bold text-primary">Expert Trainers</h5>
+                    <p class="text-muted small mb-0">Learn from professionals currently working in the top tech industries.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 bg-white rounded-3 shadow-sm h-100">
+                    <h5 class="fw-bold text-primary">Placement Cell</h5>
+                    <p class="text-muted small mb-0">Dedicated support to help you land your dream job after completion.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 bg-white rounded-3 shadow-sm h-100">
+                    <h5 class="fw-bold text-primary">Live Projects</h5>
+                    <p class="text-muted small mb-0">Build a real portfolio with hands-on assignments and industry tools.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% include 'visitors/about_section.html' %}
+<div class="container my-5">
+    {% include 'visitors/_contact_section.html' %}
+</div>
+
+<button id="chatbot-btn" class="position-fixed bottom-0 end-0 m-4 shadow" onclick="toggleChat()">
+    <i class="fas fa-comment"></i>
+</button>
+
+<div id="chatbot-box" class="position-fixed end-0 m-4 shadow-lg d-none border bg-white">
+    <div class="bg-primary text-white p-3 d-flex justify-content-between">
+        <strong>ICE Assistant</strong>
+        <span style="cursor:pointer" onclick="toggleChat()">&times;</span>
+    </div>
+    <div id="chatbot-messages" class="p-3 d-flex flex-column" style="height:250px; overflow-y:auto;">
+        <div class="chat-bubble bot-message">Hi! Looking for course details?</div>
+    </div>
+    <div class="p-2 border-top">
+        <div class="input-group input-group-sm">
+            <input id="user-input" class="form-control border-0 shadow-none" placeholder="Ask something...">
+            <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Toggle View More Button Text
+function toggleBtnText() {
+    const btn = document.getElementById('viewMoreBtn');
+    setTimeout(() => {
+        const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.innerText = isExpanded ? "Show Less" : "View All Courses";
+    }, 350);
+}
+
+// Chatbot Toggle
+function toggleChat() {
+    document.getElementById("chatbot-box").classList.toggle("d-none");
+}
+
+function sendMessage() {
+    let input = document.getElementById("user-input");
+    let msg = input.value.trim();
+    if (!msg) return;
+
+    let chat = document.getElementById("chatbot-messages");
+    chat.innerHTML += `<div class="chat-bubble user-message">${msg}</div>`;
+    input.value = "";
+    chat.scrollTop = chat.scrollHeight;
+
+    fetch("/chatbot/response/", {
+        method: "POST",
+        headers: {"Content-Type":"application/json", "X-CSRFToken": "{{ csrf_token }}"},
+        body: JSON.stringify({message: msg})
+    })
+    .then(res => res.json())
+    .then(data => {
+        chat.innerHTML += `<div class="chat-bubble bot-message">${data.reply}</div>`;
+        chat.scrollTop = chat.scrollHeight;
+    });
+}
+</script>
+
+{% endblock %}

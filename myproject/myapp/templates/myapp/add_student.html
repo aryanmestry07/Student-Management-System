@@ -1,0 +1,56 @@
+{% extends "myapp/index.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-xl-9">
+        <div class="mb-4">
+            <h2 class="fw-bold mb-1">Enroll New Student</h2>
+            <p class="text-muted">Fill in the details below to create a new student account.</p>
+        </div>
+
+        <div class="form-card shadow-sm">
+            <form method="POST">
+                {% csrf_token %}
+                
+                {% if form.errors %}
+                <div class="alert alert-danger border-0 rounded-4 mb-4">
+                    <p class="fw-bold mb-1 small">Please correct the errors below:</p>
+                    <ul class="mb-0 x-small">
+                        {% for field, errors in form.errors.items %}
+                            <li>{{ field|title }}: {{ errors|striptags }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h6 class="text-primary fw-bold small text-uppercase mb-3">Account Details</h6>
+                        {% for field in form %}
+                            {% if field.name == 'username' or field.name == 'password' or field.name == 'email' %}
+                                {{ field.label_tag }} {{ field }}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-lg-6 border-start ps-lg-4">
+                        <h6 class="text-primary fw-bold small text-uppercase mb-3">Personal Info</h6>
+                        {% for field in form %}
+                            {% if field.name != 'username' and field.name != 'password' and field.name != 'email' %}
+                                {{ field.label_tag }} {{ field }}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex justify-content-between align-items-center border-top pt-4">
+                    <a href="{% url 'myapp:students' %}" class="text-muted text-decoration-none">Cancel</a>
+                    <button type="submit" class="btn btn-primary px-5 py-2 fw-bold rounded-pill">
+                        Create Account
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

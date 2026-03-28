@@ -1,0 +1,132 @@
+{% extends 'myapp/index.html' %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h3 fw-bold mb-1">Dashboard</h1>
+    <p class="text-muted">Welcome back! Here's what's happening in your academy today.</p>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm p-3" style="border-radius: 16px;">
+            <div class="card-body d-flex align-items-center">
+                <div class="bg-primary bg-opacity-10 p-4 rounded-4 me-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#4f46e5" class="bi bi-book-half" viewBox="0 0 16 16">
+                        <path d="M8.5 2.687c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h6 class="text-uppercase fw-bold text-muted mb-1 small">Total Courses</h6>
+                    <h2 class="mb-0 fw-bold">{{ total_courses }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm p-3" style="border-radius: 16px;">
+            <div class="card-body d-flex align-items-center">
+                <div class="bg-success bg-opacity-10 p-4 rounded-4 me-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#10b981" class="bi bi-people-fill" viewBox="0 0 16 16">
+                        <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h6 class="text-uppercase fw-bold text-muted mb-1 small">Total Students</h6>
+                    <h2 class="mb-0 fw-bold">{{ total_students }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 16px;">
+            <h5 class="fw-bold mb-4">Enrollment Growth</h5>
+            <div style="height: 350px;">
+                <canvas id="studentEnrollmentChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 16px;">
+            <h5 class="fw-bold mb-4">Course Categories</h5>
+            <div style="height: 350px;">
+                <canvas id="coursesCategoryChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const categories = JSON.parse('{{ categories|safe }}');
+    const courseCounts = JSON.parse('{{ course_counts|safe }}');
+    const enrollmentMonths = JSON.parse('{{ enrollment_months|safe }}');
+    const enrollmentCounts = JSON.parse('{{ enrollment_counts|safe }}');
+
+    // Chart Configuration defaults
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.color = '#64748b';
+
+    // 1. Courses by Category (Doughnut Chart for better visual interest)
+    const ctxCategory = document.getElementById('coursesCategoryChart').getContext('2d');
+    new Chart(ctxCategory, {
+        type: 'doughnut',
+        data: {
+            labels: categories,
+            datasets: [{
+                data: courseCounts,
+                backgroundColor: ['#4f46e5', '#10b981', '#f59e0b', '#3b82f6', '#ec4899'],
+                borderWidth: 0,
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true } }
+            }
+        }
+    });
+
+    // 2. Student Enrollments (Modern Line Chart)
+    const ctxEnrollment = document.getElementById('studentEnrollmentChart').getContext('2d');
+    new Chart(ctxEnrollment, {
+        type: 'line',
+        data: {
+            labels: enrollmentMonths,
+            datasets: [{
+                label: 'New Enrollments',
+                data: enrollmentCounts,
+                fill: true,
+                backgroundColor: 'rgba(79, 70, 229, 0.05)',
+                borderColor: '#4f46e5',
+                borderWidth: 3,
+                tension: 0.4,
+                pointRadius: 4,
+                pointBackgroundColor: '#4f46e5'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { 
+                    beginAtZero: true,
+                    grid: { color: '#f1f5f9' },
+                    ticks: { stepSize: 1 }
+                },
+                x: { grid: { display: false } }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "myapp/index.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4">📂 Topics for {{ course.name }}</h2>
+
+    {% if topics %}
+        <ul class="list-group">
+            {% for topic in topics %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ topic.title }}</strong>
+                        <p class="text-muted small">{{ topic.description }}</p>
+                    </div>
+
+                    <div class="btn-group">
+                        <a href="{% url 'myapp:edit_topic' topic.id %}" class="btn btn-sm btn-warning">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </a>
+                        <form action="{% url 'myapp:delete_topic' topic.id %}" method="post" onsubmit="return confirm('Delete this topic?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash3"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="alert alert-info">No topics added yet for this course.</div>
+    {% endif %}
+</div>
+{% endblock %}

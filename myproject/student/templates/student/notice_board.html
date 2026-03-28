@@ -1,0 +1,54 @@
+{% extends "student/base.html" %}
+{% block title %}Notice Board{% endblock %}
+
+{% block content %}
+<div class="row g-0">
+
+  {% include "student/sidebar.html" %}
+
+  <div class="col-md-10 bg-light">
+
+    <div class="bg-white shadow-sm p-3">
+      <h5 class="mb-0 fw-bold">📢 Notice Board</h5>
+    </div>
+
+    <div class="p-4">
+
+      {% for notice in notices %}
+        <div class="card shadow-sm border-0 mb-3">
+          <div class="card-body">
+
+            <div class="d-flex justify-content-between">
+              <h6 class="fw-bold">
+                {{ notice.title }}
+                {% if notice.is_pinned %}
+                  <span class="badge bg-danger">Important</span>
+                {% endif %}
+              </h6>
+              <small class="text-muted">
+                {{ notice.created_at|date:"M d, Y" }}
+              </small>
+            </div>
+
+            <p class="text-muted mb-0">
+              {{ notice.content }}
+            </p>
+
+            {% if notice.expiry_date %}
+              <small class="text-warning">
+                Expires on: {{ notice.expiry_date }}
+              </small>
+            {% endif %}
+
+          </div>
+        </div>
+      {% empty %}
+        <div class="alert alert-info">
+          No notices available
+        </div>
+      {% endfor %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}

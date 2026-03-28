@@ -1,0 +1,125 @@
+{% extends 'student/base.html' %}
+{% load student_filters %}
+
+{% block content %}
+
+<div class="quiz-result-container">
+    <h2>{{ quiz.title }} - Result</h2>
+    <p class="score">Score: {{ score }} / {{ total }} ({{ percentage }}%)</p>
+
+    <table class="quiz-result-table">
+        <thead>
+            <tr>
+                <th>Q#</th>
+                <th>Question</th>
+                <th>Your Answer</th>
+                <th>Correct Answer</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for q in questions %}
+            {% with student_answer=answers|dict_get:q.id %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ q.text }}</td>
+                <td>
+                    {% if student_answer == "A" %}A. {{ q.option_a }}
+                    {% elif student_answer == "B" %}B. {{ q.option_b }}
+                    {% elif student_answer == "C" %}C. {{ q.option_c }}
+                    {% elif student_answer == "D" %}D. {{ q.option_d }}
+                    {% else %}<span class="not-answered">Not Answered</span>{% endif %}
+                </td>
+                <td>
+                    {% if q.correct_answer == "A" %}A. {{ q.option_a }}
+                    {% elif q.correct_answer == "B" %}B. {{ q.option_b }}
+                    {% elif q.correct_answer == "C" %}C. {{ q.option_c }}
+                    {% elif q.correct_answer == "D" %}D. {{ q.option_d }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endwith %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="back-btn">
+        <a href="{% url 'student:my_courses' %}">Back to Courses</a>
+    </div>
+</div>
+
+<style>
+/* Scoped only to quiz-result-container */
+.quiz-result-container {
+    max-width: 900px;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+}
+
+.quiz-result-container h2 {
+    text-align: center;
+    color: #2c3e50;
+}
+
+.quiz-result-container .score {
+    text-align: center;
+    font-size: 18px;
+    color: #34495e;
+    margin-bottom: 20px;
+}
+
+.quiz-result-table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.quiz-result-table th,
+.quiz-result-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.quiz-result-table thead th {
+    background-color: #3498db;
+    color: white;
+}
+
+.quiz-result-table tbody tr:nth-child(even) {
+    background-color: #ecf0f1;
+}
+
+.quiz-result-table tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+.not-answered {
+    color: red;
+}
+
+.quiz-result-table td:last-child {
+    color: green;
+    font-weight: bold;
+}
+
+.back-btn {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.back-btn a {
+    text-decoration: none;
+    background-color: #3498db;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.back-btn a:hover {
+    background-color: #2980b9;
+}
+</style>
+
+{% endblock %}

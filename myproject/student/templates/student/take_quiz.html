@@ -1,0 +1,149 @@
+{% extends "student/base.html" %}
+{% block title %}Take Quiz - {{ quiz.title }}{% endblock %}
+
+{% block content %}
+<div class="row g-0">
+
+  <!-- SIDEBAR -->
+  {% include "student/sidebar.html" %}
+
+  <!-- MAIN -->
+  <div class="col-md-10 bg-light min-vh-100">
+
+    <!-- HEADER -->
+    <div class="bg-white shadow-sm p-4 border-bottom">
+      <div class="d-flex justify-content-between align-items-center">
+
+        <div>
+          <h4 class="fw-bold mb-1">{{ quiz.title }}</h4>
+          <small class="text-muted">
+            Question {{ index|add:1 }} of {{ total }}
+          </small>
+        </div>
+
+        <span class="badge bg-primary px-3 py-2">
+          📝 Live Quiz
+        </span>
+
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="p-4">
+
+      <!-- PROGRESS -->
+      <div class="progress mb-4" style="height: 10px;">
+        <div class="progress-bar bg-success"
+             role="progressbar"
+             style="width: {% widthratio index|add:1 total 100 %}%;">
+        </div>
+      </div>
+
+      <!-- QUESTION -->
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="card border-0 shadow-sm mb-4 quiz-card">
+
+          <div class="card-body p-4">
+
+            <h5 class="fw-bold mb-4">
+              {{ question.text }}
+            </h5>
+
+            {% for key, option in question.get_options.items %}
+              {% if option %}
+              <label class="quiz-option">
+
+                <input type="radio"
+                       name="answer"
+                       value="{{ key }}"
+                       {% if saved_answer == key %}checked{% endif %}>
+
+                <span>
+                  <strong>{{ key }}.</strong> {{ option }}
+                </span>
+
+              </label>
+              {% endif %}
+            {% endfor %}
+
+          </div>
+        </div>
+
+        <!-- NAV -->
+        <div class="d-flex justify-content-between align-items-center">
+
+          {% if index > 0 %}
+          <button type="submit"
+                  name="prev"
+                  class="btn btn-outline-secondary px-4">
+            ⬅ Previous
+          </button>
+          {% else %}
+          <div></div>
+          {% endif %}
+
+          {% if index < total|add:-1 %}
+          <button type="submit"
+                  name="next"
+                  class="btn btn-success px-4">
+            Next ➡
+          </button>
+          {% else %}
+          <button type="submit"
+                  name="submit"
+                  class="btn btn-primary px-4">
+            Submit Quiz ✅
+          </button>
+          {% endif %}
+
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- QUIZ STYLES -->
+<style>
+
+.quiz-card {
+  border-left: 5px solid #198754;
+}
+
+.quiz-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 12px 15px;
+  margin-bottom: 12px;
+
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quiz-option:hover {
+  background: #f8f9fa;
+  border-color: #198754;
+}
+
+.quiz-option input {
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+.quiz-option input:checked + span {
+  color: #198754;
+  font-weight: 600;
+}
+
+</style>
+
+{% endblock %}

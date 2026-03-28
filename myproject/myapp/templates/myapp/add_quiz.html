@@ -1,0 +1,50 @@
+{% extends 'myapp/index.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">➕ Add Quiz for {{ course.title }}</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+
+                {% for i in questions_range %}
+                <div class="mb-4">
+                    <h5>Question {{ i }}</h5>
+                    <input type="text" name="question_{{ i }}" class="form-control mb-2" 
+                           placeholder="Enter question {{ i }}" required>
+
+                    <input type="text" name="option1_{{ i }}" class="form-control mb-1" placeholder="Option 1" required>
+                    <input type="text" name="option2_{{ i }}" class="form-control mb-1" placeholder="Option 2" required>
+                    <input type="text" name="option3_{{ i }}" class="form-control mb-1" placeholder="Option 3" required>
+                    <input type="text" name="option4_{{ i }}" class="form-control mb-1" placeholder="Option 4" required>
+
+                    <select name="correct_{{ i }}" class="form-select mt-2" required>
+                        <option value="">-- Select Correct Answer --</option>
+                        <option value="1">Option 1</option>
+                        <option value="2">Option 2</option>
+                        <option value="3">Option 3</option>
+                        <option value="4">Option 4</option>
+                    </select>
+                </div>
+                <hr>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-check-circle"></i> Save Quiz
+                </button>
+                <a href="{% url 'myapp:course_detail' course.id %}" class="btn btn-secondary">Cancel</a>
+            </form>
+
+            <div class="mt-3">
+                <small class="text-muted">
+                    Currently showing {{ questions_range|length }} questions.  
+                    The system supports up to 50 questions per quiz (exam style).
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

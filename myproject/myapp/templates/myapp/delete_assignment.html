@@ -1,0 +1,14 @@
+{% extends "myapp/index.html" %}
+
+{% block title %}Delete Assignment{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3>Are you sure you want to delete "{{ assignment.title }}"?</h3>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <a href="{% url 'myapp:course_detail' course.id %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

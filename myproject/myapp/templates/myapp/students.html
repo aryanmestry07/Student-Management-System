@@ -1,0 +1,107 @@
+{% extends 'myapp/index.html' %}
+{% block content %}
+
+<style>
+  .action-btn {
+    min-width: 70px;
+    margin-right: 5px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 0.875rem;
+  }
+  .action-btn:last-child {
+    margin-right: 0;
+  }
+  .action-btn:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+  @media (max-width: 768px) {
+    .action-btn {
+      display: block;
+      width: 100%;
+      margin-bottom: 5px;
+    }
+    .action-btn:last-child {
+      margin-bottom: 0;
+    }
+  }
+</style>
+
+<div class="mb-4">
+  <h2 class="h4 fw-bold">Student Portal</h2>
+  <p class="text-muted">Monitor student progress and engagement</p>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Active Students</h5>
+
+    <form method="GET" class="w-25">
+      <input
+        type="text"
+        name="q"
+        value="{{ query|default:'' }}"
+        placeholder="Search students..."
+        class="form-control"
+      />
+    </form>
+  </div>
+
+  <!-- 🔍 SEARCH RESULT INFO -->
+  {% if query %}
+  <div class="px-3 pt-2">
+    <p class="text-muted small mb-0">Showing results for "{{ query }}"</p>
+  </div>
+  {% endif %}
+
+  <div class="card-body">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Username</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        {% if students %}
+          {% for student in students %}
+          <tr>
+            <td>
+              {{ student.user.first_name }} {{ student.middle_name }} {{ student.last_name }}
+            </td>
+            <td>{{ student.user.email }}</td>
+            <td>{{ student.user.username }}</td>
+            <td>
+              <a href="{% url 'myapp:student_detail' student.id %}" class="btn btn-info btn-sm">
+                View Details
+              </a>
+              <a href="{% url 'myapp:add_course_to_student' student.id %}"
+                 class="btn btn-success btn-sm action-btn">
+                Add Course
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+
+        {% else %}
+          <tr>
+            <td colspan="4" class="text-center text-muted">
+              {% if query %}
+                No students found for "{{ query }}"
+              {% else %}
+                No students available
+              {% endif %}
+            </td>
+          </tr>
+        {% endif %}
+
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

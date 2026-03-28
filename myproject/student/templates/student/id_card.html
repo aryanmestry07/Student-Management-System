@@ -1,0 +1,57 @@
+{% extends "student/base.html" %}
+{% block title %}My ID Card{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h3 class="mb-4">🎓 Digital ID Card</h3>
+
+    <div class="card shadow-lg border-0 mx-auto" style="max-width: 380px; border-radius: 15px;">
+        <div class="card-body text-center">
+
+            <!-- Profile Photo OR Letter Avatar -->
+            {% if student.profile_photo %}
+                <img src="{{ student.profile_photo.url }}"
+                     class="rounded-circle mb-3"
+                     width="110"
+                     height="110"
+                     style="object-fit: cover; border: 4px solid #4f46e5;">
+            {% else %}
+                <div class="rounded-circle bg-primary text-white mx-auto mb-3 d-flex align-items-center justify-content-center"
+                     style="width:110px; height:110px; font-size:40px; font-weight:700; border: 4px solid #4f46e5;">
+                    {{ student.user.first_name|first|upper }}
+                </div>
+            {% endif %}
+
+            <h5 class="fw-bold mb-1">
+                {{ student.user.get_full_name|default:student.user.username }}
+            </h5>
+            <p class="text-muted mb-2">Student</p>
+
+            <!-- Roll Number -->
+            <span class="badge bg-dark mb-3">
+                Roll No: {{ student.roll_number }}
+            </span>
+
+            <hr>
+
+            <p class="mb-1"><strong>Enrollment No:</strong></p>
+            <p class="text-primary fw-semibold">{{ student.enrollment_no }}</p>
+
+            <p class="mb-1"><strong>Email:</strong></p>
+            <p class="text-muted small">{{ student.user.email }}</p>
+
+            <p class="mb-1"><strong>Phone:</strong></p>
+            <p class="text-muted">{{ student.phone }}</p>
+
+            <hr>
+
+            <p class="small text-muted mb-0">
+                EduManage Student Portal
+            </p>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

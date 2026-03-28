@@ -1,0 +1,25 @@
+{% extends "student/base.html" %}
+
+{% block title %}Submit Assignment{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-sm p-4">
+        <h2 class="mb-4">Submit Assignment: {{ assignment.title }}</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ form.file.label_tag }}
+                {{ form.file }}
+                {% if form.file.errors %}
+                    <div class="text-danger small">{{ form.file.errors }}</div>
+                {% endif %}
+            </div>
+            <button type="submit" class="btn btn-success">Upload</button>
+        </form>
+        <a href="{% url 'student:course_assignments' assignment.course.id %}" class="btn btn-secondary mt-3">
+            Back to Assignments
+        </a>
+    </div>
+</div>
+{% endblock %}

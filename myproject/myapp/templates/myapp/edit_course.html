@@ -1,0 +1,14 @@
+{% extends 'myapp/index.html' %}
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4">Edit Course - {{ course.name }}</h2>
+    <form method="post" class="border p-4 bg-light shadow-sm rounded">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="d-flex justify-content-end gap-3 mt-3">
+            <a href="{% url 'myapp:course_detail' course.id %}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Update Course</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

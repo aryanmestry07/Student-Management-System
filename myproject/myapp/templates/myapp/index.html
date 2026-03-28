@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduManage | Admin Portal</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --sidebar-width: 260px;
+        --primary-indigo: #4f46e5;
+        --bg-light: #f8fafc;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: var(--bg-light);
+        color: #1e293b;
+      }
+
+      /* Sidebar Styling */
+      .sidebar {
+        width: var(--sidebar-width);
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: #ffffff;
+        border-right: 1px solid #e2e8f0;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .sidebar-brand {
+        padding: 1.5rem;
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--primary-indigo);
+        text-decoration: none;
+        letter-spacing: -0.5px;
+        border-bottom: 1px solid #f1f5f9;
+      }
+
+      .nav-links-container {
+        padding: 1rem 0.75rem;
+        flex-grow: 1;
+      }
+
+      .nav-custom-link {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        margin-bottom: 0.25rem;
+        color: #64748b;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.2s;
+      }
+
+      .nav-custom-link:hover {
+        background-color: #f1f5f9;
+        color: var(--primary-indigo);
+      }
+
+      .nav-custom-link.active {
+        background-color: #eef2ff;
+        color: var(--primary-indigo);
+      }
+
+      /* Content Area */
+      .main-wrapper {
+        margin-left: var(--sidebar-width);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .top-navbar {
+        height: 64px;
+        background: #ffffff;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0 2rem;
+        position: sticky;
+        top: 0;
+        z-index: 999;
+      }
+
+      .page-content {
+        padding: 2rem;
+      }
+
+      /* Custom Scrollbar for Sidebar */
+      ::-webkit-scrollbar {
+        width: 5px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+      }
+
+      @media (max-width: 992px) {
+        .sidebar {
+          transform: translateX(-100%);
+          transition: 0.3s;
+        }
+        .main-wrapper {
+          margin-left: 0;
+        }
+        .sidebar.mobile-open {
+          transform: translateX(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <a href="{% url 'myapp:dashboard' %}" class="sidebar-brand">EDUMANAGE</a>
+
+      <div class="nav-links-container">
+        <small
+          class="text-uppercase fw-bold text-muted px-3 mb-2 d-block"
+          style="font-size: 0.7rem"
+          >Main Menu</small
+        >
+
+        <a
+          href="{% url 'myapp:dashboard' %}"
+          class="nav-custom-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+        >
+          Dashboard
+        </a>
+        <a
+          href="{% url 'myapp:courses' %}"
+          class="nav-custom-link {% if request.resolver_match.url_name == 'courses' %}active{% endif %}"
+        >
+          Courses
+        </a>
+        <a
+          href="{% url 'myapp:students' %}"
+          class="nav-custom-link {% if request.resolver_match.url_name == 'students' %}active{% endif %}"
+        >
+          Students
+        </a>
+
+        <a
+          href="{% url 'myapp:notice_list' %}"
+          class="nav-custom-link {% if request.resolver_match.url_name == 'notice_list' %}active{% endif %}"
+        >
+          Notice Board
+        </a>
+
+        <small
+          class="text-uppercase fw-bold text-muted px-3 mt-4 mb-2 d-block"
+          style="font-size: 0.7rem"
+          >Management</small
+        >
+
+        <a
+          href="{% url 'myapp:add_course' %}"
+          class="nav-custom-link {% if request.resolver_match.url_name == 'add_course' %}active{% endif %}"
+        >
+          + Add New Course
+        </a>
+        <a
+          href="{% url 'myapp:student_signup_admin' %}"
+          class="nav-custom-link {% if request.resolver_match.url_name == 'student_signup_admin' %}active{% endif %}"
+        >
+          + Enroll Student
+        </a>
+      </div>
+    </aside>
+
+    <div class="main-wrapper">
+      <header class="top-navbar">
+        {% if user.is_authenticated %}
+        <div class="d-flex align-items-center">
+          <span class="me-3 text-muted"
+            >Hi, <strong>{{ user.username }}</strong></span
+          >
+          <a
+            href="{% url 'accounts:logout' %}"
+            class="btn btn-sm btn-outline-danger px-3 rounded-pill"
+            >Logout</a
+          >
+        </div>
+        {% else %}
+        <a
+          href="{% url 'accounts:login' %}"
+          class="btn btn-sm btn-primary px-4 rounded-pill"
+          >Login</a
+        >
+        {% endif %}
+      </header>
+
+      <main class="page-content">{% block content %}{% endblock %}</main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

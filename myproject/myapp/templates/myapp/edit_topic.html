@@ -1,0 +1,21 @@
+{% extends "myapp/index.html" %}
+
+{% block title %}Edit Topic - {{ topic.title }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-warning text-dark fw-bold">
+            <h4>Edit Topic: {{ topic.title }}</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-success">Save Changes</button>
+                <a href="{% url 'myapp:course_detail' topic.course.id %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

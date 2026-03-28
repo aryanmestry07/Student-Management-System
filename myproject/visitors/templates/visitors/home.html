@@ -1,0 +1,112 @@
+{% extends 'visitors/base.html' %}
+{% load static %} {% block title %}Home | ICE Institute{% endblock %}
+
+{% block content %}
+
+<style>
+    /* A unique, clean hero section instead of a generic image */
+    .hero-section {
+        background: linear-gradient(135deg, #004aad 0%, #002e6e 100%);
+        color: white;
+        border-radius: 0.5rem;
+    }
+    .hero-section .btn-light {
+        border-radius: 20px;
+        padding: 10px 30px;
+        font-weight: 600;
+        color: #004aad;
+    }
+    .hero-section .btn-light:hover {
+        background-color: #f0f0f0;
+    }
+    .pillar-card {
+        border: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .pillar-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+    .cta-section {
+        background-color: #ffffff;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+</style>
+
+<div class="hero-section text-center p-5 my-4">
+    <h1 class="display-4 fw-bold">Ignite Your Future at ICE</h1>
+    <p class="lead fs-4 my-3">Explore our career-focused programs and find your path to success.</p>
+    <a href="#" class="btn btn-light btn-lg mt-3">Explore Programs</a>
+</div>
+
+<div class="container my-5 py-4">
+    <h2 class="text-center mb-5 fw-bold">Why Choose ICE?</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card pillar-card h-100 text-center">
+                <div class="card-body p-4">
+                    <h5 class="card-title fw-bold text-primary mb-3">Expert-Led Programs</h5>
+                    <p class="card-text">Learn from industry veterans and renowned academics who are masters in their fields.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card pillar-card h-100 text-center">
+                <div class="card-body p-4">
+                    <h5 class="card-title fw-bold text-primary mb-3">Career-Focused Learning</h5>
+                    <p class="card-text">Our curriculum is designed with your future in mind, integrating real-world projects and internship opportunities.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card pillar-card h-100 text-center">
+                <div class="card-body p-4">
+                    <h5 class="card-title fw-bold text-primary mb-3">A Supportive Community</h5>
+                    <p class="card-text">Join a diverse and vibrant campus where collaboration and innovation are celebrated.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row cta-section p-5 align-items-center">
+        <div class="col-lg-8">
+            <h3 class="fw-bold">Ready to Start Your Journey?</h3>
+            <p class="lead mb-0">Get in touch with our admissions team or download a prospectus to learn more.</p>
+        </div>
+        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+            <a href="#" class="btn btn-primary btn-lg" style="border-radius: 20px; padding: 10px 30px;">Request Info</a>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5 py-4">
+    <h2 class="text-center mb-5 fw-bold">What's Happening at ICE</h2>
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card pillar-card">
+                <img src="https://via.placeholder.com/600x400.png?text=Tech+Symposium" class="card-img-top" alt="Tech Event">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">ICE Hosts Annual Tech Symposium</h5>
+                    <p class="card-text">Students and faculty gather for a week of innovation, guest speakers, and workshops.</p>
+                    <a href="#" class="text-primary fw-bold">Read More &rarr;</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card pillar-card">
+                <img src="https://via.placeholder.com/600x400.png?text=New+Lab" class="card-img-top" alt="New Lab">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">New Robotics Research Lab Opens</h5>
+                    <p class="card-text">Our new state-of-the-art facility is now open for all engineering students.</p>
+                    <a href="#" class="text-primary fw-bold">Read More &rarr;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
