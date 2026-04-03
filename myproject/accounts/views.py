@@ -7,13 +7,14 @@ def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
             login(request, user)
-            # Redirect staff to admin panel, students to student dashboard
+
             if user.is_staff:
-                return redirect('myapp:dashboard')
+                return redirect('myapp:dashboard')   # ✅ FIXED
             else:
                 return redirect('student:student_dashboard')
         else:
@@ -25,6 +26,7 @@ def login_view(request):
 def signup_view(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
+
         if form.is_valid():
             user = form.save()
             login(request, user)
@@ -41,4 +43,4 @@ def signup_view(request):
 def logout_view(request):
     logout(request)
     messages.info(request, 'You have been logged out successfully.')
-    return render(request, 'accounts/logout.html')
+    return redirect('accounts:login') 

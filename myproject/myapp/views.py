@@ -19,6 +19,8 @@ from .forms import (
 )
 from student.forms import StudentSignupForm  # ✅ import your existing form
 from student.models import Student  # ✅ make sure to import Student model
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
 
 
 # ------------------ Dashboard ------------------
@@ -500,3 +502,4 @@ def delete_notice(request, notice_id):
         return redirect('myapp:notice_list')
 
     return render(request, 'myapp/delete_notice.html', {'notice': notice})
+
