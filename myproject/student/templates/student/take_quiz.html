@@ -1,149 +1,153 @@
 {% extends "student/base.html" %}
-{% block title %}Take Quiz - {{ quiz.title }}{% endblock %}
+{% block title %}Quiz - {{ quiz.title }}{% endblock %}
 
 {% block content %}
-<div class="row g-0">
+<div class="d-flex min-vh-100 w-100">
 
-  <!-- SIDEBAR -->
   {% include "student/sidebar.html" %}
 
-  <!-- MAIN -->
-  <div class="col-md-10 bg-light min-vh-100">
+  <div class="flex-grow-1 bg-light d-flex flex-column" style="min-width: 0;">
 
-    <!-- HEADER -->
-    <div class="bg-white shadow-sm p-4 border-bottom">
-      <div class="d-flex justify-content-between align-items-center">
-
-        <div>
-          <h4 class="fw-bold mb-1">{{ quiz.title }}</h4>
-          <small class="text-muted">
-            Question {{ index|add:1 }} of {{ total }}
-          </small>
-        </div>
-
-        <span class="badge bg-primary px-3 py-2">
-          📝 Live Quiz
+    <header class="bg-white border-bottom px-4 d-flex justify-content-between align-items-center shadow-sm" style="height: 75px;">
+      <div>
+        <h5 class="fw-bold mb-0 text-dark">{{ quiz.title }}</h5>
+        <p class="text-muted small mb-0">
+          Question <span class="text-primary fw-bold">{{ index|add:1 }}</span> of {{ total }}
+        </p>
+      </div>
+      <div class="d-flex align-items-center">
+        <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary px-3 py-2 fw-bold small">
+          ⏱ Live Assessment
         </span>
-
       </div>
-    </div>
+    </header>
 
-    <!-- CONTENT -->
-    <div class="p-4">
+    <div class="p-4 overflow-auto">
+      
+      <div class="row justify-content-center">
+        <div class="col-lg-9 col-xl-8">
 
-      <!-- PROGRESS -->
-      <div class="progress mb-4" style="height: 10px;">
-        <div class="progress-bar bg-success"
-             role="progressbar"
-             style="width: {% widthratio index|add:1 total 100 %}%;">
-        </div>
-      </div>
-
-      <!-- QUESTION -->
-      <form method="post">
-        {% csrf_token %}
-
-        <div class="card border-0 shadow-sm mb-4 quiz-card">
-
-          <div class="card-body p-4">
-
-            <h5 class="fw-bold mb-4">
-              {{ question.text }}
-            </h5>
-
-            {% for key, option in question.get_options.items %}
-              {% if option %}
-              <label class="quiz-option">
-
-                <input type="radio"
-                       name="answer"
-                       value="{{ key }}"
-                       {% if saved_answer == key %}checked{% endif %}>
-
-                <span>
-                  <strong>{{ key }}.</strong> {{ option }}
-                </span>
-
-              </label>
-              {% endif %}
-            {% endfor %}
-
+          <div class="mb-4">
+            <div class="d-flex justify-content-between mb-2">
+               <small class="text-muted fw-bold">Progress</small>
+               <small class="text-primary fw-bold">{% widthratio index|add:1 total 100 %}%</small>
+            </div>
+            <div class="progress rounded-pill shadow-sm" style="height: 8px;">
+              <div class="progress-bar bg-primary" 
+                   role="progressbar" 
+                   style="width: {% widthratio index|add:1 total 100 %}%">
+              </div>
+            </div>
           </div>
+
+          <form method="post">
+            {% csrf_token %}
+
+            <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden quiz-question-card">
+              <div class="bg-primary" style="width: 6px; height: 100%; position: absolute; left: 0; top: 0;"></div>
+              
+              <div class="card-body p-4 p-lg-5">
+                <h4 class="fw-bold text-dark mb-4" style="line-height: 1.5;">
+                  {{ question.text }}
+                </h4>
+
+                <div class="quiz-options-list">
+                  {% for key, option in question.get_options.items %}
+                    {% if option %}
+                    <label class="quiz-option-item transition rounded-4 border p-3 mb-3 d-flex align-items-center cursor-pointer">
+                      <input type="radio" 
+                             name="answer" 
+                             value="{{ key }}" 
+                             class="form-check-input me-3"
+                             {% if saved_answer == key %}checked{% endif %}>
+                      
+                      <div class="option-content">
+                        <span class="fw-bold text-muted me-2">{{ key }}.</span>
+                        <span class="text-dark fw-medium">{{ option }}</span>
+                      </div>
+                    </label>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-4">
+              {% if index > 0 %}
+                <button type="submit" name="prev" class="btn btn-outline-secondary rounded-pill px-4 fw-bold shadow-sm">
+                  ← Previous
+                </button>
+              {% else %}
+                <div></div>
+              {% endif %}
+
+              {% if index < total|add:-1 %}
+                <button type="submit" name="next" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
+                  Save & Next →
+                </button>
+              {% else %}
+                <button type="submit" name="submit" class="btn btn-success rounded-pill px-5 fw-bold shadow-sm">
+                  Complete Quiz ✅
+                </button>
+              {% endif %}
+            </div>
+
+          </form>
         </div>
-
-        <!-- NAV -->
-        <div class="d-flex justify-content-between align-items-center">
-
-          {% if index > 0 %}
-          <button type="submit"
-                  name="prev"
-                  class="btn btn-outline-secondary px-4">
-            ⬅ Previous
-          </button>
-          {% else %}
-          <div></div>
-          {% endif %}
-
-          {% if index < total|add:-1 %}
-          <button type="submit"
-                  name="next"
-                  class="btn btn-success px-4">
-            Next ➡
-          </button>
-          {% else %}
-          <button type="submit"
-                  name="submit"
-                  class="btn btn-primary px-4">
-            Submit Quiz ✅
-          </button>
-          {% endif %}
-
-        </div>
-
-      </form>
+      </div>
 
     </div>
   </div>
 </div>
 
-
-<!-- QUIZ STYLES -->
 <style>
+  /* Modern Quiz Styling */
+  .cursor-pointer { cursor: pointer; }
+  
+  .quiz-option-item {
+    background-color: #ffffff;
+    border: 2px solid #f1f5f9 !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 
-.quiz-card {
-  border-left: 5px solid #198754;
-}
+  .quiz-option-item:hover {
+    background-color: #f8fafc;
+    border-color: #e2e8f0 !important;
+  }
 
-.quiz-option {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  /* Radio Checked State Styling */
+  .quiz-option-item input:checked {
+    background-color: #4f46e5;
+    border-color: #4f46e5;
+  }
 
-  padding: 12px 15px;
-  margin-bottom: 12px;
+  .quiz-option-item:has(input:checked) {
+    background-color: #eef2ff;
+    border-color: #4f46e5 !important;
+    transform: translateX(5px);
+  }
 
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
+  .quiz-option-item:has(input:checked) .option-content span {
+    color: #4f46e5 !important;
+  }
 
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
+  .transition {
+    transition: all 0.3s ease;
+  }
 
-.quiz-option:hover {
-  background: #f8f9fa;
-  border-color: #198754;
-}
+  .form-check-input {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0;
+  }
 
-.quiz-option input {
-  transform: scale(1.2);
-  cursor: pointer;
-}
+  .btn-primary {
+    background-color: #4f46e5;
+    border: none;
+  }
 
-.quiz-option input:checked + span {
-  color: #198754;
-  font-weight: 600;
-}
-
+  .bg-indigo-soft {
+    background-color: #eef2ff;
+  }
 </style>
-
 {% endblock %}

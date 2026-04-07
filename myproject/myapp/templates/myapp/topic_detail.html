@@ -2,15 +2,57 @@
 
 {% block content %}
 <div class="container my-5">
+
+    <!-- TOPIC DETAILS -->
     <div class="card shadow-sm border-0">
         <div class="card-body">
+
             <h3 class="fw-bold">{{ topic.title }}</h3>
+
             <p class="text-muted">{{ topic.description }}</p>
+
+            <!-- 📄 NOTES SECTION -->
+            
+            <!-- ✅ PDF VIEW -->
+            {% if topic.notes_file %}
+            <div class="card mt-3 border-0 shadow-sm bg-light">
+                <div class="card-body">
+                    <h6 class="fw-bold">📄 Notes (PDF)</h6>
+
+                    <iframe 
+                        src="{{ topic.notes_file.url }}" 
+                        width="100%" 
+                        height="500px" 
+                        style="border: none; border-radius: 10px;">
+                    </iframe>
+
+                    <div class="mt-2">
+                        <a href="{{ topic.notes_file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                            Open Full PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- ✅ TEXT NOTES (optional) -->
+            {% if topic.notes %}
+            <div class="card mt-3 border-0 shadow-sm bg-light">
+                <div class="card-body">
+                    <h6 class="fw-bold">📝 Notes (Text)</h6>
+                    <p class="mb-0">{{ topic.notes|linebreaks }}</p>
+                </div>
+            </div>
+            {% endif %}
+
             <hr>
+
+            <!-- ACTION BUTTONS -->
             <div class="d-flex gap-2">
                 <a href="{% url 'myapp:edit_topic' topic.id %}" class="btn btn-warning">
                     <i class="bi bi-pencil-square"></i> Edit
                 </a>
+
                 <form action="{% url 'myapp:delete_topic' topic.id %}" method="post"
                       onsubmit="return confirm('Are you sure you want to delete this topic?');">
                     {% csrf_token %}
@@ -19,42 +61,52 @@
                     </button>
                 </form>
             </div>
+
         </div>
     </div>
 
-    <!-- Quiz Section -->
+    <!-- QUIZ SECTION -->
     <div class="card shadow-sm border-0 mt-4">
         <div class="card-body">
+
             <h5 class="fw-bold mb-3">📝 Quizzes for this Topic</h5>
 
-       {% if quizzes %}
-    {% for quiz in quizzes %}
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <span>{{ quiz.title }}</span>
-            <div>
-                <a href="{% url 'myapp:edit_quiz' topic.course.id quiz.id %}" class="btn btn-info btn-sm">
-                    <i class="bi bi-pencil-square"></i> Edit
+            {% if quizzes %}
+                {% for quiz in quizzes %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    
+                    <span>{{ quiz.title }}</span>
+
+                    <div>
+                        <a href="{% url 'myapp:edit_quiz' topic.course.id quiz.id %}" class="btn btn-info btn-sm">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </a>
+
+                        <a href="{% url 'myapp:view_quiz' topic.course.id quiz.id %}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-eye"></i> View
+                        </a>
+
+                        <form action="{% url 'myapp:delete_quiz' topic.course.id quiz.id %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button class="btn btn-danger btn-sm" onclick="return confirm('Delete this quiz?');">
+                                <i class="bi bi-trash3"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+                {% endfor %}
+
+            {% else %}
+                <p class="text-muted">No quizzes added yet.</p>
+
+                <a href="{% url 'myapp:add_quiz' topic.course.id topic.id %}" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Add Quiz
                 </a>
-                <a href="{% url 'myapp:view_quiz' topic.course.id quiz.id %}" class="btn btn-primary btn-sm">
-                    <i class="bi bi-eye"></i> View
-                </a>
-                <form action="{% url 'myapp:delete_quiz' topic.course.id quiz.id %}" method="post" class="d-inline">
-                    {% csrf_token %}
-                    <button class="btn btn-danger btn-sm" onclick="return confirm('Delete this quiz?');">
-                        <i class="bi bi-trash3"></i> Delete
-                    </button>
-                </form>
-            </div>
-        </div>
-    {% endfor %}
-{% else %}
-    <p class="text-muted">No quizzes added yet.</p>
-    <a href="{% url 'myapp:add_quiz' topic.course.id topic.id %}" class="btn btn-success">
-        <i class="bi bi-plus-circle"></i> Add Quiz
-    </a>
-{% endif %}
+            {% endif %}
 
         </div>
     </div>
+
 </div>
 {% endblock %}

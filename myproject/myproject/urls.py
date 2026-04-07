@@ -1,20 +1,26 @@
 from django.contrib import admin
 from django.urls import path, include
 
+# ✅ ADD THESE
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
+    # 🔐 Custom Admin Login
     path('admin/', include('accounts.urls', namespace='accounts')),
 
-    # 🌐 WEBSITE (HOME PAGE)
-    path('', include('visitors.urls', namespace='visitors')),
-
+    # 🔥 Admin Panel
     path('admin-panel/', include('myapp.urls', namespace='myapp')),
 
-    # 👨‍🎓 Student panel
-    path('student/', include('student.urls', namespace='student')),
+    # 🌐 Website
+    path('', include('visitors.urls', namespace='visitors')),
 
-    # 🔐 Accounts
-    path('accounts/', include('accounts.urls', namespace='accounts')),
+    # 👨‍🎓 Student Panel
+    path('student/', include('student.urls', namespace='student')),
 
     # 🤖 Chatbot
     path('chatbot/', include('chatbot.urls')),
 ]
+
+# ✅ VERY IMPORTANT (for PDF/images)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

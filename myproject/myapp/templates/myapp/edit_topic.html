@@ -4,18 +4,72 @@
 
 {% block content %}
 <div class="container my-5">
+
+    <!-- HEADER -->
+    <div class="mb-4">
+        <h3 class="fw-bold">✏️ Edit Topic</h3>
+        <p class="text-muted mb-0">Course: {{ topic.course.name }}</p>
+    </div>
+
+    <!-- FORM CARD -->
     <div class="card shadow-sm border-0">
-        <div class="card-header bg-warning text-dark fw-bold">
-            <h4>Edit Topic: {{ topic.title }}</h4>
-        </div>
         <div class="card-body">
-            <form method="post">
+
+            <!-- ✅ IMPORTANT CHANGE -->
+            <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-success">Save Changes</button>
-                <a href="{% url 'myapp:course_detail' topic.course.id %}" class="btn btn-secondary">Cancel</a>
+
+                <!-- TITLE -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Topic Title</label>
+                    {{ form.title }}
+                </div>
+
+                <!-- DESCRIPTION -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Description</label>
+                    {{ form.description }}
+                </div>
+
+                <!-- NOTES FILE (PDF) -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Upload Notes (PDF)</label>
+                    {{ form.notes_file }}
+
+                    {% if topic.notes_file %}
+                        <div class="mt-2">
+                            <small class="text-success">
+                                Current File: 
+                                <a href="{{ topic.notes_file.url }}" target="_blank">View PDF</a>
+                            </small>
+                        </div>
+                    {% endif %}
+
+                    <small class="text-muted">Update PDF notes for students.</small>
+                </div>
+
+                <!-- OPTIONAL TEXT NOTES -->
+                {% if form.notes %}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Notes (Optional Text)</label>
+                    {{ form.notes }}
+                </div>
+                {% endif %}
+
+                <!-- BUTTONS -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">
+                        💾 Save Changes
+                    </button>
+                    <a href="{% url 'myapp:course_detail' topic.course.id %}" class="btn btn-outline-secondary">
+                        Cancel
+                    </a>
+                </div>
+
             </form>
+
         </div>
     </div>
+
 </div>
 {% endblock %}

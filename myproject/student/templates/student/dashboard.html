@@ -2,112 +2,162 @@
 {% block title %}Student Dashboard{% endblock %}
 
 {% block content %}
-<div class="row g-0">
+<div class="d-flex min-vh-100 w-100">
 
   {% include "student/sidebar.html" %}
 
-  <div class="col-md-10 bg-light">
-
-    <div class="bg-white shadow-sm p-3 d-flex justify-content-between align-items-center">
-      <h5 class="mb-0 fw-bold">Student Dashboard</h5>
-      <span class="text-muted">
-        👋 {{ student.user.first_name|default:student.user.username }}
-      </span>
-    </div>
-
-    <div class="p-4">
-
-      <div class="row mb-4">
-        <div class="col-md-4">
-          <div class="card shadow-sm border-0">
-            <div class="card-body">
-              <h6 class="text-muted">Enrolled Courses</h6>
-              <h3 class="fw-bold text-success">{{ student.courses.count }}</h3>
-            </div>
-          </div>
+  <div class="flex-grow-1 bg-light d-flex flex-column" style="min-width: 0;">
+    
+    <!-- Updated Top Header with Roll Number -->
+    <header class="bg-white border-bottom px-4 d-flex justify-content-between align-items-center shadow-sm" style="height: 70px; sticky-top">
+      <div class="d-flex align-items-center">
+        <h5 class="fw-bold mb-0 text-dark">Student Portal</h5>
+      </div>
+      
+      <div class="d-flex align-items-center">
+        <div class="text-end me-3 d-none d-sm-block">
+          <p class="mb-0 small fw-bold text-dark">{{ student.user.get_full_name|default:student.user.username }}</p>
+          <!-- Changed from ID to Roll Number -->
+          <p class="mb-0 text-muted" style="font-size: 0.7rem;">Roll No: <span class="fw-bold text-primary">#{{ student.roll_number|default:"N/A" }}</span></p>
         </div>
-
-        <div class="col-md-4">
-          <div class="card shadow-sm border-0">
-            <div class="card-body">
-              <h6 class="text-muted">Assignments</h6>
-              <h3 class="fw-bold text-primary">{{ assignments|length }}</h3>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="card shadow-sm border-0">
-            <div class="card-body">
-              <h6 class="text-muted">Status</h6>
-              <h5 class="fw-bold text-success">Active Student</h5>
-            </div>
-          </div>
+        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" 
+             style="width: 42px; height: 42px; border: 2px solid #fff; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
+            {{ student.user.username|slice:":1"|upper }}
         </div>
       </div>
+    </header>
 
-      <!-- ✅ NOTICE BOARD -->
-      <h5 class="fw-bold mt-4 mb-3">📢 Latest Notices</h5>
+    <div class="p-4 overflow-auto">
+      
+      <div class="mb-4">
+        <h3 class="fw-bold text-dark mb-1">Welcome Back! 👋</h3>
+        <p class="text-muted">Here is a quick look at your academic progress.</p>
+      </div>
 
-      <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body">
-
-          {% for notice in notices %}
-            <div class="mb-3 border-bottom pb-2">
-              <div class="d-flex justify-content-between">
-                <strong>
-                  {{ notice.title }}
-                  {% if notice.is_pinned %}
-                    <span class="badge bg-danger">Important</span>
-                  {% endif %}
-                </strong>
-                <small class="text-muted">
-                  {{ notice.created_at|date:"M d, Y" }}
-                </small>
+      <!-- Quick Stats -->
+      <div class="row g-4 mb-4">
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm p-3 h-100 rounded-4">
+            <div class="card-body d-flex align-items-center">
+              <div class="bg-indigo bg-opacity-10 p-3 rounded-4 me-3" style="background-color: #eef2ff;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#6366f1" class="bi bi-book" viewBox="0 0 16 16">
+                  <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/>
+                </svg>
               </div>
-
-              <p class="mb-1 text-muted">
-                {{ notice.content|truncatechars:120 }}
-              </p>
-            </div>
-          {% empty %}
-            <p class="text-muted mb-0">No notices available</p>
-          {% endfor %}
-
-          <a href="{% url 'student:notice_board' %}" class="btn btn-sm btn-primary">
-            View All Notices
-          </a>
-
-        </div>
-      </div>
-
-      <!-- COURSES -->
-      <h5 class="fw-bold mb-3">📘 My Courses</h5>
-
-      {% if student.courses.exists %}
-      <div class="row g-4">
-        {% for course in student.courses.all %}
-        <div class="col-md-4 col-lg-3">
-          <div class="card shadow-sm border-0 h-100">
-            <div class="card-body">
-              <h6 class="fw-bold text-success">{{ course.name }}</h6>
-              <p class="small text-muted">
-                {{ course.description|truncatewords:15 }}
-              </p>
-              <a href="{% url 'dashboard_student:course_detail' course.id %}"
-                 class="btn btn-sm btn-outline-success w-100">
-                View Course
-              </a>
+              <div>
+                <small class="text-uppercase fw-bold text-muted" style="font-size: 0.65rem; letter-spacing: 0.5px;">Enrolled Courses</small>
+                <h3 class="mb-0 fw-bold text-dark">{{ student.courses.count }}</h3>
+              </div>
             </div>
           </div>
         </div>
-        {% endfor %}
+
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm p-3 h-100 rounded-4">
+            <div class="card-body d-flex align-items-center">
+              <div class="bg-success bg-opacity-10 p-3 rounded-4 me-3" style="background-color: #ecfdf5;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#10b981" class="bi bi-journal-text" viewBox="0 0 16 16">
+                  <path d="M5 10.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+                  <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zM2 2v12a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1z"/>
+                </svg>
+              </div>
+              <div>
+                <small class="text-uppercase fw-bold text-muted" style="font-size: 0.65rem; letter-spacing: 0.5px;">Tasks Pending</small>
+                <h3 class="mb-0 fw-bold text-dark">{{ assignments|length }}</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card border-0 shadow-sm p-3 h-100 rounded-4">
+            <div class="card-body d-flex align-items-center">
+              <div class="bg-warning bg-opacity-10 p-3 rounded-4 me-3" style="background-color: #fffbeb;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#f59e0b" class="bi bi-patch-check" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M10.354 6.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 8.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
+                  <path d="m8 0 1.669.864 1.858.282.842 1.68 1.337 1.32L13.4 6l.306 1.854-1.337 1.32-.842 1.68-1.858.282L8 12l-1.669-.864-1.858-.282-.842-1.68-1.337-1.32L2.6 6l-.306-1.854 1.337-1.32.842-1.68 1.858-.282L8 0z"/>
+                </svg>
+              </div>
+              <div>
+                <small class="text-uppercase fw-bold text-muted" style="font-size: 0.65rem; letter-spacing: 0.5px;">Status</small>
+                <h5 class="mb-0 fw-bold text-success">Verified</h5>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      {% else %}
-        <p class="text-muted">No courses enrolled yet.</p>
-      {% endif %}
+
+      <div class="row g-4">
+        <!-- Learning Path List -->
+        <div class="col-lg-8">
+          <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h5 class="fw-bold mb-0">📘 My Learning Path</h5>
+              <a href="{% url 'student:my_courses' %}" class="btn btn-sm btn-light rounded-pill px-3">View All</a>
+            </div>
+            
+            <div class="row g-3">
+              {% for course in student.courses.all %}
+              <div class="col-md-6">
+                <div class="p-3 border border-light-subtle rounded-4 transition hover-card bg-white h-100 d-flex flex-column">
+                  <div class="mb-3">
+                    <span class="badge bg-primary bg-opacity-10 text-primary small mb-2">Ongoing</span>
+                    <h6 class="fw-bold text-dark mb-1">{{ course.name }}</h6>
+                    <p class="text-muted small mb-0" style="font-size: 0.75rem;">{{ course.description|truncatewords:8 }}</p>
+                  </div>
+                  <a href="{% url 'dashboard_student:course_detail' course.id %}" 
+                     class="btn btn-sm btn-outline-primary w-100 rounded-3 py-2 fw-medium mt-auto">
+                    Resume Lesson
+                  </a>
+                </div>
+              </div>
+              {% empty %}
+                <div class="col-12 text-center py-4">
+                   <p class="text-muted">No courses enrolled yet.</p>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Notices Column -->
+        <div class="col-lg-4">
+          <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+            <h5 class="fw-bold mb-4">📢 Latest Notices</h5>
+            <div class="notice-container mb-4">
+              {% for notice in notices %}
+              <div class="mb-3 p-3 rounded-4 border-start border-4 border-primary bg-light position-relative">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                  <h6 class="fw-bold small mb-0">{{ notice.title }}</h6>
+                  <small class="text-muted" style="font-size: 0.6rem;">{{ notice.created_at|date:"M d" }}</small>
+                </div>
+                <p class="small text-muted mb-0 text-truncate">{{ notice.content }}</p>
+              </div>
+              {% empty %}
+              <p class="text-center text-muted small py-5">No new announcements</p>
+              {% endfor %}
+            </div>
+            <a href="{% url 'student:notice_board' %}" class="btn btn-primary w-100 mt-auto rounded-3">Open Notice Board</a>
+          </div>
+        </div>
+      </div>
 
     </div>
   </div>
 </div>
+
+<style>
+  /* Refined Hover Effects */
+  .hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    border-color: #6366f1 !important;
+  }
+  .transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .bg-light {
+    background-color: #f8fafc !important;
+  }
+</style>
 {% endblock %}

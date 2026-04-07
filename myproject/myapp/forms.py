@@ -41,7 +41,11 @@ class UserUpdateForm(forms.ModelForm):
 class TopicForm(forms.ModelForm):
     class Meta:
         model = Topic
-        fields = ['title', 'description']
+        fields = ['title', 'description', 'notes_file']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 3}),
+            'notes': forms.Textarea(attrs={'rows': 5, 'placeholder': 'Enter notes here...'})
+        }
 
 
 # ---------------- Assignment Form ----------------

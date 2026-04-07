@@ -256,7 +256,7 @@ def view_topics(request, course_id):
 def add_topic(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     if request.method == 'POST':
-        form = TopicForm(request.POST)
+        form = TopicForm(request.POST, request.FILES)
         if form.is_valid():
             topic = form.save(commit=False)
             topic.course = course
@@ -281,7 +281,7 @@ def topic_detail(request, topic_id):
 def edit_topic(request, topic_id):
     topic = get_object_or_404(Topic, id=topic_id)
     if request.method == "POST":
-        form = TopicForm(request.POST, instance=topic)
+        form = TopicForm(request.POST, request.FILES, instance=topic)
         if form.is_valid():
             form.save()
             return redirect("myapp:course_detail", course_id=topic.course.id)

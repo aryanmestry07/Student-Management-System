@@ -2,56 +2,197 @@
 {% block title %}My ID Card{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="d-flex min-vh-100 w-100">
 
-    <h3 class="mb-4">🎓 Digital ID Card</h3>
+  {% include "student/sidebar.html" %}
 
-    <div class="card shadow-lg border-0 mx-auto" style="max-width: 380px; border-radius: 15px;">
-        <div class="card-body text-center">
+  <div class="flex-grow-1 bg-light d-flex flex-column" style="min-width: 0;">
 
-            <!-- Profile Photo OR Letter Avatar -->
-            {% if student.profile_photo %}
-                <img src="{{ student.profile_photo.url }}"
-                     class="rounded-circle mb-3"
-                     width="110"
-                     height="110"
-                     style="object-fit: cover; border: 4px solid #4f46e5;">
-            {% else %}
-                <div class="rounded-circle bg-primary text-white mx-auto mb-3 d-flex align-items-center justify-content-center"
-                     style="width:110px; height:110px; font-size:40px; font-weight:700; border: 4px solid #4f46e5;">
+    <!-- Top Header -->
+    <header class="bg-white border-bottom px-4 d-flex justify-content-between align-items-center shadow-sm" style="height: 70px;">
+      <div class="d-flex align-items-center">
+        <h5 class="mb-0 fw-bold text-dark">🪪 Digital ID Card</h5>
+      </div>
+      <button class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm d-flex align-items-center" onclick="window.print()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-printer me-2" viewBox="0 0 16 16">
+          <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
+          <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v3a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-3h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/>
+        </svg>
+        <span class="fw-medium">Print ID Pass</span>
+      </button>
+    </header>
+
+    <!-- Card Display Area -->
+    <div class="p-4 d-flex align-items-center justify-content-center flex-grow-1">
+      
+      <div class="card id-card-container border-0 shadow-lg overflow-hidden position-relative">
+        <!-- Modern Gradient Background Accent -->
+        <div class="id-card-accent"></div>
+        
+        <div class="card-body p-0">
+          <!-- Card Header / Profile Section -->
+          <div class="text-center pt-5 pb-3">
+            <div class="position-relative d-inline-block">
+              {% if student.profile_photo %}
+                <img src="{{ student.profile_photo.url }}" 
+                     class="profile-img shadow" 
+                     alt="Profile Photo">
+              {% else %}
+                <div class="profile-img-placeholder shadow mx-auto">
                     {{ student.user.first_name|first|upper }}
                 </div>
-            {% endif %}
+              {% endif %}
+              <!-- Live Status Dot -->
+              <div class="status-indicator bg-success"></div>
+            </div>
+            
+            <h4 class="fw-bold text-dark mt-3 mb-0">{{ student.user.get_full_name|default:student.user.username }}</h4>
+            <p class="text-primary fw-bold text-uppercase small mb-0" style="letter-spacing: 1px;">Official Student Pass</p>
+          </div>
 
-            <h5 class="fw-bold mb-1">
-                {{ student.user.get_full_name|default:student.user.username }}
-            </h5>
-            <p class="text-muted mb-2">Student</p>
+          <!-- Student Data Grid -->
+          <div class="px-4 pb-4">
+            <div class="id-details-grid rounded-4 p-3 bg-light border border-white">
+              <div class="row g-3 text-center">
+                <div class="col-6">
+                  <p class="id-label">Roll Number</p>
+                  <p class="id-value">#{{ student.roll_number|default:"N/A" }}</p>
+                </div>
+                <div class="col-6">
+                  <p class="id-label">ID Status</p>
+                  <p class="id-value text-success">Verified</p>
+                </div>
+                <div class="col-12 border-top pt-2">
+                  <p class="id-label">Enrollment ID</p>
+                  <p class="id-value text-primary font-monospace" style="letter-spacing: 0.5px;">
+                    {{ student.enrollment_no|default:"EMP-2026-042" }}
+                  </p>
+                </div>
+              </div>
+            </div>
 
-            <!-- Roll Number -->
-            <span class="badge bg-dark mb-3">
-                Roll No: {{ student.roll_number }}
-            </span>
+            <!-- Contact & Metadata -->
+            <div class="mt-4 px-2">
+              <div class="d-flex align-items-center mb-2">
+                <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-2 me-3" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                  <span style="font-size: 0.8rem;">✉</span>
+                </div>
+                <span class="small text-muted fw-medium">{{ student.user.email }}</span>
+              </div>
+              <div class="d-flex align-items-center">
+                <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-2 me-3" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                    <span style="font-size: 0.8rem;">📞</span>
+                </div>
+                <span class="small text-muted fw-medium">{{ student.phone|default:"+1 (555) 012-3456" }}</span>
+              </div>
+            </div>
+          </div>
 
-            <hr>
-
-            <p class="mb-1"><strong>Enrollment No:</strong></p>
-            <p class="text-primary fw-semibold">{{ student.enrollment_no }}</p>
-
-            <p class="mb-1"><strong>Email:</strong></p>
-            <p class="text-muted small">{{ student.user.email }}</p>
-
-            <p class="mb-1"><strong>Phone:</strong></p>
-            <p class="text-muted">{{ student.phone }}</p>
-
-            <hr>
-
-            <p class="small text-muted mb-0">
-                EduManage Student Portal
+          <!-- Bottom Branding Bar -->
+          <div class="bg-dark text-center py-3">
+            <p class="mb-0 text-white-50 small fw-bold" style="letter-spacing: 3px; font-size: 0.65rem;">
+              EDUMANAGE INSTITUTE PORTAL
             </p>
-
+          </div>
         </div>
-    </div>
+      </div>
 
+    </div>
+  </div>
 </div>
+
+<style>
+  /* ID Card Specific Styling */
+  .id-card-container {
+    width: 100%;
+    max-width: 360px;
+    background: #ffffff;
+    border-radius: 28px !important;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 1;
+  }
+  
+  .id-card-container:hover {
+    transform: translateY(-10px) scale(1.02);
+  }
+
+  .id-card-accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 130px;
+    background: linear-gradient(135deg, #4f46e5 0%, #1e1b4b 100%);
+    z-index: -1;
+  }
+
+  .profile-img, .profile-img-placeholder {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid #ffffff;
+    position: relative;
+    background: #4f46e5;
+  }
+
+  .profile-img-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.8rem;
+    color: white;
+    font-weight: 800;
+  }
+
+  .status-indicator {
+    width: 20px;
+    height: 20px;
+    border: 3.5px solid #fff;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 8px;
+    right: 12px;
+    z-index: 3;
+    animation: pulse-success 2s infinite;
+  }
+
+  @keyframes pulse-success {
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+  }
+
+  .id-details-grid {
+    background: rgba(241, 245, 249, 0.6) !important;
+  }
+
+  .id-label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    font-weight: 800;
+    color: #64748b;
+    margin-bottom: 2px;
+    letter-spacing: 1px;
+  }
+
+  .id-value {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0;
+  }
+
+  /* Print Specific Optimization */
+  @media print {
+    #sidebar, header, .btn, .status-indicator { display: none !important; }
+    body { background: white !important; }
+    .flex-grow-1 { padding: 0 !important; }
+    .id-card-container { 
+      box-shadow: none !important; 
+      border: 1px solid #e2e8f0 !important; 
+      margin: 20mm auto; 
+    }
+  }
+</style>
 {% endblock %}

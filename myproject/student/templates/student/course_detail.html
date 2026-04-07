@@ -2,112 +2,121 @@
 {% block title %}{{ course.name }} - Details{% endblock %}
 
 {% block content %}
-<div class="row g-0">
+<div class="d-flex min-vh-100 w-100">
 
-  <!-- SIDEBAR -->
   {% include "student/sidebar.html" %}
 
-  <!-- MAIN CONTENT -->
-  <div class="col-md-10 bg-light">
+  <div class="flex-grow-1 bg-light d-flex flex-column" style="min-width: 0;">
 
-    <!-- TOP BAR -->
-    <div class="bg-white shadow-sm p-3 d-flex justify-content-between align-items-center">
-      <h5 class="mb-0 fw-bold">{{ course.name }}</h5>
-
+    <!-- HEADER -->
+    <header class="bg-white border-bottom px-4 d-flex justify-content-between align-items-center shadow-sm" style="height: 70px;">
+      <div class="d-flex align-items-center">
+        <a href="{% url 'student:my_courses' %}" class="btn btn-sm btn-light rounded-circle me-3">←</a>
+        <h5 class="mb-0 fw-bold text-dark">{{ course.name }}</h5>
+      </div>
       <a href="{% url 'student:course_assignments' course.id %}"
-         class="btn btn-sm btn-outline-success">
+         class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm">
         📝 View Assignments
       </a>
-    </div>
+    </header>
 
     <!-- CONTENT -->
-    <div class="p-4">
+    <div class="p-4 overflow-auto">
 
-      <!-- COURSE INFO -->
-      <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body">
-
-          <div class="row">
-
-            <div class="col-md-8">
-              <h4 class="fw-bold text-success mb-2">
-                {{ course.name }}
-              </h4>
-
-              <p class="text-muted mb-2">
+      <!-- COURSE OVERVIEW -->
+      <div class="card border-0 shadow-sm rounded-4 mb-5 overflow-hidden">
+        <div style="height: 8px; background: linear-gradient(90deg, #4f46e5 0%, #06b6d4 100%);"></div>
+        
+        <div class="card-body p-4 p-lg-5">
+          <div class="row g-4 align-items-center">
+            <div class="col-lg-8">
+              <span class="badge bg-primary bg-opacity-10 text-primary mb-2 px-3 py-2 rounded-pill small fw-bold">
+                COURSE OVERVIEW
+              </span>
+              <h2 class="fw-bold text-dark mb-3">{{ course.name }}</h2>
+              <p class="text-muted mb-0" style="line-height: 1.8; font-size: 1rem;">
                 {{ course.description }}
               </p>
             </div>
 
-            <div class="col-md-4">
-
-              <div class="border rounded p-3 bg-white">
-
-                <p class="mb-2">
-                  <strong>📂 Category:</strong> {{ course.category }}
-                </p>
-
-                <p class="mb-2">
-                  <strong>⏱ Duration:</strong> {{ course.duration }} hrs
-                </p>
-
-                <p class="mb-0">
-                  <strong>🎓 Status:</strong>
-                  <span class="badge bg-success">Enrolled</span>
-                </p>
-
+            <div class="col-lg-4">
+              <div class="p-4 rounded-4 bg-light border border-white shadow-sm">
+                <div class="d-flex justify-content-between mb-3 pb-2 border-bottom">
+                  <span class="text-muted small fw-bold">CATEGORY</span>
+                  <span class="text-dark small fw-bold">{{ course.category }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3 pb-2 border-bottom">
+                  <span class="text-muted small fw-bold">DURATION</span>
+                  <span class="text-dark small fw-bold">{{ course.duration }} Hours</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span class="text-muted small fw-bold">YOUR STATUS</span>
+                  <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">Enrolled</span>
+                </div>
               </div>
-
             </div>
-
           </div>
-
         </div>
       </div>
 
-
-      <!-- TOPICS -->
-      <h5 class="fw-bold mb-3">📚 Course Topics</h5>
+      <!-- CURRICULUM -->
+      <div class="d-flex align-items-center mb-4">
+        <div class="bg-primary rounded-2 me-2" style="width: 4px; height: 24px;"></div>
+        <h5 class="fw-bold mb-0 text-dark">📚 Course Curriculum</h5>
+      </div>
 
       {% if topics %}
       <div class="row g-4">
-
         {% for topic in topics %}
         <div class="col-md-6 col-lg-4">
 
-          <a href="{% url 'student:topic_detail' topic.id %}"
-             class="text-decoration-none text-dark">
+          <a href="{% url 'student:topic_detail' topic.id %}" class="text-decoration-none h-100">
+            <div class="card border-0 shadow-sm h-100 transition hover-card rounded-4 bg-white">
 
-            <div class="card border-0 shadow-sm h-100 topic-card">
+              <div class="card-body p-4 d-flex flex-column">
 
-              <div class="card-body">
+                <!-- TITLE -->
+                <div class="d-flex align-items-start mb-3">
+                  <div class="bg-indigo-soft text-primary rounded-3 p-2 me-3"
+                       style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                    <span class="fw-bold">{{ forloop.counter }}</span>
+                  </div>
+                  <h6 class="fw-bold text-dark mb-0 mt-2">{{ topic.title }}</h6>
+                </div>
 
-                <h6 class="fw-bold mb-2">
-                  {{ topic.title }}
-                </h6>
-
-                <p class="small text-muted">
-                  {{ topic.description|truncatechars:90|default:"No description available." }}
+                <!-- DESCRIPTION -->
+                <p class="small text-muted flex-grow-1 mb-3" style="line-height: 1.6;">
+                  {{ topic.description|truncatechars:90|default:"Explore the core concepts of this module." }}
                 </p>
 
-                <span class="badge bg-secondary">
-                  View Details
+                <!-- ✅ NOTES INDICATOR -->
+                {% if topic.notes_file %}
+                <span class="badge bg-success bg-opacity-10 text-success mb-3 px-3 py-1 rounded-pill small">
+                  📄 Notes Available
                 </span>
+                {% endif %}
+
+                <!-- CTA -->
+                <div class="d-flex align-items-center text-primary fw-bold small mt-auto">
+                  Explore Module
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                       fill="currentColor" class="bi bi-arrow-right ms-2" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                          d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                  </svg>
+                </div>
 
               </div>
-
             </div>
-
           </a>
 
         </div>
         {% endfor %}
-
       </div>
 
       {% else %}
-      <div class="alert alert-warning text-center">
-        No topics available for this course yet.
+      <div class="p-5 rounded-4 border border-dashed text-center bg-white bg-opacity-50">
+        <p class="text-muted mb-0">No topics have been added to this curriculum yet.</p>
       </div>
       {% endif %}
 
@@ -115,17 +124,27 @@
   </div>
 </div>
 
-
-<!-- SMALL HOVER EFFECT -->
 <style>
-.topic-card {
-  transition: all 0.25s ease;
-}
+  .bg-indigo-soft {
+    background-color: #eef2ff;
+  }
+  
+  .hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(79, 70, 229, 0.08) !important;
+  }
+  
+  .transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 
-.topic-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 22px rgba(0,0,0,0.1);
-}
+  .border-dashed {
+    border: 2px dashed #e2e8f0 !important;
+  }
+
+  h2 {
+    letter-spacing: -0.5px;
+  }
 </style>
 
 {% endblock %}

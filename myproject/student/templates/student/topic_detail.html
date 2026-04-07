@@ -2,81 +2,88 @@
 {% block title %}{{ topic.title }} - Topic Details{% endblock %}
 
 {% block content %}
-<div class="row g-0">
+<div class="d-flex min-vh-100 w-100">
 
-  <!-- SIDEBAR -->
   {% include "student/sidebar.html" %}
 
-  <!-- MAIN CONTENT -->
-  <div class="col-md-10 bg-light">
+  <div class="flex-grow-1 bg-light d-flex flex-column" style="min-width: 0;">
 
-    <!-- TOP HEADER -->
-    <div class="bg-white shadow-sm p-3 d-flex justify-content-between align-items-center">
-
+    <!-- HEADER -->
+    <header class="bg-white border-bottom px-4 d-flex justify-content-between align-items-center shadow-sm" style="height: 75px;">
       <div>
-        <h5 class="mb-0 fw-bold">
-          📘 {{ topic.title }}
+        <h5 class="mb-0 fw-bold text-dark">
+          <span class="text-primary me-2">📘</span> {{ topic.title }}
         </h5>
-        <small class="text-muted">
-          Topic Learning Panel
-        </small>
+        <p class="text-muted small mb-0">Topic Learning Panel</p>
       </div>
 
       <form method="post" action="{% url 'student:mark_attendance' topic.id %}">
         {% csrf_token %}
-        <button type="submit" class="btn btn-sm btn-success">
-          ✅ Mark Attendance
+        <button type="submit" class="btn btn-sm btn-primary rounded-pill px-4 shadow-sm fw-medium">
+          Mark as Completed
         </button>
       </form>
-
-    </div>
+    </header>
 
     <!-- CONTENT -->
     <div class="p-4">
 
       <!-- TABS -->
-      <ul class="nav nav-pills mb-4 gap-2">
-
+      <ul class="nav nav-pills mb-4 p-1 bg-white rounded-pill shadow-sm d-inline-flex border">
         <li class="nav-item">
-          <button class="nav-link active"
-                  data-bs-toggle="pill"
-                  data-bs-target="#notes">
-            📒 Notes
+          <button class="nav-link active rounded-pill px-4 fw-bold" data-bs-toggle="pill" data-bs-target="#notes">
+            📒 Study Notes
           </button>
         </li>
-
         <li class="nav-item">
-          <button class="nav-link"
-                  data-bs-toggle="pill"
-                  data-bs-target="#quizzes">
-            📝 Quizzes
+          <button class="nav-link rounded-pill px-4 fw-bold" data-bs-toggle="pill" data-bs-target="#quizzes">
+            📝 Assessment
           </button>
         </li>
-
       </ul>
 
-      <!-- TAB CONTENT -->
       <div class="tab-content">
 
-        <!-- NOTES -->
+        <!-- ================= NOTES ================= -->
         <div class="tab-pane fade show active" id="notes">
 
-          <div class="card border-0 shadow-sm mb-4">
+          <div class="card border-0 shadow-sm rounded-4">
 
-            <div class="card-header bg-light fw-bold">
-              📖 Topic Notes
+            <div class="card-header bg-white border-bottom py-3 px-4">
+              <h6 class="fw-bold mb-0 text-dark">📖 Study Material</h6>
             </div>
 
-            <div class="card-body">
+            <div class="card-body p-5 text-center">
 
-              {% if topic.description %}
-                <p class="text-dark lh-lg">
-                  {{ topic.description }}
+              {% if topic.notes_file %}
+
+                <!-- ICON -->
+                <div style="font-size: 60px;">📄</div>
+
+                <!-- TITLE -->
+                <h5 class="fw-bold mt-3">PDF Notes Available</h5>
+
+                <p class="text-muted">
+                  Click below to view your study material
                 </p>
+
+                <!-- BUTTON -->
+                <a href="{{ topic.notes_file.url }}" 
+                   target="_blank"
+                   class="btn btn-primary px-4 py-2 mt-2 shadow-sm">
+                  📖 Open Notes
+                </a>
+
+              {% elif topic.description %}
+
+                <div class="text-start text-secondary" style="line-height: 2; font-size: 1.05rem;">
+                  {{ topic.description|linebreaks }}
+                </div>
+
               {% else %}
-                <p class="text-muted text-center">
-                  No notes available for this topic yet.
-                </p>
+
+                <p class="text-muted">No notes uploaded yet.</p>
+
               {% endif %}
 
             </div>
@@ -85,8 +92,7 @@
 
         </div>
 
-
-        <!-- QUIZZES -->
+        <!-- ================= QUIZZES ================= -->
         <div class="tab-pane fade" id="quizzes">
 
           {% if quizzes %}
@@ -94,38 +100,32 @@
 
             {% for quiz in quizzes %}
             <div class="col-md-6 col-lg-4">
+              <div class="card border-0 shadow-sm h-100 rounded-4">
 
-              <div class="card border-0 shadow-sm h-100 quiz-card">
+                <div style="height: 4px; background: #4f46e5;"></div>
 
-                <div class="card-body d-flex flex-column">
+                <div class="card-body d-flex flex-column p-4">
+                  <h6 class="fw-bold text-dark">{{ quiz.title }}</h6>
 
-                  <h6 class="fw-bold mb-2">
-                    {{ quiz.title }}
-                  </h6>
-
-                  {% if quiz.description %}
                   <p class="small text-muted flex-grow-1">
                     {{ quiz.description|truncatewords:15 }}
                   </p>
-                  {% endif %}
 
-                  <a href="{% url 'student:take_quiz' quiz.id %}"
-                     class="btn btn-sm btn-success mt-auto">
-                    ▶ Start Quiz
+                  <a href="{% url 'student:take_quiz' quiz.id %}" 
+                     class="btn btn-primary btn-sm mt-auto">
+                    Start Quiz
                   </a>
-
                 </div>
 
               </div>
-
             </div>
             {% endfor %}
 
           </div>
 
           {% else %}
-          <div class="alert alert-warning text-center">
-            No quizzes available for this topic yet.
+          <div class="text-center p-5">
+            <h6>No quizzes available</h6>
           </div>
           {% endif %}
 
@@ -136,18 +136,4 @@
     </div>
   </div>
 </div>
-
-
-<!-- HOVER EFFECT -->
-<style>
-.quiz-card {
-  transition: all 0.25s ease;
-}
-
-.quiz-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.12);
-}
-</style>
-
 {% endblock %}

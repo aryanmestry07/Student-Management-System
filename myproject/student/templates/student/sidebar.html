@@ -1,96 +1,83 @@
 <style>
-#sidebar {
-  transition: all 0.3s ease;
-  width: 220px;
-}
+    #sidebar {
+        width: 260px;
+        min-width: 260px;
+        background-color: #0f172a;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+        z-index: 1050;
+    }
 
-#sidebar.collapsed {
-  width: 70px;
-}
+    #sidebar.collapsed {
+        width: 80px;
+        min-width: 80px;
+    }
 
-#sidebar.collapsed .nav-text,
-#sidebar.collapsed h5 {
-  display: none;
-}
+    .nav-custom-link {
+        display: flex;
+        align-items: center;
+        padding: 0.8rem 1.25rem;
+        margin: 0.2rem 0.75rem;
+        color: #94a3b8;
+        text-decoration: none;
+        border-radius: 12px;
+        white-space: nowrap;
+    }
 
-#sidebar.collapsed .nav-link {
-  text-align: center;
-  font-size: 20px;
-}
+    .nav-custom-link:hover, .nav-custom-link.active {
+        background-color: #4f46e5;
+        color: white;
+    }
+
+    #sidebar.collapsed .nav-text,
+    #sidebar.collapsed .brand-name {
+        display: none;
+    }
 </style>
 
+<div id="sidebar" class="d-flex flex-column min-vh-100 shadow">
 
-<div id="sidebar"
-     class="col-md-2 bg-dark text-white min-vh-100 p-3 d-flex flex-column">
+    <!-- HEADER -->
+    <div class="p-4 d-flex align-items-center justify-content-between">
+        <h5 class="text-white fw-bold mb-0 brand-name">ICE PORTAL</h5>
+        <button class="btn btn-sm btn-dark border-secondary" onclick="toggleSidebar()">☰</button>
+    </div>
 
-  <!-- TOGGLE BUTTON -->
-  <button class="btn btn-sm btn-outline-light mb-3"
-          onclick="toggleSidebar()">
-    ☰
-  </button>
+    <!-- NAV -->
+    <nav class="mt-3 flex-grow-1 d-flex flex-column">
 
-  <!-- BRAND -->
-  <h5 class="fw-bold text-center mb-4 nav-text">🎓 Institute</h5>
+        <a href="{% url 'student:student_dashboard' %}" class="nav-custom-link">
+            <span class="nav-text">Dashboard</span>
+        </a>
 
-  <!-- NAV LINKS -->
-  <ul class="nav flex-column gap-2">
+        <a href="{% url 'student:my_courses' %}" class="nav-custom-link">
+            <span class="nav-text">My Courses</span>
+        </a>
 
-    <!-- Dashboard -->
-    <li class="nav-item">
-      <a class="nav-link text-white {% if active_page == 'dashboard' %}active bg-success rounded{% endif %}"
-         href="{% url 'student:student_dashboard' %}">
-        📊 <span class="nav-text">Dashboard</span>
-      </a>
-    </li>
+        <a href="{% url 'student:all_assignments' %}" class="nav-custom-link">
+            <span class="nav-text">Assignments</span>
+        </a>
 
-    <!-- My Courses -->
-    <li class="nav-item">
-      <a class="nav-link text-white {% if active_page == 'courses' %}active bg-success rounded{% endif %}"
-         href="{% url 'student:my_courses' %}">
-        📘 <span class="nav-text">My Courses</span>
-      </a>
-    </li>
+        <a href="{% url 'student:notice_board' %}" class="nav-custom-link">
+            <span class="nav-text">Notice Board</span>
+        </a>
 
-    <!-- Assignments -->
-    <li class="nav-item">
-      <a class="nav-link text-white {% if active_page == 'assignments' %}active bg-success rounded{% endif %}"
-         href="{% url 'student:all_assignments' %}">
-        📝 <span class="nav-text">Assignments</span>
-      </a>
-    </li>
+        <a href="{% url 'student:id_card' %}" class="nav-custom-link">
+            <span class="nav-text">ID Card</span>
+        </a>
 
-    <!-- Notice Board NEW -->
-    <li class="nav-item">
-      <a class="nav-link text-white {% if active_page == 'notices' %}active bg-success rounded{% endif %}"
-         href="{% url 'student:notice_board' %}">
-        📢 <span class="nav-text">Notices</span>
-      </a>
-    </li>
+        <!-- LOGOUT AT BOTTOM -->
+        <div class="mt-auto">
+            <a href="{% url 'student:student_logout' %}" class="nav-custom-link text-danger">
+                <span class="nav-text">Logout</span>
+            </a>
+        </div>
 
-    <!-- ID Card -->
-    <li class="nav-item">
-      <a class="nav-link text-white {% if active_page == 'id_card' %}active bg-success rounded{% endif %}"
-         href="{% url 'student:id_card' %}">
-        🪪 <span class="nav-text">My ID Card</span>
-      </a>
-    </li>
-
-  </ul>
-
-  <!-- LOGOUT -->
-  <div class="mt-auto">
-    <hr class="border-secondary">
-    <a class="nav-link text-danger"
-       href="{% url 'dashboard_student:student_logout' %}">
-      🚪 <span class="nav-text">Logout</span>
-    </a>
-  </div>
-
+    </nav>
 </div>
 
-
 <script>
-function toggleSidebar() {
-  document.getElementById("sidebar").classList.toggle("collapsed");
-}
+    function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle("collapsed");
+    }
 </script>
