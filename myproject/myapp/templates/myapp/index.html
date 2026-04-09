@@ -127,6 +127,7 @@
       }
     </style>
   </head>
+  
   <body>
     <aside class="sidebar">
       <a href="{% url 'myapp:dashboard' %}" class="sidebar-brand">EDUMANAGE</a>
@@ -206,6 +207,16 @@
         >
         {% endif %}
       </header>
+      {% if messages %}
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
 
       <main class="page-content">{% block content %}{% endblock %}</main>
     </div>

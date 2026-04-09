@@ -113,7 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -140,3 +140,8 @@ LOGOUT_REDIRECT_URL = 'accounts:login'
 import os
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# 📍 College Location
+COLLEGE_LAT = 19.13612587284456   # change to real class latitude
+COLLEGE_LNG = 72.85886213097895  # change to  real class longitude
+ALLOWED_RADIUS_KM = 0.3  # 100 meters

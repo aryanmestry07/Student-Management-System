@@ -17,11 +17,30 @@
         <p class="text-muted small mb-0">Topic Learning Panel</p>
       </div>
 
-      <form method="post" action="{% url 'student:mark_attendance' topic.id %}">
+      <!-- ✅ ATTENDANCE -->
+      <form id="attendanceForm" method="post" action="{% url 'student:mark_attendance' topic.id %}">
         {% csrf_token %}
-        <button type="submit" class="btn btn-sm btn-primary rounded-pill px-4 shadow-sm fw-medium">
-          Mark as Completed
-        </button>
+
+        <!-- 📍 Lecture Type Dropdown -->
+        <select id="lectureType" class="form-select form-select-sm me-2" style="width: 140px;">
+          <option value="theory" {% if lecture_type == "theory" %}selected{% endif %}>Theory</option>
+          <option value="practical" {% if lecture_type == "practical" %}selected{% endif %}>Practical</option>
+        </select>
+
+        <!-- Hidden fields -->
+        <input type="hidden" name="latitude" id="lat">
+        <input type="hidden" name="longitude" id="lng">
+        <input type="hidden" name="lecture_type" id="lectureTypeInput">
+
+        {% if attendance_marked %}
+          <button type="button" class="btn btn-sm btn-success rounded-pill px-4 shadow-sm fw-medium" disabled>
+            ✅ Attendance Marked
+          </button>
+        {% else %}
+          <button id="attendanceBtn" type="button" onclick="markAttendance()" class="btn btn-sm btn-primary rounded-pill px-4 shadow-sm fw-medium">
+            📍 Mark Attendance
+          </button>
+        {% endif %}
       </form>
     </header>
 
@@ -44,11 +63,9 @@
 
       <div class="tab-content">
 
-        <!-- ================= NOTES ================= -->
+        <!-- NOTES -->
         <div class="tab-pane fade show active" id="notes">
-
           <div class="card border-0 shadow-sm rounded-4">
-
             <div class="card-header bg-white border-bottom py-3 px-4">
               <h6 class="fw-bold mb-0 text-dark">📖 Study Material</h6>
             </div>
@@ -56,57 +73,39 @@
             <div class="card-body p-5 text-center">
 
               {% if topic.notes_file %}
-
-                <!-- ICON -->
                 <div style="font-size: 60px;">📄</div>
-
-                <!-- TITLE -->
                 <h5 class="fw-bold mt-3">PDF Notes Available</h5>
+                <p class="text-muted">Click below to view your study material</p>
 
-                <p class="text-muted">
-                  Click below to view your study material
-                </p>
-
-                <!-- BUTTON -->
-                <a href="{{ topic.notes_file.url }}" 
-                   target="_blank"
+                <a href="{{ topic.notes_file.url }}" target="_blank"
                    class="btn btn-primary px-4 py-2 mt-2 shadow-sm">
                   📖 Open Notes
                 </a>
 
               {% elif topic.description %}
-
                 <div class="text-start text-secondary" style="line-height: 2; font-size: 1.05rem;">
                   {{ topic.description|linebreaks }}
                 </div>
 
               {% else %}
-
                 <p class="text-muted">No notes uploaded yet.</p>
-
               {% endif %}
 
             </div>
-
           </div>
-
         </div>
 
-        <!-- ================= QUIZZES ================= -->
+        <!-- QUIZZES -->
         <div class="tab-pane fade" id="quizzes">
-
           {% if quizzes %}
           <div class="row g-4">
-
             {% for quiz in quizzes %}
             <div class="col-md-6 col-lg-4">
               <div class="card border-0 shadow-sm h-100 rounded-4">
-
                 <div style="height: 4px; background: #4f46e5;"></div>
 
                 <div class="card-body d-flex flex-column p-4">
                   <h6 class="fw-bold text-dark">{{ quiz.title }}</h6>
-
                   <p class="small text-muted flex-grow-1">
                     {{ quiz.description|truncatewords:15 }}
                   </p>
@@ -116,24 +115,52 @@
                     Start Quiz
                   </a>
                 </div>
-
               </div>
             </div>
             {% endfor %}
-
           </div>
-
           {% else %}
           <div class="text-center p-5">
             <h6>No quizzes available</h6>
           </div>
           {% endif %}
-
         </div>
 
       </div>
-
     </div>
   </div>
 </div>
+
+<!-- ✅ UPDATED SCRIPT -->
+<script>
+function markAttendance() {
+    const btn = document.getElementById("attendanceBtn");
+
+    // ✅ Get lecture type
+    const type = document.getElementById("lectureType").value;
+    document.getElementById("lectureTypeInput").value = type;
+
+    if (navigator.geolocation) {
+        btn.innerText = "📍 Getting Location...";
+        btn.disabled = true;
+
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                document.getElementById("lat").value = position.coords.latitude;
+                document.getElementById("lng").value = position.coords.longitude;
+
+                btn.innerText = "⏳ Marking...";
+                document.getElementById("attendanceForm").submit();
+            },
+            function(error) {
+                btn.innerText = "📍 Mark Attendance";
+                btn.disabled = false;
+
+                alert("⚠️ Please allow location access.");
+            }
+        );
+    }
+}
+</script>
+
 {% endblock %}

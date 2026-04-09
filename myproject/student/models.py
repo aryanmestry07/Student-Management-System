@@ -1,14 +1,9 @@
-#student/models.py
+# student/models.py
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
 from myapp.models import Course, Topic, Assignment
-
-
-from django.db import models
-from django.contrib.auth.models import User
-from django.utils.timezone import now
-from myapp.models import Course
 
 
 class Student(models.Model):
@@ -33,6 +28,17 @@ class Student(models.Model):
         blank=True
     )
 
+    # ✅ FEES STATUS FIELD (NEW)
+    FEES_STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+    ]
+    fees_status = models.CharField(
+        max_length=10,
+        choices=FEES_STATUS_CHOICES,
+        default='pending'
+    )
+
     # IMPORTANT: Make unique
     roll_number = models.CharField(max_length=20, unique=True, blank=True)
 
@@ -49,18 +55,19 @@ class Student(models.Model):
 
         super().save(*args, **kwargs)
 
-    #  FULL NAME PROPERTY
+    # FULL NAME PROPERTY
     @property
     def full_name(self):
         return f"{self.user.first_name} {self.middle_name or ''} {self.last_name}".strip()
 
-    #  DISPLAY
+    # DISPLAY
     def __str__(self):
         return f"{self.full_name} ({self.roll_number})"
 
-   
     class Meta:
         ordering = ['-enrollment_date']
+
+
 class Submission(models.Model):
     """Submissions made by students for assignments"""
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name="submissions")
@@ -69,25 +76,37 @@ class Submission(models.Model):
     submitted_at = models.DateTimeField(auto_now_add=True)
     graded = models.BooleanField(default=False)
     grade = models.CharField(max_length=10, blank=True, null=True)
-    feedback = models.TextField(blank=True, null=True)  # Teacher feedback
+    feedback = models.TextField(blank=True, null=True)
 
     class Meta:
-        unique_together = ('assignment', 'student')  # Each student submits once
+        unique_together = ('assignment', 'student')
 
     def __str__(self):
         return f"{self.student.user.username} → {self.assignment.title}"
 
-
 class Attendance(models.Model):
+    LECTURE_TYPE_CHOICES = [
+        ('theory', 'Theory'),
+        ('practical', 'Practical'),
+    ]
+
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name="attendance")
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="attendance")
+
     date = models.DateField(auto_now_add=True)
-    status = models.BooleanField(default=False)
+    marked_at = models.DateTimeField(auto_now_add=True)  # ✅ time stored
+
+    status = models.BooleanField(default=True)
+
+    # ✅ Lecture type (ONLY ONCE)
+    lecture_type = models.CharField(
+        max_length=10,
+        choices=LECTURE_TYPE_CHOICES,
+        default='theory'
+    )
 
     class Meta:
-        unique_together = ('topic', 'student')
+        unique_together = ('topic', 'student', 'date')
 
     def __str__(self):
-        return f"{self.student.user.username} - {self.topic.title} - {'Present' if self.status else 'Absent'}"
-
-
+        return f"{self.student.user.username} - {self.topic.title} - {self.date} - {'Present' if self.status else 'Absent'}"

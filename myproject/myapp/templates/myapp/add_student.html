@@ -24,22 +24,38 @@
                 {% endif %}
 
                 <div class="row">
+                    <!-- LEFT: ACCOUNT -->
                     <div class="col-lg-6">
                         <h6 class="text-primary fw-bold small text-uppercase mb-3">Account Details</h6>
                         {% for field in form %}
                             {% if field.name == 'username' or field.name == 'password' or field.name == 'email' %}
-                                {{ field.label_tag }} {{ field }}
+                                <div class="mb-3">
+                                    {{ field.label_tag }}
+                                    {{ field }}
+                                </div>
                             {% endif %}
                         {% endfor %}
                     </div>
 
+                    <!-- RIGHT: PERSONAL -->
                     <div class="col-lg-6 border-start ps-lg-4">
                         <h6 class="text-primary fw-bold small text-uppercase mb-3">Personal Info</h6>
+                        
                         {% for field in form %}
-                            {% if field.name != 'username' and field.name != 'password' and field.name != 'email' %}
-                                {{ field.label_tag }} {{ field }}
+                            {% if field.name != 'username' and field.name != 'password' and field.name != 'email' and field.name != 'fees_status' %}
+                                <div class="mb-3">
+                                    {{ field.label_tag }}
+                                    {{ field }}
+                                </div>
                             {% endif %}
                         {% endfor %}
+
+                        <!-- ✅ FEES STATUS (CUSTOM PLACED) -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Fees Status</label>
+                            {{ form.fees_status }}
+                        </div>
+
                     </div>
                 </div>
 

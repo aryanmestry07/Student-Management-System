@@ -1,8 +1,7 @@
-#student/urls
 from django.urls import path
 from . import views
 
-app_name = 'dashboard_student'
+app_name = 'student'   # ✅ FIXED
 
 urlpatterns = [
     # Home & Auth
@@ -24,6 +23,8 @@ urlpatterns = [
     path("topics/<int:topic_id>/", views.topic_detail, name="topic_detail"),
     path("quiz/<int:quiz_id>/take/", views.take_quiz, name="take_quiz"),
     path('topic/<int:topic_id>/assignments/', views.topic_assignments, name='topic_assignments'),
+
+    # ✅ ATTENDANCE (CORRECT)
     path('topic/<int:topic_id>/attendance/', views.mark_attendance, name='mark_attendance'),
 
     # Assignments & Submissions
@@ -31,7 +32,5 @@ urlpatterns = [
     path("assignments/", views.all_assignments, name="all_assignments"),
 
     path('notices/', views.notice_board, name='notice_board'),
-
     path('id-card/', views.id_card, name='id_card'),
-
 ]

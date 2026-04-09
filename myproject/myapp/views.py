@@ -79,13 +79,40 @@ def students_view(request):
         "students": students,
         "query": query
     })
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404
+from student.models import Student, Attendance
+
 @login_required
 def student_detail(request, student_id):
+    # ✅ Get student
     student = get_object_or_404(Student, id=student_id)
-    return render(request, "myapp/student_detail.html", {"student": student})
 
+    # ✅ Fetch attendance records
+    attendance_records = Attendance.objects.filter(
+        student=student
+    ).select_related("topic").order_by("-date")
+
+    # ✅ Attendance stats
+    total_classes = attendance_records.count()
+    present_classes = attendance_records.filter(status=True).count()
+
+    # ✅ Calculate percentage
+    attendance_percentage = 0
+    if total_classes > 0:
+        attendance_percentage = round((present_classes / total_classes) * 100, 2)
+
+    # ✅ Pass data to template
+    context = {
+        "student": student,
+        "attendance_records": attendance_records,
+        "total_classes": total_classes,
+        "present_classes": present_classes,
+        "attendance_percentage": attendance_percentage,
+    }
+
+    return render(request, "myapp/student_detail.html", context)
 @login_required
-
 def student_signup_admin(request):
     if request.method == "POST":
         form = StudentSignupForm(request.POST)
@@ -112,10 +139,13 @@ def student_signup_admin(request):
             # Create Student profile
             student = form.save(commit=False)
             student.user = user
+
+            # ✅ Fees status handled automatically from form
             student.save()
 
             messages.success(request, "Student created successfully! ✅")
-            return redirect("myapp:students")  # redirect to student list
+            return redirect("myapp:students")
+
     else:
         form = StudentSignupForm()
 
@@ -124,17 +154,26 @@ def student_signup_admin(request):
 @login_required
 def update_student(request, student_id):
     student = get_object_or_404(Student, id=student_id)
+
     if request.method == "POST":
         student_form = StudentUpdateForm(request.POST, instance=student)
         user_form = UserUpdateForm(request.POST, instance=student.user)
+
         if student_form.is_valid() and user_form.is_valid():
-            student_form.save()
+            updated_student = student_form.save(commit=False)
+
+            # ✅ Fees status handled automatically
+            updated_student.save()
+
             user_form.save()
+
             messages.success(request, "Student updated successfully! ✏️")
-            return redirect("students")
+            return redirect("myapp:students")
+
     else:
         student_form = StudentUpdateForm(instance=student)
         user_form = UserUpdateForm(instance=student.user)
+
     return render(request, "myapp/update_student.html", {
         "student_form": student_form,
         "user_form": user_form,

@@ -13,10 +13,11 @@ class CourseForm(forms.ModelForm):
 
 
 # ---------------- Student Forms ----------------
+# ---------------- Student Forms ----------------
 class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
-        fields = ['phone', 'courses']  # only Student fields
+        fields = ['phone', 'courses', 'fees_status']   # ✅ ADDED
         widgets = {
             'courses': forms.CheckboxSelectMultiple
         }
@@ -25,7 +26,7 @@ class StudentForm(forms.ModelForm):
 class StudentUpdateForm(forms.ModelForm):
     class Meta:
         model = Student
-        fields = ['phone', 'courses']
+        fields = ['phone', 'courses', 'fees_status']   # ✅ ADDED
         widgets = {
             'courses': forms.CheckboxSelectMultiple
         }

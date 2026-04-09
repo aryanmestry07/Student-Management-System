@@ -146,11 +146,26 @@ def course_topics(request, course_id):
     )
 
 
+from django.utils.timezone import now
+from django.db.models import Q
+
 @student_login_required
 def topic_detail(request, topic_id):
     topic = get_object_or_404(Topic, id=topic_id)
+    student = request.user.student_profile
+    today = now().date()
 
-    from django.db.models import Q
+    # ✅ Check attendance for today
+    attendance_marked = Attendance.objects.filter(
+        topic=topic,
+        student=student,
+        date=today
+    ).exists()
+
+    # ✅ Default lecture type (for dropdown UI)
+    lecture_type = request.GET.get("lecture_type", "theory")
+
+    # Quiz logic
     quizzes = Quiz.objects.filter(
         Q(course=topic.course) & (Q(topic=topic) | Q(topic__isnull=True))
     ).distinct()
@@ -158,9 +173,13 @@ def topic_detail(request, topic_id):
     return render(
         request,
         "student/topic_detail.html",
-        {"topic": topic, "quizzes": quizzes},
+        {
+            "topic": topic,
+            "quizzes": quizzes,
+            "attendance_marked": attendance_marked,
+            "lecture_type": lecture_type,   # ✅ NEW
+        },
     )
-
 
 # ----------------------------
 # QUIZZES
@@ -392,26 +411,124 @@ def all_assignments(request):
 # ----------------------------
 # ATTENDANCE
 # ----------------------------
+import math
+from django.conf import settings
+from django.utils.timezone import now
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+
 @student_login_required
 def mark_attendance(request, topic_id):
-    """ Marks student as present for a topic """
     topic = get_object_or_404(Topic, id=topic_id)
     student = request.user.student_profile
+    today = now().date()
 
+    # ✅ Get location
+    lat = request.POST.get("latitude")
+    lng = request.POST.get("longitude")
+
+    # ✅ Get lecture type
+    lecture_type = request.POST.get("lecture_type", "theory")
+
+    if not lat or not lng:
+        messages.error(request, "Location not received. Please allow location access.")
+        return redirect("student:topic_detail", topic_id=topic.id)
+
+    try:
+        lat = float(lat)
+        lng = float(lng)
+    except ValueError:
+        messages.error(request, "Invalid location data.")
+        return redirect("student:topic_detail", topic_id=topic.id)
+
+    # ✅ College location
+    COLLEGE_LAT = settings.COLLEGE_LAT
+    COLLEGE_LNG = settings.COLLEGE_LNG
+    ALLOWED_RADIUS = settings.ALLOWED_RADIUS_KM
+
+    # ✅ Distance calculation (Haversine)
+    def calculate_distance(lat1, lon1, lat2, lon2):
+        R = 6371  # km
+        dlat = math.radians(lat2 - lat1)
+        dlon = math.radians(lon2 - lon1)
+
+        a = (
+            math.sin(dlat / 2) ** 2
+            + math.cos(math.radians(lat1))
+            * math.cos(math.radians(lat2))
+            * math.sin(dlon / 2) ** 2
+        )
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+        return R * c
+
+    distance = calculate_distance(lat, lng, COLLEGE_LAT, COLLEGE_LNG)
+
+    # ❌ Outside campus
+    if distance > ALLOWED_RADIUS:
+        messages.error(
+            request,
+            f"You are outside campus ({round(distance*1000)} meters). Attendance denied."
+        )
+        return redirect("student:topic_detail", topic_id=topic.id)
+
+    # ✅ Create or update attendance
     attendance, created = Attendance.objects.get_or_create(
-        topic=topic, student=student,
+        topic=topic,
+        student=student,
+        date=today,
+        defaults={
+            "status": True,
+            "lecture_type": lecture_type
+        }
+    )
+
+    # 🔁 If already exists → update lecture type
+    if not created:
+        attendance.lecture_type = lecture_type
+        attendance.save()
+        messages.info(request, "Attendance already marked. Lecture type updated.")
+    else:
+        messages.success(request, "Attendance marked successfully.")
+
+    return redirect("student:topic_detail", topic_id=topic.id)
+
+    # ✅ Haversine Formula
+    def calculate_distance(lat1, lon1, lat2, lon2):
+        R = 6371  # Earth radius in km
+        dlat = math.radians(lat2 - lat1)
+        dlon = math.radians(lon2 - lon1)
+
+        a = (
+            math.sin(dlat / 2) ** 2
+            + math.cos(math.radians(lat1))
+            * math.cos(math.radians(lat2))
+            * math.sin(dlon / 2) ** 2
+        )
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+        return R * c
+
+    distance = calculate_distance(lat, lng, COLLEGE_LAT, COLLEGE_LNG)
+
+    # ✅ Location validation
+    if distance > ALLOWED_RADIUS:
+        messages.error(
+            request,
+            f"You are outside campus (Distance: {round(distance*1000)} meters). Attendance denied."
+        )
+        return redirect("student:topic_detail", topic_id=topic.id)
+
+    # ✅ Attendance logic
+    attendance, created = Attendance.objects.get_or_create(
+        topic=topic,
+        student=student,
+        date=today,
         defaults={"status": True}
     )
 
     if not created:
-        if not attendance.status:  # only update if previously absent
-            attendance.status = True
-            attendance.save()
-            messages.success(request, "Your attendance has been updated to present.")
-        else:
-            messages.info(request, "Your attendance is already marked as present.")
+        messages.info(request, "Attendance already marked for today.")
     else:
-        messages.success(request, "Your attendance has been marked as present.")
+        messages.success(request, "Attendance marked successfully.")
 
     return redirect("student:topic_detail", topic_id=topic.id)
 
