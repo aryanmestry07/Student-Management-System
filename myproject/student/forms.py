@@ -30,14 +30,24 @@ class StudentSignupForm(forms.ModelForm):
 
     class Meta:
         model = Student
-        fields = ["first_name", "middle_name", "last_name", "phone", "birthdate", "education"]
+        fields = [
+            "first_name", "middle_name", "last_name",
+            "phone", "birthdate", "education",
+            "courses",        # 🔥 ADD THIS
+            "fees_status"     # 🔥 ADD THIS
+        ]
+
         widgets = {
-            "first_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "First Name"}),
-            "middle_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Middle Name"}),
-            "last_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Last Name"}),
-            "phone": forms.TextInput(attrs={"class": "form-control", "placeholder": "Phone Number"}),
+            "first_name": forms.TextInput(attrs={"class": "form-control"}),
+            "middle_name": forms.TextInput(attrs={"class": "form-control"}),
+            "last_name": forms.TextInput(attrs={"class": "form-control"}),
+            "phone": forms.TextInput(attrs={"class": "form-control"}),
             "birthdate": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
-            "education": forms.TextInput(attrs={"class": "form-control", "placeholder": "Education"}),
+            "education": forms.TextInput(attrs={"class": "form-control"}),
+
+            # 🔥 IMPORTANT
+            "courses": forms.CheckboxSelectMultiple(),
+            "fees_status": forms.Select(attrs={"class": "form-select"}),
         }
 
     def clean(self):
@@ -47,7 +57,6 @@ class StudentSignupForm(forms.ModelForm):
         if password and confirm_password and password != confirm_password:
             raise forms.ValidationError("Passwords do not match.")
         return cleaned_data
-
 
 
 class AssignmentUploadForm(forms.ModelForm):

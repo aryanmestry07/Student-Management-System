@@ -1,60 +1,192 @@
 {% extends 'myapp/index.html' %}
+{% load static %}
 
 {% block content %}
-<div class="container my-5">
-    <div class="card shadow-sm">
-        <div class="card-header bg-warning text-dark">
-            <h4 class="mb-0">✏️ Edit Quiz for {{ quiz.course.title }}</h4>
+<style>
+    /* QUIZ BUILDER STYLING */
+    .quiz-hub-container {
+        max-width: 950px;
+        margin: 0 auto;
+    }
+
+    .question-module {
+        background: #ffffff;
+        border-radius: 24px;
+        border: 1px solid rgba(0, 74, 173, 0.08);
+        padding: 35px;
+        margin-bottom: 30px;
+        transition: var(--transition);
+        position: relative;
+    }
+
+    .question-module:hover {
+        border-color: var(--ice-primary-light);
+        box-shadow: 0 15px 35px rgba(0, 31, 77, 0.04);
+    }
+
+    .question-number-badge {
+        position: absolute;
+        top: -15px;
+        left: 30px;
+        background: #f59e0b; /* Amber for Edit state */
+        color: white;
+        padding: 5px 20px;
+        border-radius: 10px;
+        font-weight: 800;
+        font-family: 'Outfit';
+        font-size: 0.85rem;
+        box-shadow: 0 8px 15px rgba(245, 158, 11, 0.2);
+    }
+
+    .form-label-elite {
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: #94a3b8;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    /* ELITE INPUTS */
+    .form-control-elite {
+        background-color: #f8fafc !important;
+        border: 2px solid #f1f5f9 !important;
+        padding: 12px 16px !important;
+        border-radius: 14px !important;
+        transition: var(--transition) !important;
+        font-weight: 500;
+        color: var(--ice-dark);
+    }
+
+    .form-control-elite:focus {
+        background-color: #ffffff !important;
+        border-color: var(--ice-primary) !important;
+        box-shadow: 0 10px 25px rgba(0, 74, 173, 0.05) !important;
+        outline: none;
+    }
+
+    /* OPTION GRID */
+    .option-input-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+    }
+
+    .option-letter {
+        width: 32px; height: 32px;
+        background: #f1f5f9;
+        color: #64748b;
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800; font-size: 0.75rem;
+        flex-shrink: 0;
+    }
+
+    .correct-answer-select {
+        background-color: #ecfdf5 !important;
+        border-color: #10b981 !important;
+        color: #059669 !important;
+        font-weight: 700 !important;
+    }
+
+    .btn-update-quiz {
+        background: var(--ice-primary);
+        color: white;
+        border: none;
+        padding: 16px 45px;
+        border-radius: 18px;
+        font-weight: 700;
+        font-family: 'Outfit';
+        font-size: 1.1rem;
+        transition: var(--transition);
+        box-shadow: 0 10px 25px rgba(0, 74, 173, 0.2);
+    }
+
+    .btn-update-quiz:hover {
+        background: var(--ice-dark);
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(0, 74, 173, 0.3);
+    }
+</style>
+
+<div class="container-fluid py-2 quiz-hub-container">
+    
+    <div class="mb-5 d-flex justify-content-between align-items-end">
+        <div>
+            <h2 class="h3 fw-800 mb-1" style="font-family: 'Outfit'; color: var(--ice-dark);">Modify Assessment</h2>
+            <p class="text-muted small mb-0">Course: <span class="text-primary fw-bold">{{ quiz.course.name }}</span></p>
         </div>
-        <div class="card-body">
-            <form method="post">
-                {% csrf_token %}
-
-                {% for question in quiz.questions.all %}
-<div class="mb-4">
-    <h5>Question {{ forloop.counter }}</h5>
-    <input type="text" name="question_{{ question.id }}" 
-           value="{{ question.text }}" 
-           class="form-control mb-2" required>
-
-    <input type="text" name="option1_{{ question.id }}" 
-           value="{{ question.option_a }}" 
-           class="form-control mb-1" required>
-    <input type="text" name="option2_{{ question.id }}" 
-           value="{{ question.option_b }}" 
-           class="form-control mb-1" required>
-    <input type="text" name="option3_{{ question.id }}" 
-           value="{{ question.option_c }}" 
-           class="form-control mb-1" required>
-    <input type="text" name="option4_{{ question.id }}" 
-           value="{{ question.option_d }}" 
-           class="form-control mb-1" required>
-
-    <select name="correct_{{ question.id }}" class="form-select mt-2" required>
-        <option value="">-- Select Correct Answer --</option>
-        <option value="1" {% if question.correct_answer == "1" %}selected{% endif %}>Option 1</option>
-        <option value="2" {% if question.correct_answer == "2" %}selected{% endif %}>Option 2</option>
-        <option value="3" {% if question.correct_answer == "3" %}selected{% endif %}>Option 3</option>
-        <option value="4" {% if question.correct_answer == "4" %}selected{% endif %}>Option 4</option>
-    </select>
-</div>
-<hr>
-{% endfor %}
-
-
-                <button type="submit" class="btn btn-success">
-                    <i class="bi bi-check-circle"></i> Update Quiz
-                </button>
-                <a href="{% url 'myapp:course_detail' quiz.course.id %}" class="btn btn-secondary">Cancel</a>
-            </form>
-
-            <div class="mt-3">
-                <small class="text-muted">
-                    You can edit existing questions here.  
-                    Currently, this quiz has {{ quiz.questions.count }} questions.
-                </small>
-            </div>
+        <div class="badge bg-white text-muted border px-3 py-2 rounded-pill shadow-sm" style="font-size: 0.7rem; font-weight: 700;">
+            <i class="bi bi-pencil-square me-1"></i> {{ quiz.questions.count }} ENTRIES LOADED
         </div>
     </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% for question in quiz.questions.all %}
+        <div class="question-module shadow-sm">
+            <div class="question-number-badge">ENTRY {{ forloop.counter }}</div>
+            
+            <div class="mb-4">
+                <label class="form-label-elite">Question Statement</label>
+                <textarea name="question_{{ question.id }}" class="form-control-elite w-100" rows="2" required>{{ question.text }}</textarea>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label-elite">Response Options</label>
+                    <div class="option-input-group">
+                        <div class="option-letter">A</div>
+                        <input type="text" name="option1_{{ question.id }}" value="{{ question.option_a }}" class="form-control-elite w-100" required>
+                    </div>
+                    <div class="option-input-group">
+                        <div class="option-letter">B</div>
+                        <input type="text" name="option2_{{ question.id }}" value="{{ question.option_b }}" class="form-control-elite w-100" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label-elite opacity-0 d-none d-md-block">.</label>
+                    <div class="option-input-group">
+                        <div class="option-letter">C</div>
+                        <input type="text" name="option3_{{ question.id }}" value="{{ question.option_c }}" class="form-control-elite w-100" required>
+                    </div>
+                    <div class="option-input-group">
+                        <div class="option-letter">D</div>
+                        <input type="text" name="option4_{{ question.id }}" value="{{ question.option_d }}" class="form-control-elite w-100" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 pt-4 border-top">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <p class="text-muted small mb-0"><i class="bi bi-shield-check me-1"></i> Change the validation key if required.</p>
+                    </div>
+                    <div class="col-md-6">
+                        <select name="correct_{{ question.id }}" class="form-select form-control-elite correct-answer-select" required>
+                            <option value="" class="text-muted">Select Correct Key</option>
+                            <option value="1" {% if question.correct_answer == "1" %}selected{% endif %}>Key A (Option 1)</option>
+                            <option value="2" {% if question.correct_answer == "2" %}selected{% endif %}>Key B (Option 2)</option>
+                            <option value="3" {% if question.correct_answer == "3" %}selected{% endif %}>Key C (Option 3)</option>
+                            <option value="4" {% if question.correct_answer == "4" %}selected{% endif %}>Key D (Option 4)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="d-flex justify-content-between align-items-center mt-5 mb-5 pt-4 border-top">
+            <a href="{% url 'myapp:course_detail' quiz.course.id %}" class="text-muted text-decoration-none fw-bold small">Discard Changes</a>
+            <div class="d-flex gap-3">
+                <button type="submit" class="btn-update-quiz">
+                    Apply Updates <i class="bi bi-cloud-check-fill ms-2"></i>
+                </button>
+            </div>
+        </div>
+    </form>
 </div>
 {% endblock %}

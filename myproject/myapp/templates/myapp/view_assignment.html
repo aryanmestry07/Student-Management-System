@@ -1,0 +1,110 @@
+{% extends 'myapp/index.html' %} {% load static %} {% block content %}
+
+<style>
+  .assignment-card {
+    background: #ffffff;
+    border-radius: 28px;
+    padding: 40px;
+    border: 1px solid rgba(0, 74, 173, 0.05);
+    box-shadow: 0 10px 30px rgba(0, 31, 77, 0.03);
+  }
+
+  .badge-assignment {
+    background: var(--ice-primary-light);
+    color: var(--ice-primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    padding: 6px 14px;
+    border-radius: 10px;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+
+  .file-box {
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .btn-custom {
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+</style>
+
+<div class="container py-4">
+  <!-- BACK BUTTON -->
+ {% if course_id %}
+<a href="{% url 'myapp:course_detail' course_id %}" 
+   class="text-decoration-none text-muted small fw-bold">
+    <i class="bi bi-arrow-left me-2"></i> BACK TO COURSE
+</a>
+{% endif %}
+
+  <!-- MAIN CARD -->
+  <div class="assignment-card">
+    <span class="badge-assignment">Assignment</span>
+
+    <h1 class="fw-800 mb-3" style="font-family: &quot;Outfit&quot;">
+      {{ assignment.title }}
+    </h1>
+
+    <p class="text-muted fs-5 mb-4">{{ assignment.description }}</p>
+
+    <!-- FILE SECTION -->
+    {% if assignment.file %}
+    <div class="file-box mb-4">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-file-earmark-text fs-3 text-primary me-3"></i>
+        <div>
+          <div class="fw-bold">Attached File</div>
+          <small class="text-muted">Download or view assignment file</small>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <a
+          href="{{ assignment.file.url }}"
+          target="_blank"
+          class="btn btn-primary btn-custom"
+        >
+          Open
+        </a>
+
+        <a
+          href="{{ assignment.file.url }}"
+          download
+          class="btn btn-outline-primary btn-custom"
+        >
+          Download
+        </a>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- ACTION BUTTONS -->
+    <div class="d-flex gap-3 mt-4">
+      <form
+        action="{% url 'myapp:delete_assignment' assignment.id %}"
+        method="post"
+      >
+        {% csrf_token %}
+        <button
+          class="btn btn-danger btn-custom"
+          onclick="return confirm('Delete this assignment?');"
+        >
+          <i class="bi bi-trash me-2"></i> Delete
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -2,67 +2,144 @@
 {% block content %}
 
 <style>
-  .action-btn {
-    min-width: 70px;
-    margin-right: 5px;
-    transition: all 0.3s ease;
+  /* STUDENT LIST ENHANCEMENTS */
+  .student-table-card {
+    background: #ffffff;
+    border-radius: 24px;
+    border: 1px solid rgba(0, 74, 173, 0.05);
+    box-shadow: 0 10px 30px rgba(0, 31, 77, 0.02);
+    overflow: hidden;
+  }
+
+  .table {
+    margin-bottom: 0;
+    vertical-align: middle;
+  }
+
+  .table thead th {
+    background: #f8fafc;
+    color: #94a3b8;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    padding: 1.25rem 1.5rem;
+    border-top: none;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .table tbody td {
+    padding: 1.1rem 1.5rem;
+    border-bottom: 1px solid #f1f5f9;
+    color: var(--ice-dark);
     font-weight: 500;
-    font-size: 0.875rem;
+    font-size: 0.9rem;
   }
-  .action-btn:last-child {
-    margin-right: 0;
+
+  /* AVATAR STYLE */
+  .student-avatar {
+    width: 38px;
+    height: 38px;
+    background: var(--ice-primary-light);
+    color: var(--ice-primary);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.8rem;
   }
-  .action-btn:hover {
-    opacity: 0.9;
-    transform: scale(1.02);
+
+  /* STATUS BADGES */
+  .badge-elite {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
-  @media (max-width: 768px) {
-    .action-btn {
-      display: block;
-      width: 100%;
-      margin-bottom: 5px;
-    }
-    .action-btn:last-child {
-      margin-bottom: 0;
-    }
+  .bg-pending { background: #fff1f2; color: #e11d48; }
+  .bg-completed { background: #ecfdf5; color: #059669; }
+
+  /* SEARCH BAR GLASS */
+  .search-wrapper {
+    position: relative;
+    width: 300px;
   }
+  .search-wrapper i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+  }
+  .search-input-elite {
+    padding-left: 42px !important;
+    border-radius: 12px !important;
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    font-size: 0.85rem;
+    transition: var(--transition);
+  }
+  .search-input-elite:focus {
+    background: #fff !important;
+    border-color: var(--ice-primary) !important;
+    box-shadow: 0 8px 20px rgba(0, 74, 173, 0.05) !important;
+  }
+
+  /* ACTION BUTTONS */
+  .btn-mgmt {
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 8px 14px;
+    transition: var(--transition);
+    border: none;
+  }
+  .btn-view { background: #f1f5f9; color: #475569; }
+  .btn-view:hover { background: #e2e8f0; transform: translateY(-2px); }
+  .btn-add-course { background: var(--ice-primary); color: white; }
+  .btn-add-course:hover { background: var(--ice-dark); color: white; transform: translateY(-2px); }
 </style>
 
-<div class="mb-4">
-  <h2 class="h4 fw-bold">Student Portal</h2>
-  <p class="text-muted">Monitor student progress and engagement</p>
+<div class="d-flex justify-content-between align-items-end mb-4">
+  <div>
+    <h2 class="h3 fw-800 mb-1" style="font-family: 'Outfit'; color: var(--ice-dark);">Student Registry</h2>
+    <p class="text-muted small mb-0">Manage enrollment and financial status of the Bandra cohort</p>
+  </div>
+
+  <form method="GET" class="search-wrapper">
+    <i class="bi bi-search"></i>
+    <input
+      type="text"
+      name="q"
+      value="{{ query|default:'' }}"
+      placeholder="Search name or username..."
+      class="form-control search-input-elite shadow-none"
+    />
+  </form>
 </div>
 
-<div class="card shadow-sm">
-  <div class="card-header d-flex justify-content-between align-items-center">
-    <h5 class="mb-0">Active Students</h5>
+{% if query %}
+<div class="mb-3">
+  <span class="badge bg-light text-dark border py-2 px-3 rounded-pill" style="font-size: 0.75rem;">
+    <i class="bi bi-filter me-1"></i> Results for: <strong>{{ query }}</strong>
+    <a href="{% url 'myapp:students' %}" class="text-danger ms-2"><i class="bi bi-x-circle-fill"></i></a>
+  </span>
+</div>
+{% endif %}
 
-    <form method="GET" class="w-25">
-      <input
-        type="text"
-        name="q"
-        value="{{ query|default:'' }}"
-        placeholder="Search students..."
-        class="form-control"
-      />
-    </form>
-  </div>
-
-  {% if query %}
-  <div class="px-3 pt-2">
-    <p class="text-muted small mb-0">Showing results for "{{ query }}"</p>
-  </div>
-  {% endif %}
-
-  <div class="card-body">
-    <table class="table table-bordered">
+<div class="student-table-card">
+  <div class="table-responsive">
+    <table class="table">
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Username</th>
-          <th>Fees Status</th> <!-- ✅ NEW COLUMN -->
-          <th>Actions</th>
+          <th>Student Profile</th>
+          <th>Contact Info</th>
+          <th>Account</th>
+          <th>Fees Status</th>
+          <th class="text-end">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -71,40 +148,54 @@
           {% for student in students %}
           <tr>
             <td>
-              {{ student.user.first_name }} {{ student.middle_name }} {{ student.last_name }}
+              <div class="d-flex align-items-center">
+                <div class="student-avatar me-3">
+                  {{ student.user.first_name|slice:":1"|upper }}{{ student.last_name|slice:":1"|upper }}
+                </div>
+                <div>
+                  <div class="fw-bold">{{ student.user.first_name }} {{ student.last_name }}</div>
+                  <div class="text-muted extra-small" style="font-size: 0.7rem;">Roll No: #{{ student.roll_number  }}</div>
+                </div>
+              </div>
             </td>
-            <td>{{ student.user.email }}</td>
-            <td>{{ student.user.username }}</td>
+            <td>
+              <div style="font-size: 0.85rem;">{{ student.user.email }}</div>
+            </td>
+            <td>
+              <code class="text-primary" style="font-size: 0.8rem;">@{{ student.user.username }}</code>
+            </td>
 
-            <!-- ✅ FEES STATUS -->
             <td>
               {% if student.fees_status == "pending" %}
-                <span class="badge bg-danger">Pending</span>
+                <span class="badge-elite bg-pending">
+                  <i class="bi bi-clock-history me-1"></i> Pending
+                </span>
               {% else %}
-                <span class="badge bg-success">Completed</span>
+                <span class="badge-elite bg-completed">
+                  <i class="bi bi-check-circle-fill me-1"></i> Completed
+                </span>
               {% endif %}
             </td>
 
-            <td>
-              <a href="{% url 'myapp:student_detail' student.id %}" class="btn btn-info btn-sm">
-                View Details
-              </a>
-              <a href="{% url 'myapp:add_course_to_student' student.id %}"
-                 class="btn btn-success btn-sm action-btn">
-                Add Course
-              </a>
+            <td class="text-end">
+              <div class="d-flex justify-content-end gap-2">
+                <a href="{% url 'myapp:student_detail' student.id %}" class="btn-mgmt btn-view text-decoration-none">
+                  View Profile
+                </a>
+                <a href="{% url 'myapp:add_course_to_student' student.id %}" class="btn-mgmt btn-add-course text-decoration-none">
+                  <i class="bi bi-plus-lg me-1"></i> Course
+                </a>
+              </div>
             </td>
           </tr>
           {% endfor %}
 
         {% else %}
           <tr>
-            <td colspan="5" class="text-center text-muted"> <!-- updated colspan -->
-              {% if query %}
-                No students found for "{{ query }}"
-              {% else %}
-                No students available
-              {% endif %}
+            <td colspan="5" class="text-center py-5">
+              <div class="text-muted mb-2"><i class="bi bi-people-fill display-6"></i></div>
+              <h6 class="fw-bold">No students found</h6>
+              <p class="small text-muted">Try adjusting your search or enroll a new student.</p>
             </td>
           </tr>
         {% endif %}

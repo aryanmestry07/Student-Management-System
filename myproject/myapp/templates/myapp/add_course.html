@@ -1,51 +1,201 @@
-<!--add_course.html-->
 {% extends 'myapp/index.html' %}
+{% load static %}
+
 {% block content %}
-<div class="mb-4">
-    <h2 class="h4 fw-bold">Create New Course</h2>
-    <p class="text-muted">Add a new course to your curriculum</p>
-</div>
+<style>
+    /* FORM HUB STYLING */
+    .form-hub-card {
+        background: #ffffff;
+        border-radius: 32px;
+        border: 1px solid rgba(0, 74, 173, 0.05);
+        box-shadow: 0 20px 50px rgba(0, 31, 77, 0.05);
+        overflow: hidden;
+    }
 
-<div class="card shadow-sm">
-    <div class="card-body">
-        <form method="POST">
-            {% csrf_token %}
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="name" class="form-label">Course Name</label>
-                    <input type="text" id="name" name="name" required class="form-control">
-                </div>
-                <div class="col-md-6">
-                    <label for="category" class="form-label">Category</label>
-                    <select id="category" name="category" class="form-select" required>
-                        <option value="">Select category</option>
-                        <option value="Programming">Programming</option>
-                        <option value="Design">Design</option>
-                        <option value="Marketing">Marketing</option>
-                    </select>
-                </div>
-            </div>
+    .form-header-accent {
+        background: linear-gradient(to right, var(--ice-primary-light), transparent);
+        padding: 40px;
+        border-bottom: 1px solid #f1f5f9;
+    }
 
-            <div class="mb-3">
-                <label for="description" class="form-label">Description</label>
-                <textarea id="description" name="description" rows="4" class="form-control" required></textarea>
-            </div>
+    .form-label-elite {
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: #94a3b8;
+        margin-bottom: 8px;
+    }
 
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <label for="duration" class="form-label">Duration (months)</label>
-                    <input type="number" id="duration" name="duration" class="form-control" required>
-                </div>
-                <div class="col-md-6">
-                    <label for="price" class="form-label">Price (₹)</label>
-                    <input type="number" id="price" name="price" step="0.01" class="form-control" required>
-                </div>
-            </div>
+    /* ELITE INPUTS */
+    .form-control-elite, .form-select-elite {
+        background-color: #f8fafc !important;
+        border: 2px solid #f1f5f9 !important;
+        padding: 14px 18px !important;
+        border-radius: 16px !important;
+        transition: var(--transition) !important;
+        font-size: 1rem;
+        color: var(--ice-dark);
+    }
 
-            <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-primary">Create Course</button>
-            </div>
-        </form>
+    .form-control-elite:focus, .form-select-elite:focus {
+        background-color: #ffffff !important;
+        border-color: var(--ice-primary) !important;
+        box-shadow: 0 10px 25px rgba(0, 74, 173, 0.08) !important;
+        outline: none;
+    }
+
+    /* TOPIC GENERATOR STYLING */
+    .topic-step-item {
+        background: #f8fafc;
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 15px;
+        border: 1px solid #f1f5f9;
+        display: flex;
+        align-items: center;
+        animation: slideIn 0.4s ease forwards;
+    }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .topic-number {
+        width: 35px; height: 35px;
+        background: var(--ice-primary);
+        color: white;
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800; font-size: 0.8rem;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+
+    .btn-create {
+        background: var(--ice-primary);
+        color: white;
+        border: none;
+        padding: 16px 40px;
+        border-radius: 18px;
+        font-weight: 700;
+        font-family: 'Outfit';
+        font-size: 1.1rem;
+        transition: var(--transition);
+        box-shadow: 0 10px 25px rgba(0, 74, 173, 0.2);
+    }
+
+    .btn-create:hover {
+        background: var(--ice-dark);
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(0, 74, 173, 0.3);
+    }
+</style>
+
+<div class="container-fluid py-2">
+    <div class="mb-4">
+        <a href="{% url 'myapp:courses' %}" class="text-decoration-none text-muted small fw-bold">
+            <i class="bi bi-arrow-left me-2"></i> BACK TO CATALOG
+        </a>
+    </div>
+
+    <div class="form-hub-card">
+        <div class="form-header-accent">
+            <h2 class="fw-800 mb-1" style="font-family: 'Outfit'; color: var(--ice-dark);">Create New Course</h2>
+            <p class="text-muted mb-0">Define curriculum, pricing, and duration for the Bandra Campus.</p>
+        </div>
+
+        <div class="p-5">
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="row g-4 mb-4">
+                    <div class="col-md-7">
+                        <label for="name" class="form-label-elite">Course Title</label>
+                        <input type="text" id="name" name="name" required class="form-control-elite w-100" placeholder="e.g. Full Stack Web Development">
+                    </div>
+                    <div class="col-md-5">
+                        <label for="category" class="form-label-elite">Academic Category</label>
+                        <select id="category" name="category" class="form-select-elite w-100" required>
+                            <option value="">Select category</option>
+                            <option value="Programming">Programming</option>
+                            <option value="Design">Design</option>
+                            <option value="Marketing">Marketing</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="description" class="form-label-elite">Course Prospectus (Description)</label>
+                    <textarea id="description" name="description" rows="4" class="form-control-elite w-100" required placeholder="Outline the learning objectives and career outcomes..."></textarea>
+                </div>
+
+                <div class="row g-4 mb-5">
+                    <div class="col-md-6">
+                        <label for="duration" class="form-label-elite">Duration (Months)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0" style="border-radius: 16px 0 0 16px; border: 2px solid #f1f5f9;"><i class="bi bi-calendar3"></i></span>
+                            <input type="number" id="duration" name="duration" class="form-control-elite border-start-0" required style="border-radius: 0 16px 16px 0 !important;">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="price" class="form-label-elite">Course Fee (₹)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0" style="border-radius: 16px 0 0 16px; border: 2px solid #f1f5f9; font-weight: bold;">₹</span>
+                            <input type="number" id="price" name="price" step="0.01" class="form-control-elite border-start-0" required style="border-radius: 0 16px 16px 0 !important;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4 pt-4 border-top">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h5 class="fw-bold mb-0" style="font-family: 'Outfit';">Curriculum Builder</h5>
+                            <p class="text-muted small">Set the number of core topics to generate input fields.</p>
+                        </div>
+                        <div style="width: 150px;">
+                            <label class="form-label-elite">Total Topics</label>
+                            <input type="number" id="topicCount" name="topicCount" class="form-control-elite w-100" min="1" placeholder="0">
+                        </div>
+                    </div>
+
+                    <div id="topicsContainer" class="row">
+                        </div>
+                </div>
+
+                <div class="d-flex justify-content-end pt-4 border-top">
+                    <button type="button" class="btn btn-link text-muted text-decoration-none fw-bold me-4">Discard Draft</button>
+                    <button type="submit" class="btn-create shadow">
+                        <i class="bi bi-plus-lg me-2"></i> Deploy New Course
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+<script>
+document.getElementById("topicCount").addEventListener("input", function() {
+    let count = this.value;
+    let container = document.getElementById("topicsContainer");
+    container.innerHTML = "";
+
+    for (let i = 1; i <= count; i++) {
+        let col = document.createElement("div");
+        col.classList.add("col-md-6");
+
+        col.innerHTML = `
+            <div class="topic-step-item shadow-sm">
+                <div class="topic-number">${i}</div>
+                <div class="flex-grow-1">
+                    <input type="text" name="topics[]" class="form-control-elite w-100 border-0 bg-transparent" placeholder="Enter Topic ${i} Title" required>
+                </div>
+            </div>
+        `;
+
+        container.appendChild(col);
+    }
+});
+</script>
 {% endblock %}

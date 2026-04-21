@@ -1,263 +1,212 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Student Details | {{ student.user.first_name }}</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <style>
-      :root {
-        --sidebar-width: 260px;
-        --primary: #4f46e5;
-        --bg: #f8fafc;
-      }
-      body {
-        font-family: "Inter", sans-serif;
-        background-color: var(--bg);
-        color: #1e293b;
-        margin: 0;
-      }
+{% extends 'myapp/index.html' %}
+{% load static %}
 
-      .sidebar {
-        width: var(--sidebar-width);
-        height: 100vh;
-        position: fixed;
-        background: #fff;
-        border-right: 1px solid #e2e8f0;
-        padding: 1.5rem;
-        z-index: 1000;
-      }
-      .sidebar-brand {
-        font-size: 1.25rem;
-        font-weight: 800;
-        color: var(--primary);
-        text-decoration: none;
-        display: block;
-        margin-bottom: 2rem;
-      }
-      .nav-link-custom {
-        display: flex;
-        align-items: center;
-        padding: 0.8rem 1rem;
-        color: #64748b;
-        text-decoration: none;
-        border-radius: 8px;
-        margin-bottom: 0.5rem;
-      }
+{% block title %}Student Profile | {{ student.user.first_name }}{% endblock %}
 
-      .main-content {
-        margin-left: var(--sidebar-width);
-        padding: 2rem;
-      }
-      .top-header {
-        background: #fff;
-        border-bottom: 1px solid #e2e8f0;
-        padding: 1rem 2rem;
-        display: flex;
-        justify-content: flex-end;
-        margin-left: var(--sidebar-width);
-      }
-
-      .profile-card {
-        border: none;
-        border-radius: 20px;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+{% block content %}
+<style>
+    /* PROFILE STYLING */
+    .profile-card-elite {
+        background: #ffffff;
+        border-radius: 28px;
+        border: 1px solid rgba(0, 74, 173, 0.05);
+        box-shadow: 0 10px 30px rgba(0, 31, 77, 0.02);
         overflow: hidden;
-      }
-      .info-label {
-        font-size: 0.75rem;
-        text-uppercase: uppercase;
-        font-weight: 700;
+    }
+
+    .info-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        font-weight: 800;
         color: #94a3b8;
-        letter-spacing: 0.5px;
-      }
-      .info-value {
+        letter-spacing: 1px;
+        margin-bottom: 4px;
+    }
+
+    .info-value {
         font-weight: 600;
-        color: #334155;
-        margin-bottom: 1rem;
-      }
-      .course-badge {
-        padding: 0.5rem 1rem;
-        background: #f1f5f9;
-        border-radius: 10px;
-        font-weight: 500;
-        display: inline-block;
-        margin: 0.25rem;
-      }
-    </style>
-  </head>
-  <body>
-    <aside class="sidebar">
-      <a href="{% url 'myapp:dashboard' %}" class="sidebar-brand">EDUMANAGE</a>
-      <nav>
-        <a href="{% url 'myapp:dashboard' %}" class="nav-link-custom"
-          >Dashboard</a
-        >
-        <a href="{% url 'myapp:courses' %}" class="nav-link-custom">Courses</a>
-        <a
-          href="{% url 'myapp:students' %}"
-          class="nav-link-custom"
-          style="background: #eef2ff; color: #4f46e5"
-          >Students</a
-        >
-      </nav>
-    </aside>
+        color: var(--ice-dark);
+        margin-bottom: 1.25rem;
+        font-size: 0.95rem;
+    }
 
-    <header class="top-header">
-      <a
-        href="{% url 'myapp:students' %}"
-        class="btn btn-sm btn-light border px-3"
-        >← Back to List</a
-      >
-    </header>
+    .course-pill {
+        padding: 6px 14px;
+        background: var(--ice-primary-light);
+        color: var(--ice-primary);
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 4px;
+        border: 1px solid rgba(0, 74, 173, 0.1);
+    }
 
-    <main class="main-content">
-      <div class="row g-4">
-        <div class="col-lg-4 text-center">
-          <div class="card profile-card p-4 mb-4">
-            <div
-              class="bg-primary text-white rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3"
-              style="
-                width: 80px;
-                height: 80px;
-                font-size: 2rem;
-                font-weight: 700;
-              "
-            >
-              {{ student.user.first_name|first }}
+    /* ATTENDANCE PROGRESS */
+    .attendance-circle-container {
+        padding: 20px;
+        background: #f8fafc;
+        border-radius: 20px;
+        text-align: center;
+    }
+
+    .attendance-percentage {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 800;
+        font-size: 2rem;
+        color: var(--ice-primary);
+    }
+
+    /* TABLE REFINEMENT */
+    .table-elite thead th {
+        background: #f8fafc;
+        color: #94a3b8;
+        font-size: 0.65rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border: none;
+    }
+
+    .status-badge-sm {
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 6px;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="mb-4 d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="h3 fw-800 mb-1" style="font-family: 'Outfit'; color: var(--ice-dark);">Student Profile</h2>
+            <p class="text-muted small mb-0">Detailed academic and attendance overview</p>
+        </div>
+        <a href="{% url 'myapp:students' %}" class="btn btn-sm btn-white border px-3 rounded-pill fw-bold text-muted">
+            <i class="bi bi-arrow-left me-1"></i> Back to Registry
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="profile-card-elite p-4 text-center mb-4">
+                <div class="avatar-circle mx-auto mb-3 shadow" style="width: 100px; height: 100px; font-size: 2.5rem; background: linear-gradient(135deg, var(--ice-primary) 0%, var(--ice-secondary) 100%);">
+                    {{ student.user.first_name|slice:":1"|upper }}
+                </div>
+                <h4 class="fw-800 mb-1" style="font-family: 'Outfit';">{{ student.user.first_name }} {{ student.last_name }}</h4>
+                <p class="text-muted small mb-4">@{{ student.user.username }}</p>
+                
+                <div class="attendance-circle-container mb-4">
+                    <div class="attendance-percentage">{{ attendance_percentage }}%</div>
+                    <div class="info-label">Overall Attendance</div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <a href="{% url 'myapp:update_student' student.id %}" class="btn btn-primary rounded-pill fw-bold py-2">
+                        <i class="bi bi-pencil-square me-2"></i>Edit Profile
+                    </a>
+                    <a href="{% url 'myapp:reset_student_password' student.id %}" class="btn btn-outline-warning rounded-pill fw-bold py-2">
+                        <i class="bi bi-shield-lock me-2"></i>Reset Password
+                    </a>
+                </div>
             </div>
-            <h4 class="fw-bold mb-0">
-              {{ student.user.first_name }} {{ student.last_name }}
-            </h4>
-            <p class="text-muted small mb-4">@{{ student.user.username }}</p>
-            <div class="d-grid gap-2">
-              <a
-                href="{% url 'myapp:update_student' student.id %}"
-                class="btn btn-primary rounded-pill"
-                >Edit Profile</a
-              >
-              <a
-                href="{% url 'myapp:reset_student_password' student.id %}"
-                class="btn btn-outline-warning rounded-pill"
-                >Reset Password</a
-              >
-            </div>
-          </div>
         </div>
 
         <div class="col-lg-8">
-          <div class="card profile-card p-4">
-            <h5 class="fw-bold mb-4">Personal Information</h5>
-            <div class="row">
-              <div class="col-md-6">
-                <p class="info-label">Email Address</p>
-                <p class="info-value">{{ student.user.email }}</p>
-                <p class="info-label">Phone Number</p>
-                <p class="info-value">{{ student.phone|default:"N/A" }}</p>
-              </div>
-              <div class="col-md-6">
-                <p class="info-label">Education</p>
-                <p class="info-value">{{ student.education }}</p>
-                <p class="info-label">Enrollment Date</p>
-                <p class="info-value">
-                  {{ student.enrollment_date|date:"F d, Y" }}
-                </p>
-              </div>
+            <div class="profile-card-elite p-4">
+                <h5 class="fw-800 mb-4" style="font-family: 'Outfit'; color: var(--ice-dark);">Personal Information</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-label">Email Address</div>
+                        <div class="info-value">{{ student.user.email }}</div>
+                        <div class="info-label">Phone Number</div>
+                        <div class="info-value">{{ student.phone|default:"Not Provided" }}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-label">Current Education</div>
+                        <div class="info-value">{{ student.education }}</div>
+                        <div class="info-label">Date of Enrollment</div>
+                        <div class="info-value">{{ student.enrollment_date|date:"F d, Y" }}</div>
+                    </div>
+                </div>
+
+                <hr class="my-4 opacity-5" />
+
+                <h5 class="fw-800 mb-3" style="font-family: 'Outfit'; color: var(--ice-dark);">Active Enrollments</h5>
+                <div class="mb-2">
+                    {% for course in student.courses.all %}
+                        <span class="course-pill">
+                            <i class="bi bi-journal-check"></i> {{ course.name }}
+                        </span>
+                    {% empty %}
+                        <p class="text-muted small italic">No active courses found for this student.</p>
+                    {% endfor %}
+                </div>
+
+                <hr class="my-4 opacity-5" />
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-800 mb-0" style="font-family: 'Outfit'; color: var(--ice-dark);">Attendance Log</h5>
+                    <div class="text-muted small fw-bold">
+                        <span class="text-primary">{{ present_classes }}</span> / {{ total_classes }} Sessions
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-elite align-middle">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Topic Segment</th>
+                                <th>Lecture Type</th>
+                                <th class="text-end">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for att in attendance_records %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">{{ att.date }}</div>
+                                    <div class="text-muted extra-small" style="font-size: 0.7rem;">{{ att.marked_at|time:"H:i" }}</div>
+                                </td>
+                                <td><span class="text-muted small">{{ att.topic.title }}</span></td>
+                                <td>
+                                    <span class="badge bg-light text-dark border-0 rounded-pill px-3" style="font-size: 0.65rem; font-weight: 700;">
+                                        {{ att.lecture_type|upper }}
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    {% if att.status %}
+                                        <span class="status-badge-sm bg-success bg-opacity-10 text-success">PRESENT</span>
+                                    {% else %}
+                                        <span class="status-badge-sm bg-danger bg-opacity-10 text-danger">ABSENT</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted small italic">
+                                    No historical attendance records found.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-5 border-top pt-4">
+                    <form action="{% url 'myapp:delete_student' student.id %}" method="post" 
+                          onsubmit="return confirm('DANGER: This will permanently delete the student account. Proceed?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-link text-danger p-0 text-decoration-none extra-small fw-bold">
+                            <i class="bi bi-trash3 me-1"></i> Permanently Delete Student Account
+                        </button>
+                    </form>
+                </div>
             </div>
-
-            <hr class="my-4" />
-
-            <h5 class="fw-bold mb-3">Enrolled Courses</h5>
-            <div>
-              {% for course in student.courses.all %}
-              <span class="course-badge">📚 {{ course.name }}</span>
-              {% empty %}
-              <p class="text-muted">Not enrolled in any courses.</p>
-              {% endfor %}
-            </div>
-
-            <!-- 🔥 NEW: ATTENDANCE SECTION -->
-            <!-- 🔥 NEW: ATTENDANCE SECTION -->
-            <hr class="my-4" />
-
-            <h5 class="fw-bold mb-3">Attendance Overview</h5>
-
-            <div class="mb-3">
-              <strong>Total Classes:</strong> {{ total_classes }} |
-              <strong>Present:</strong> {{ present_classes }} |
-              <strong>Attendance:</strong> {{ attendance_percentage }}%
-            </div>
-
-            <div class="table-responsive">
-              <table class="table table-bordered table-sm">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <!-- ✅ NEW -->
-                    <th>Topic</th>
-                    <th>Type</th>
-                    <!-- ✅ NEW -->
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for att in attendance_records %}
-                  <tr>
-                    <td>{{ att.date }}</td>
-
-                    <!-- ✅ TIME -->
-                    <td>{{ att.marked_at|time:"H:i" }}</td>
-
-                    <td>{{ att.topic.title }}</td>
-
-                    <!-- ✅ LECTURE TYPE -->
-                    <td>{{ att.lecture_type|title }}</td>
-
-                    <td>
-                      {% if att.status %}
-                      <span class="text-success fw-bold">Present</span>
-                      {% else %}
-                      <span class="text-danger fw-bold">Absent</span>
-                      {% endif %}
-                    </td>
-                  </tr>
-                  {% empty %}
-                  <tr>
-                    <td colspan="5" class="text-center text-muted">
-                      No attendance records
-                    </td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-
-            <div class="mt-5 border-top pt-4">
-              <form
-                action="{% url 'myapp:delete_student' student.id %}"
-                method="post"
-                onsubmit="return confirm('Delete this student permanently?');"
-              >
-                {% csrf_token %}
-                <button
-                  type="submit"
-                  class="btn btn-link text-danger p-0 text-decoration-none small fw-bold"
-                >
-                  Delete Student Account
-                </button>
-              </form>
-            </div>
-          </div>
         </div>
-      </div>
-    </main>
-  </body>
-</html>
+    </div>
+</div>
+{% endblock %}

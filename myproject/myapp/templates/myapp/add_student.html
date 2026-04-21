@@ -1,68 +1,175 @@
-{% extends "myapp/index.html" %}
+{% extends 'myapp/index.html' %}
+{% load static %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-xl-9">
-        <div class="mb-4">
-            <h2 class="fw-bold mb-1">Enroll New Student</h2>
-            <p class="text-muted">Fill in the details below to create a new student account.</p>
+<style>
+    /* FORM HUB STYLING */
+    .form-hub-card {
+        background: #ffffff;
+        border-radius: 32px;
+        border: 1px solid rgba(0, 74, 173, 0.05);
+        box-shadow: 0 20px 50px rgba(0, 31, 77, 0.05);
+        overflow: hidden;
+    }
+
+    .form-header-accent {
+        background: linear-gradient(to right, #e6f0ff, transparent);
+        padding: 40px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .form-label-elite {
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: #94a3b8;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    /* ELITE INPUTS - Targeting Django Auto-widgets */
+    .form-hub-card input, 
+    .form-hub-card select, 
+    .form-hub-card textarea {
+        display: block;
+        width: 100%;
+        padding: 14px 18px;
+        background-color: #f8fafc;
+        border: 2px solid #f1f5f9;
+        border-radius: 16px;
+        transition: var(--transition);
+        font-weight: 500;
+        color: var(--ice-dark);
+    }
+
+    .form-hub-card input:focus, 
+    .form-hub-card select:focus {
+        background-color: #ffffff;
+        border-color: var(--ice-primary);
+        outline: 0;
+        box-shadow: 0 10px 25px rgba(0, 74, 173, 0.08);
+    }
+
+    /* SECTION HEADER STYLE */
+    .section-indicator {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 25px;
+    }
+
+    .section-dot {
+        width: 8px; height: 8px;
+        background: var(--ice-primary);
+        border-radius: 50%;
+    }
+
+    .btn-create-account {
+        background: var(--ice-primary);
+        color: white;
+        border: none;
+        padding: 16px 40px;
+        border-radius: 18px;
+        font-weight: 700;
+        font-family: 'Outfit';
+        font-size: 1.1rem;
+        transition: var(--transition);
+        box-shadow: 0 10px 25px rgba(0, 74, 173, 0.2);
+    }
+
+    .btn-create-account:hover {
+        background: var(--ice-dark);
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(0, 74, 173, 0.3);
+    }
+
+    .btn-cancel-link {
+        color: #94a3b8;
+        text-decoration: none;
+        font-weight: 700;
+        transition: 0.3s;
+    }
+
+    .btn-cancel-link:hover {
+        color: #e11d48;
+    }
+</style>
+
+<div class="container-fluid py-2">
+    <div class="mb-4">
+        <a href="{% url 'myapp:students' %}" class="text-decoration-none text-muted small fw-bold">
+            <i class="bi bi-arrow-left me-2"></i> BACK TO REGISTRY
+        </a>
+    </div>
+
+    <div class="form-hub-card">
+        <div class="form-header-accent">
+            <h2 class="fw-800 mb-1" style="font-family: 'Outfit'; color: var(--ice-dark);">Enroll New Student</h2>
+            <p class="text-muted mb-0">Initialize a new academic profile and secure portal access.</p>
         </div>
 
-        <div class="form-card shadow-sm">
+        <div class="p-5">
             <form method="POST">
                 {% csrf_token %}
-                
-                {% if form.errors %}
-                <div class="alert alert-danger border-0 rounded-4 mb-4">
-                    <p class="fw-bold mb-1 small">Please correct the errors below:</p>
-                    <ul class="mb-0 x-small">
-                        {% for field, errors in form.errors.items %}
-                            <li>{{ field|title }}: {{ errors|striptags }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
 
-                <div class="row">
-                    <!-- LEFT: ACCOUNT -->
-                    <div class="col-lg-6">
-                        <h6 class="text-primary fw-bold small text-uppercase mb-3">Account Details</h6>
-                        {% for field in form %}
-                            {% if field.name == 'username' or field.name == 'password' or field.name == 'email' %}
-                                <div class="mb-3">
-                                    {{ field.label_tag }}
-                                    {{ field }}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-
-                    <!-- RIGHT: PERSONAL -->
-                    <div class="col-lg-6 border-start ps-lg-4">
-                        <h6 class="text-primary fw-bold small text-uppercase mb-3">Personal Info</h6>
-                        
-                        {% for field in form %}
-                            {% if field.name != 'username' and field.name != 'password' and field.name != 'email' and field.name != 'fees_status' %}
-                                <div class="mb-3">
-                                    {{ field.label_tag }}
-                                    {{ field }}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-
-                        <!-- ✅ FEES STATUS (CUSTOM PLACED) -->
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Fees Status</label>
-                            {{ form.fees_status }}
+                <div class="row g-5">
+                    <div class="col-lg-5">
+                        <div class="section-indicator">
+                            <div class="section-dot"></div>
+                            <h6 class="fw-800 mb-0" style="font-family: 'Outfit'; color: var(--ice-dark);">Security & Access</h6>
                         </div>
 
+                        {% for field in form %}
+                            {% if field.name == 'username' or field.name == 'password' or field.name == 'email' %}
+                                <div class="mb-4">
+                                    <label class="form-label-elite">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <small class="text-muted extra-small d-block mt-1">{{ field.help_text|striptags }}</small>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-lg-7 border-start ps-lg-5">
+                        <div class="section-indicator">
+                            <div class="section-dot" style="background: #10b981;"></div>
+                            <h6 class="fw-800 mb-0" style="font-family: 'Outfit'; color: var(--ice-dark);">Personal Profile</h6>
+                        </div>
+
+                        <div class="row g-3">
+                            {% for field in form %}
+                                {% if field.name != 'username' and field.name != 'password' and field.name != 'email' and field.name != 'fees_status' and field.name != 'courses' %}
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label-elite">{{ field.label }}</label>
+                                        {{ field }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+
+                            <div class="col-12 mt-4 pt-4 border-top">
+                                <div class="p-4 bg-light rounded-4">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <label class="form-label-elite text-primary">Financial Status</label>
+                                            <p class="text-muted small mb-0">Set the initial fee clearance for this student.</p>
+                                        </div>
+                                        <div style="width: 200px;">
+                                            {{ form.fees_status }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="mt-4 d-flex justify-content-between align-items-center border-top pt-4">
-                    <a href="{% url 'myapp:students' %}" class="text-muted text-decoration-none">Cancel</a>
-                    <button type="submit" class="btn btn-primary px-5 py-2 fw-bold rounded-pill">
-                        Create Account
+                <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
+                    <a href="{% url 'myapp:students' %}" class="btn-cancel-link">Discard Enrollment</a>
+                    <button type="submit" class="btn-create-account shadow">
+                        <i class="bi bi-person-plus-fill me-2"></i> Complete Registration
                     </button>
                 </div>
             </form>

@@ -1,27 +1,79 @@
-<!--course.html-->
 {% extends 'myapp/index.html' %}
 
 {% block content %}
-<div class="mb-4">
-    <h2 class="h4 fw-bold">Course Management</h2>
-    <p class="text-muted">Manage and monitor all your courses</p>
+<style>
+    /* Custom Styling for Course Cards */
+    .course-card-link {
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        display: block;
+        height: 100%;
+    }
+
+    .course-card-link:hover {
+        transform: translateY(-10px); /* Lifts the card */
+        text-decoration: none !important;
+    }
+
+    .custom-course-card {
+        min-height: 220px; /* Increased height */
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        border-radius: 15px;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background: #ffffff;
+    }
+
+    .course-card-link:hover .custom-course-card {
+        box-shadow: 0 15px 35px rgba(0, 74, 173, 0.15) !important; /* Blue-tinted deep shadow */
+        border-color: #004aad; /* Brand primary color border on hover */
+    }
+
+    .card-title {
+        color: #001f4d;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+    }
+
+    .card-category {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 700;
+        color: #004aad;
+    }
+</style>
+
+<div class="mb-5">
+    <h2 class="h3 fw-bold" style="font-family: 'Outfit', sans-serif;">Course Management</h2>
+    <p class="text-muted">Manage and monitor all your courses for the Bandra Campus</p>
 </div>
 
 <div class="row">
     {% for course in courses %}
     <div class="col-md-4 mb-4">
-        <a href="{% url 'myapp:course_detail' course.id %}" class="text-decoration-none text-dark">
-            <div class="card h-100 shadow-sm">
+        <a href="{% url 'myapp:course_detail' course.id %}" class="text-decoration-none text-dark course-card-link">
+            <div class="card custom-course-card shadow-sm p-3">
                 <div class="card-body">
+                    <div class="card-category mb-2">{{ course.category }}</div>
                     <h5 class="card-title">{{ course.name }}</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">{{ course.category }}</h6>
-                    <p class="card-text">{{ course.description|truncatewords:10 }}</p>
+                    <p class="card-text text-muted small">{{ course.description|truncatewords:15 }}</p>
+                </div>
+                <div class="card-footer bg-transparent border-0 pt-0">
+                    <span class="badge rounded-pill" style="background-color: #e6effc; color: #004aad;">
+                        View Details
+                    </span>
                 </div>
             </div>
         </a>
     </div>
     {% empty %}
-    <p>No courses added yet.</p>
+    <div class="col-12">
+        <div class="alert alert-light border text-center py-5">
+            <p class="mb-0">No courses added yet.</p>
+        </div>
+    </div>
     {% endfor %}
 </div>
 {% endblock %}

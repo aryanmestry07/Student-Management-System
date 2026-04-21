@@ -21,6 +21,8 @@ from student.forms import StudentSignupForm  # ✅ import your existing form
 from student.models import Student  # ✅ make sure to import Student model
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
+from visitors.models import ContactMessage
+
 
 
 # ------------------ Dashboard ------------------
@@ -29,7 +31,7 @@ def dashboard(request):
     total_students = Student.objects.count()
     total_courses = Course.objects.count()
 
-    # Courses by category
+    # ✅ Courses by category
     course_data = (
         Course.objects.values("category")
         .annotate(count=Count("id"))
@@ -38,26 +40,28 @@ def dashboard(request):
     categories = [c["category"] for c in course_data]
     course_counts = [c["count"] for c in course_data]
 
-    # Student enrollments over time
-    enrollment_data = (
-        Student.objects.annotate(month=ExtractMonth("enrollment_date"))
-        .values("month")
-        .annotate(count=Count("id"))
-        .order_by("month")
+    # 🔥 NEW: Students per Course
+    course_student_data = (
+        Course.objects.annotate(student_count=Count("enrolled_students"))
     )
-    enrollment_months = [e["month"] for e in enrollment_data]
-    enrollment_counts = [e["count"] for e in enrollment_data]
+
+    course_names = [c.name for c in course_student_data]
+    student_counts = [c.student_count for c in course_student_data]
 
     context = {
         "total_students": total_students,
         "total_courses": total_courses,
+
+        # existing chart
         "categories": json.dumps(categories),
         "course_counts": json.dumps(course_counts),
-        "enrollment_months": json.dumps(enrollment_months),
-        "enrollment_counts": json.dumps(enrollment_counts),
-    }
-    return render(request, "myapp/dashboard.html", context)
 
+        # 🔥 new chart
+        "course_names": json.dumps(course_names),
+        "student_counts": json.dumps(student_counts),
+    }
+
+    return render(request, "myapp/dashboard.html", context)
 # ------------------ Student Views ------------------
 @login_required
 @login_required
@@ -160,15 +164,27 @@ def update_student(request, student_id):
         user_form = UserUpdateForm(request.POST, instance=student.user)
 
         if student_form.is_valid() and user_form.is_valid():
+            # Save student basic fields
             updated_student = student_form.save(commit=False)
 
-            # ✅ Fees status handled automatically
+            # 🔥 FIX 1: Fees Status (manual binding)
+            updated_student.fees_status = request.POST.get("fees_status")
+
             updated_student.save()
 
+            # 🔥 FIX 2: Courses (custom multi-select)
+            courses = request.POST.getlist("courses")
+            student.courses.set(courses)
+
+            # Save user info
             user_form.save()
 
-            messages.success(request, "Student updated successfully! ✏️")
+            messages.success(request, "Student updated successfully!")
             return redirect("myapp:students")
+
+        else:
+            print("Student Form Errors:", student_form.errors)
+            print("User Form Errors:", user_form.errors)
 
     else:
         student_form = StudentUpdateForm(instance=student)
@@ -179,6 +195,7 @@ def update_student(request, student_id):
         "user_form": user_form,
         "student": student,
     })
+
 
 @login_required
 def edit_student(request, student_id):
@@ -198,16 +215,28 @@ def delete_student(request, student_id):
 def reset_student_password(request, student_id):
     student = get_object_or_404(Student, id=student_id)
     user = student.user
+
     if request.method == "POST":
         form = SetPasswordForm(user, request.POST)
+
         if form.is_valid():
             form.save()
             update_session_auth_hash(request, user)
+
             messages.success(request, "Password reset successfully 🔑")
-            return redirect("student_detail", student_id=student.id)
+
+            return redirect("myapp:student_detail", student_id=student.id)  # ✅ FIXED
+
+        else:
+            print(form.errors)  # 🔥 DEBUG
+
     else:
         form = SetPasswordForm(user)
-    return render(request, "myapp/reset_password.html", {"form": form, "student": student})
+
+    return render(request, "myapp/reset_password.html", {
+        "form": form,
+        "student": student
+    })
 
 @login_required
 def add_course_to_student(request, student_id):
@@ -232,12 +261,31 @@ def course_list(request):
 def add_course(request):
     if request.method == "POST":
         form = CourseForm(request.POST)
+
         if form.is_valid():
-            form.save()
-            messages.success(request, "Course added successfully ✅")
+            course = form.save(commit=False)
+
+            # 👉 get topic count
+            total_topics = request.POST.get("topicCount")
+            course.total_topics = total_topics if total_topics else 0
+            course.save()
+
+            # 👉 get topic names
+            topics = request.POST.getlist("topics[]")
+
+            for topic_name in topics:
+                if topic_name.strip():
+                    Topic.objects.create(
+                        course=course,
+                        title=topic_name
+                    )
+
+            messages.success(request, "Course & Topics added successfully ✅")
             return redirect("myapp:courses")
+
     else:
         form = CourseForm()
+
     return render(request, "myapp/add_course.html", {"form": form})
 
 @login_required
@@ -511,11 +559,22 @@ def notice_list(request):
 def add_notice(request):
     if request.method == 'POST':
         form = NoticeForm(request.POST)
+
         if form.is_valid():
-            form.save()
+            notice = form.save(commit=False)
+
+            # 🔥 FORCE ACTIVE
+            notice.is_active = True
+
+            notice.save()
+
             return redirect('myapp:notice_list')
+        else:
+            print(form.errors)  # debug
+
     else:
         form = NoticeForm()
+
     return render(request, 'myapp/add_notice.html', {'form': form})
 
 
@@ -525,13 +584,18 @@ def edit_notice(request, notice_id):
     if request.method == 'POST':
         form = NoticeForm(request.POST, instance=notice)
         if form.is_valid():
-            form.save()
+            notice = form.save(commit=False)
+
+            # ensure still active
+            notice.is_active = True
+
+            notice.save()
+
             return redirect('myapp:notice_list')
     else:
         form = NoticeForm(instance=notice)
 
     return render(request, 'myapp/edit_notice.html', {'form': form})
-
 
 def delete_notice(request, notice_id):
     notice = get_object_or_404(Notice, id=notice_id)
@@ -542,3 +606,40 @@ def delete_notice(request, notice_id):
 
     return render(request, 'myapp/delete_notice.html', {'notice': notice})
 
+
+
+
+def contact_messages(request):
+    messages = ContactMessage.objects.all().order_by("-created_at")
+
+    # mark all unread messages as read permanently
+    ContactMessage.objects.filter(is_read=False).update(is_read=True)
+
+    return render(request, "myapp/contact_messages.html", {
+        "messages": messages
+    })
+
+
+
+def view_assignment(request, assignment_id):
+    assignment = get_object_or_404(Assignment, id=assignment_id)
+
+    course_id = None
+    if assignment.course:
+        course_id = assignment.course.id
+
+    return render(request, 'myapp/view_assignment.html', {
+        'assignment': assignment,
+        'course_id': course_id
+    })
+
+
+def delete_assignment(request, assignment_id):
+    assignment = get_object_or_404(Assignment, id=assignment_id)
+    course_id = assignment.topic.course.id   # 👈 IMPORTANT (for redirect)
+
+    if request.method == 'POST':
+        assignment.delete()
+        return redirect('myapp:course_detail', course_id)
+
+    return redirect('myapp:course_detail', course_id)

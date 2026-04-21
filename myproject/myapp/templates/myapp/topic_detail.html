@@ -1,112 +1,169 @@
 {% extends 'myapp/index.html' %}
+{% load static %}
 
 {% block content %}
-<div class="container my-5">
+<style>
+    /* KNOWLEDGE MODULE STYLING */
+    .knowledge-card {
+        background: #ffffff;
+        border-radius: 28px;
+        border: 1px solid rgba(0, 74, 173, 0.05);
+        box-shadow: 0 10px 30px rgba(0, 31, 77, 0.02);
+        padding: 40px;
+    }
 
-    <!-- TOPIC DETAILS -->
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
+    .topic-badge {
+        background: var(--ice-primary-light);
+        color: var(--ice-primary);
+        font-weight: 800;
+        font-size: 0.7rem;
+        letter-spacing: 1px;
+        padding: 6px 14px;
+        border-radius: 10px;
+        text-transform: uppercase;
+        display: inline-block;
+        margin-bottom: 1rem;
+    }
 
-            <h3 class="fw-bold">{{ topic.title }}</h3>
+    /* RESOURCE BOXES */
+    .resource-box {
+        background: #f8fafc;
+        border: 1px solid #f1f5f9;
+        border-radius: 20px;
+        padding: 25px;
+        transition: var(--transition);
+    }
 
-            <p class="text-muted">{{ topic.description }}</p>
+    .resource-box:hover {
+        background: #ffffff;
+        border-color: var(--ice-primary-light);
+        box-shadow: 0 10px 25px rgba(0, 74, 173, 0.05);
+    }
 
-            <!-- 📄 NOTES SECTION -->
-            
-            <!-- ✅ PDF VIEW -->
-            {% if topic.notes_file %}
-            <div class="card mt-3 border-0 shadow-sm bg-light">
-                <div class="card-body">
-                    <h6 class="fw-bold">📄 Notes (PDF)</h6>
+    .file-icon-box {
+        width: 60px; height: 60px;
+        background: white;
+        border-radius: 15px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        margin-bottom: 15px;
+    }
 
-                    <iframe 
-                        src="{{ topic.notes_file.url }}" 
-                        width="100%" 
-                        height="500px" 
-                        style="border: none; border-radius: 10px;">
-                    </iframe>
+    /* QUIZ LISTING */
+    .quiz-item {
+        background: white;
+        border: 1px solid #f1f5f9;
+        border-radius: 16px;
+        padding: 15px 20px;
+        transition: 0.3s;
+    }
 
-                    <div class="mt-2">
-                        <a href="{{ topic.notes_file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                            Open Full PDF
-                        </a>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
+    .quiz-item:hover {
+        background: var(--ice-primary-light);
+        border-color: var(--ice-primary-light);
+    }
 
-            <!-- ✅ TEXT NOTES (optional) -->
-            {% if topic.notes %}
-            <div class="card mt-3 border-0 shadow-sm bg-light">
-                <div class="card-body">
-                    <h6 class="fw-bold">📝 Notes (Text)</h6>
-                    <p class="mb-0">{{ topic.notes|linebreaks }}</p>
-                </div>
-            </div>
-            {% endif %}
+    .btn-action-elite {
+        padding: 8px 16px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        border: none;
+        transition: 0.3s;
+    }
+</style>
 
-            <hr>
-
-            <!-- ACTION BUTTONS -->
-            <div class="d-flex gap-2">
-                <a href="{% url 'myapp:edit_topic' topic.id %}" class="btn btn-warning">
-                    <i class="bi bi-pencil-square"></i> Edit
-                </a>
-
-                <form action="{% url 'myapp:delete_topic' topic.id %}" method="post"
-                      onsubmit="return confirm('Are you sure you want to delete this topic?');">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">
-                        <i class="bi bi-trash3"></i> Delete
-                    </button>
-                </form>
-            </div>
-
-        </div>
+<div class="container-fluid py-2">
+    <div class="mb-4">
+        <a href="{% url 'myapp:course_detail' topic.course.id %}" class="text-decoration-none text-muted small fw-bold">
+            <i class="bi bi-arrow-left me-2"></i> BACK TO CURRICULUM
+        </a>
     </div>
 
-    <!-- QUIZ SECTION -->
-    <div class="card shadow-sm border-0 mt-4">
-        <div class="card-body">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="knowledge-card">
+                <span class="topic-badge">Academic Module</span>
+                <h1 class="fw-800 mb-3" style="font-family: 'Outfit'; color: var(--ice-dark);">{{ topic.title }}</h1>
+                <p class="text-muted fs-5 mb-5">{{ topic.description }}</p>
 
-            <h5 class="fw-bold mb-3">📝 Quizzes for this Topic</h5>
-
-            {% if quizzes %}
-                {% for quiz in quizzes %}
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    
-                    <span>{{ quiz.title }}</span>
-
-                    <div>
-                        <a href="{% url 'myapp:edit_quiz' topic.course.id quiz.id %}" class="btn btn-info btn-sm">
-                            <i class="bi bi-pencil-square"></i> Edit
-                        </a>
-
-                        <a href="{% url 'myapp:view_quiz' topic.course.id quiz.id %}" class="btn btn-primary btn-sm">
-                            <i class="bi bi-eye"></i> View
-                        </a>
-
-                        <form action="{% url 'myapp:delete_quiz' topic.course.id quiz.id %}" method="post" class="d-inline">
-                            {% csrf_token %}
-                            <button class="btn btn-danger btn-sm" onclick="return confirm('Delete this quiz?');">
-                                <i class="bi bi-trash3"></i> Delete
-                            </button>
-                        </form>
+                {% if topic.notes_file %}
+                <div class="resource-box mb-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="file-icon-box me-3 text-primary">
+                                <i class="bi bi-file-earmark-pdf-fill"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Study Materials Available</h6>
+                                <p class="text-muted small mb-0">PDF Document for Bandra Campus Cohort</p>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="{{ topic.notes_file.url }}" target="_blank" class="btn btn-primary rounded-pill px-4 fw-bold">Open</a>
+                            <a href="{{ topic.notes_file.url }}" download class="btn btn-outline-primary rounded-pill px-4 fw-bold">Download</a>
+                        </div>
                     </div>
-
                 </div>
-                {% endfor %}
+                {% endif %}
 
-            {% else %}
-                <p class="text-muted">No quizzes added yet.</p>
+                {% if topic.notes %}
+                <div class="resource-box bg-white shadow-sm border-0 p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-card-text text-primary me-2 fs-5"></i>
+                        <h6 class="fw-800 mb-0" style="font-family: 'Outfit';">Quick Notes</h6>
+                    </div>
+                    <div class="text-muted lh-lg">{{ topic.notes|linebreaks }}</div>
+                </div>
+                {% endif %}
 
-                <a href="{% url 'myapp:add_quiz' topic.course.id topic.id %}" class="btn btn-success">
-                    <i class="bi bi-plus-circle"></i> Add Quiz
+                <div class="mt-5 pt-4 border-top d-flex gap-3">
+                    <a href="{% url 'myapp:edit_topic' topic.id %}" class="btn btn-warning rounded-pill px-4 fw-bold">
+                        <i class="bi bi-pencil-square me-2"></i>Edit Module
+                    </a>
+                    <form action="{% url 'myapp:delete_topic' topic.id %}" method="post" onsubmit="return confirm('Delete this module?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger rounded-pill px-4 fw-bold">
+                            <i class="bi bi-trash3 me-2"></i>Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="knowledge-card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-800 mb-0" style="font-family: 'Outfit';">Assessments</h5>
+                    <i class="bi bi-clipboard2-check text-primary"></i>
+                </div>
+
+                {% if quizzes %}
+                    {% for quiz in quizzes %}
+                    <div class="quiz-item mb-3">
+                        <div class="fw-bold text-dark mb-3">{{ quiz.title }}</div>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'myapp:view_quiz' topic.course.id quiz.id %}" class="btn-action-elite btn-view bg-light text-primary flex-grow-1 text-center text-decoration-none">View</a>
+                            <a href="{% url 'myapp:edit_quiz' topic.course.id quiz.id %}" class="btn-action-elite bg-light text-dark text-decoration-none"><i class="bi bi-pencil"></i></a>
+                            <form action="{% url 'myapp:delete_quiz' topic.course.id quiz.id %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button class="btn-action-elite bg-light text-danger" onclick="return confirm('Delete Quiz?');"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4 bg-light rounded-4 mb-4">
+                        <p class="text-muted small mb-0">No assessments found.</p>
+                    </div>
+                {% endif %}
+
+                <a href="{% url 'myapp:add_quiz' topic.course.id topic.id %}" class="btn btn-primary w-100 rounded-pill fw-bold py-3 mt-2 shadow-sm">
+                    <i class="bi bi-plus-circle-fill me-2"></i> New Quiz
                 </a>
-            {% endif %}
-
+            </div>
         </div>
     </div>
-
 </div>
 {% endblock %}

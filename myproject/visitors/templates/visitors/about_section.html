@@ -1,33 +1,85 @@
-<div id="about" class="container my-5 py-4">
-    <div class="text-center mb-5">
-        <h2 class="fw-bold">About ICE</h2>
-        <p class="lead text-muted">Shaping the leaders of tomorrow since 1998.</p>
-    </div>
+{% load static %}
 
-    <div class="row g-4">
-        <div class="col-lg-6">
-            <div class="p-4 bg-white rounded shadow-sm h-100">
-                <h3 class="fw-bold text-primary">Our Mission</h3>
-                <p>To provide accessible, high-quality education that empowers students with the knowledge, skills, and values needed to excel in a rapidly changing world.</p>
+<section id="about" class="py-5" style="background: linear-gradient(180deg, var(--ice-bg) 0%, #ffffff 100%);">
+    <div class="container py-lg-5">
+        
+        <div class="text-center mb-5 pb-lg-4">
+            <span class="text-primary fw-bold text-uppercase tracking-wider shadow-sm bg-white px-3 py-2 rounded-pill" style="font-size: 0.75rem; letter-spacing: 2px;">Established 1998</span>
+            <h2 class="display-4 fw-800 mt-4" style="color: var(--ice-dark); letter-spacing: -1.5px;">Defining the Future of <br><span class="brand-accent">Technical Education in Mumbai</span></h2>
+            <div class="mx-auto mt-3" style="width: 80px; height: 5px; background: linear-gradient(to right, var(--ice-primary), var(--ice-secondary)); border-radius: 10px;"></div>
+            <p class="lead text-muted mt-4 mx-auto" style="max-width: 750px; font-size: 1.2rem; line-height: 1.7;">
+                ICE Institute has spent over two decades bridging the gap between academic theory and industrial excellence, empowering the next generation of digital leaders in Mumbai.
+            </p>
+        </div>
+
+        <div class="row g-4 mb-5 pb-lg-5">
+            <div class="col-lg-6">
+                <div class="p-5 h-100 border-0 shadow-sm transition-up" style="background: white; border-radius: 30px; border-top: 6px solid var(--ice-primary) !important;">
+                    <div class="mb-4 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background: var(--ice-primary-light); border-radius: 18px;">
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--ice-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                    </div>
+                    <h3 class="fw-bold h3 mb-3" style="color: var(--ice-dark);">Our Mission</h3>
+                    <p class="text-muted lh-lg fs-5">To provide accessible, high-quality education that empowers students with the knowledge, skills, and values needed to excel in a rapidly changing world.</p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-5 h-100 border-0 shadow-sm transition-up" style="background: white; border-radius: 30px; border-top: 6px solid var(--ice-secondary) !important;">
+                    <div class="mb-4 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background: #e0faff; border-radius: 18px;">
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#00c6ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </div>
+                    <h3 class="fw-bold h3 mb-3" style="color: var(--ice-dark);">Our Vision</h3>
+                    <p class="text-muted lh-lg fs-5">To be a leading institution recognized for academic excellence, innovative research, and a profound commitment to community development.</p>
+                </div>
             </div>
         </div>
-        <div class="col-lg-6">
-            <div class="p-4 bg-white rounded shadow-sm h-100">
-                <h3 class="fw-bold text-primary">Our Vision</h3>
-                <p>To be a leading institution recognized for academic excellence, innovative research, and a profound commitment to community development.</p>
-            </div>
-        </div>
-    </div>
 
-    <div class="row g-5 align-items-center mt-5">
-        <div class="col-lg-4 text-center">
-            <img src="https://via.placeholder.com/300x300.png?text=Director's+Photo" class="img-fluid rounded-circle shadow" alt="Director of ICE" style="max-width: 300px;">
-        </div>
-        <div class="col-lg-8">
-            <h3 class="fw-bold">A Message from Our Director</h3>
-            <p class="lead text-muted">"Welcome to ICE, a place where curiosity meets innovation. Our dedicated faculty are committed to providing you with an environment that challenges you academically and supports your personal growth."</p>
-            <h5 class="fw-bold mt-4 mb-0">Dr. Evelyn Reed</h5>
-            <p class="text-primary">Director, ICE Institute</p>
-        </div>
+        {% comment %} <div class="row g-5 align-items-center mt-5 pt-lg-5" style="border-top: 1px solid rgba(0,0,0,0.06);">
+            <div class="col-lg-5 position-relative">
+                <div class="position-absolute translate-middle d-none d-lg-block" style="top: 15%; left: 5%; z-index: 0; opacity: 0.05;">
+                    <svg width="180" height="180" viewBox="0 0 24 24" fill="var(--ice-primary)"><path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C19.5693 16 20.017 15.5523 20.017 15V9C20.017 8.44772 19.5693 8 19.017 8H15.017C14.4647 8 14.017 8.44772 14.017 9V11M10 21L10 18C10 16.8954 9.10457 16 8 16H5C4.44772 16 4 15.5523 4 15V9C4 8.44772 4.44772 8 5 8H9C9.55228 8 10 8.44772 10 9V11"></path></svg>
+                </div>
+                <div class="px-2">
+                    <div class="position-relative">
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=600" 
+                             class="img-fluid shadow-lg" 
+                             alt="Director Dr. Evelyn Reed" 
+                             style="border-radius: 40px; position: relative; z-index: 1; border: 8px solid white;">
+                        <div class="position-absolute bottom-0 start-0 m-4 bg-primary text-white p-3 shadow-lg d-none d-md-block" style="z-index: 2; border-radius: 20px;">
+                            <h4 class="mb-0 fw-bold">25+</h4>
+                            <small class="text-uppercase fw-bold" style="font-size: 0.6rem;">Years of Excellence</small>
+                        </div>
+                    </div>
+                </div>
+            </div> {% endcomment %}
+            
+            {% comment %} <div class="col-lg-7">
+                <div class="ps-lg-5">
+                    <h3 class="fw-bold display-6 mb-4" style="color: var(--ice-dark); letter-spacing: -1px;">Our Mumbai Campus</h3>
+                    <div class="mb-4" style="width: 50px; height: 3px; background: var(--ice-primary);"></div>
+                    
+                    <p class="text-muted fs-5 lh-lg mb-5" style="position: relative;">
+                        Located in the heart of Bandra (East), our Mumbai campus is equipped with state-of-the-art labs and classrooms to provide a superior learning environment. We are committed to fostering an atmosphere of curiosity and innovation.
+                    </p>
+                    
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="avatar-sm" style="width: 50px; height: 50px; background: var(--ice-primary-light); border-radius: 50%; d-flex; align-items: center; justify-content: center; color: var(--ice-primary); font-weight: bold;">ICE</div>
+                        <div>
+                            <h5 class="fw-bold mb-0">Mumbai Campus</h5>
+                            <small class="text-primary text-uppercase fw-bold" style="letter-spacing: 1px; font-size: 0.75rem;">Bandra (East)</small>
+                        </div>
+                    </div>
+                </div>
+            </div> {% endcomment %}
     </div>
-</div>
+</section>
+
+<style>
+    .fw-800 { font-weight: 800; }
+    .transition-up {
+        transition: all 0.3s ease;
+    }
+    .transition-up:hover {
+        transform: translateY(-10px);
+    }
+    #about .display-4 { line-height: 1.1; }
+</style>

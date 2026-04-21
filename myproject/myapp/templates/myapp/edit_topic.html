@@ -1,75 +1,175 @@
-{% extends "myapp/index.html" %}
+{% extends 'myapp/index.html' %}
+{% load static %}
 
-{% block title %}Edit Topic - {{ topic.title }}{% endblock %}
+{% block title %}Edit Module | {{ topic.title }}{% endblock %}
 
 {% block content %}
-<div class="container my-5">
+<style>
+    /* EDIT HUB STYLING */
+    .edit-hub-card {
+        background: #ffffff;
+        border-radius: 32px;
+        border: 1px solid rgba(0, 74, 173, 0.05);
+        box-shadow: 0 20px 50px rgba(0, 31, 77, 0.05);
+        overflow: hidden;
+        max-width: 900px;
+        margin: 0 auto;
+    }
 
-    <!-- HEADER -->
+    .edit-header-accent {
+        background: linear-gradient(to right, #eef2ff, transparent);
+        padding: 40px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .form-label-elite {
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: #94a3b8;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    /* ELITE INPUTS - Targeting Django Auto-widgets */
+    .edit-hub-card input, 
+    .edit-hub-card textarea,
+    .edit-hub-card select {
+        display: block;
+        width: 100%;
+        padding: 14px 18px;
+        background-color: #f8fafc;
+        border: 2px solid #f1f5f9;
+        border-radius: 16px;
+        transition: var(--transition);
+        font-weight: 500;
+        color: var(--ice-dark);
+    }
+
+    .edit-hub-card input:focus, 
+    .edit-hub-card textarea:focus {
+        background-color: #ffffff;
+        border-color: var(--ice-primary);
+        outline: 0;
+        box-shadow: 0 10px 25px rgba(0, 74, 173, 0.08);
+    }
+
+    /* FILE UPLOAD ZONE */
+    .file-upload-zone {
+        background: #f8fafc;
+        border: 2px dashed #e2e8f0;
+        border-radius: 20px;
+        padding: 25px;
+        transition: var(--transition);
+    }
+
+    .file-upload-zone:hover {
+        border-color: var(--ice-primary-light);
+        background: #fff;
+    }
+
+    .current-file-badge {
+        background: #ecfdf5;
+        color: #059669;
+        padding: 8px 16px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid #d1fae5;
+    }
+
+    .btn-update {
+        background: var(--ice-primary);
+        color: white;
+        border: none;
+        padding: 14px 40px;
+        border-radius: 18px;
+        font-weight: 700;
+        font-family: 'Outfit';
+        transition: var(--transition);
+        box-shadow: 0 10px 25px rgba(0, 74, 173, 0.2);
+    }
+
+    .btn-update:hover {
+        background: var(--ice-dark);
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(0, 74, 173, 0.3);
+    }
+</style>
+
+<div class="container-fluid py-2">
     <div class="mb-4">
-        <h3 class="fw-bold">✏️ Edit Topic</h3>
-        <p class="text-muted mb-0">Course: {{ topic.course.name }}</p>
+        <a href="{% url 'myapp:course_detail' topic.course.id %}" class="text-decoration-none text-muted small fw-bold">
+            <i class="bi bi-arrow-left me-2"></i> RETURN TO CURRICULUM
+        </a>
     </div>
 
-    <!-- FORM CARD -->
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
+    <div class="edit-hub-card">
+        <div class="edit-header-accent d-flex align-items-center justify-content-between">
+            <div>
+                <h2 class="h4 fw-800 mb-1" style="font-family: 'Outfit'; color: var(--ice-dark);">Edit Academic Module</h2>
+                <p class="text-muted small mb-0">Course: <span class="text-primary fw-bold">{{ topic.course.name }}</span></p>
+            </div>
+            <div class="icon-circle-sm bg-white shadow-sm text-primary" style="width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-pencil-fill fs-5"></i>
+            </div>
+        </div>
 
-            <!-- ✅ IMPORTANT CHANGE -->
+        <div class="p-5">
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
-                <!-- TITLE -->
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Topic Title</label>
+                <div class="mb-4">
+                    <label class="form-label-elite">Module Title</label>
                     {{ form.title }}
                 </div>
 
-                <!-- DESCRIPTION -->
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Description</label>
+                <div class="mb-4">
+                    <label class="form-label-elite">Brief Summary</label>
                     {{ form.description }}
                 </div>
 
-                <!-- NOTES FILE (PDF) -->
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Upload Notes (PDF)</label>
-                    {{ form.notes_file }}
-
-                    {% if topic.notes_file %}
-                        <div class="mt-2">
-                            <small class="text-success">
-                                Current File: 
-                                <a href="{{ topic.notes_file.url }}" target="_blank">View PDF</a>
-                            </small>
+                <div class="mb-4">
+                    <label class="form-label-elite">Academic Resources (PDF)</label>
+                    <div class="file-upload-zone">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-file-earmark-pdf text-danger fs-3 me-3"></i>
+                            <div class="flex-grow-1">
+                                {{ form.notes_file }}
+                            </div>
                         </div>
-                    {% endif %}
-
-                    <small class="text-muted">Update PDF notes for students.</small>
+                        
+                        {% if topic.notes_file %}
+                            <div class="mt-2">
+                                <span class="current-file-badge">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                    ACTIVE FILE: <a href="{{ topic.notes_file.url }}" target="_blank" class="text-decoration-none text-success fw-800">VIEW CURRENT PDF</a>
+                                </span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <small class="text-muted d-block mt-2" style="font-size: 0.75rem;">Uploading a new file will replace the current module notes.</small>
                 </div>
 
-                <!-- OPTIONAL TEXT NOTES -->
                 {% if form.notes %}
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Notes (Optional Text)</label>
+                <div class="mb-5">
+                    <label class="form-label-elite">Detailed Transcription (Optional)</label>
                     {{ form.notes }}
                 </div>
                 {% endif %}
 
-                <!-- BUTTONS -->
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-success">
-                        💾 Save Changes
+                <div class="d-flex justify-content-between align-items-center pt-4 border-top">
+                    <a href="{% url 'myapp:course_detail' topic.course.id %}" class="text-muted text-decoration-none fw-bold small">Discard Changes</a>
+                    <button type="submit" class="btn-update">
+                        Save Module Changes <i class="bi bi-cloud-check-fill ms-2"></i>
                     </button>
-                    <a href="{% url 'myapp:course_detail' topic.course.id %}" class="btn btn-outline-secondary">
-                        Cancel
-                    </a>
                 </div>
-
             </form>
-
         </div>
     </div>
-
 </div>
 {% endblock %}

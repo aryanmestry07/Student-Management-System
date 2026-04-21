@@ -4,101 +4,155 @@
 {% block content %}
 <div class="d-flex min-vh-100 w-100">
 
-  {% include "student/sidebar.html" %}
+    {% include "student/sidebar.html" %}
 
-  <div class="flex-grow-1 bg-light d-flex flex-column" style="min-width: 0;">
+    <div class="flex-grow-1 d-flex flex-column" style="min-width: 0;">
 
-    <header class="bg-white border-bottom px-4 d-flex justify-content-between align-items-center shadow-sm" style="height: 70px;">
-      <div class="d-flex align-items-center">
-        <h5 class="mb-0 fw-bold text-dark">📢 Notice Board</h5>
-      </div>
-      <div class="d-flex align-items-center">
-        <span class="badge bg-indigo-soft text-primary rounded-pill px-3 py-2 small fw-bold">
-          {{ notices|length }} Announcements
-        </span>
-      </div>
-    </header>
-
-    <div class="p-4 overflow-auto">
-      
-      <div class="row justify-content-center">
-        <div class="col-lg-10 col-xl-8">
-          
-          {% for notice in notices %}
-            <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden transition hover-card">
-              
-              {% if notice.is_pinned %}
-                <div class="bg-danger py-1 text-center">
-                  <small class="text-white fw-bold text-uppercase" style="font-size: 0.65rem; letter-spacing: 1px;">
-                    📌 Priority Announcement
-                  </small>
-                </div>
-              {% endif %}
-
-              <div class="card-body p-4">
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                  <div>
-                    <h5 class="fw-bold text-dark mb-1">{{ notice.title }}</h5>
-                    <div class="d-flex align-items-center text-muted small">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-clock-history me-2" viewBox="0 0 16 16">
-                        <path d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022l-.074 1.019zM1 8c0-.391.033-.777.098-1.154L.11 6.697A8.014 8.014 0 1 0 8 16v-1a7 7 0 1 1-7-7z"/>
-                        <path d="M8.5 4.5a.5.5 0 0 0-1 0v4l3 3a.5.5 0 0 0 .708-.708L8.5 8.207V4.5z"/>
-                      </svg>
-                      Posted on {{ notice.created_at|date:"M d, Y" }}
-                    </div>
-                  </div>
-                </div>
-
-                <div class="notice-content text-secondary mb-4" style="line-height: 1.7; font-size: 0.95rem;">
-                  {{ notice.content|linebreaks }}
-                </div>
-
-                <div class="d-flex justify-content-between align-items-center pt-3 border-top border-light">
-                  {% if notice.expiry_date %}
-                    <div class="text-warning small d-flex align-items-center fw-medium">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-exclamation-triangle me-2" viewBox="0 0 16 16">
-                        <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
-                        <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
-                      </svg>
-                      Valid until {{ notice.expiry_date|date:"M d, Y" }}
-                    </div>
-                  {% else %}
-                    <span></span>
-                  {% endif %}
-                  
-                  <span class="text-muted small italic">#Announcement</span>
-                </div>
-              </div>
+        <header class="px-4 d-flex justify-content-between align-items-center sticky-top" style="height: 85px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); z-index: 1000; border-bottom: 1px solid rgba(0,0,0,0.05);">
+            <div>
+                <h4 class="fw-800 mb-0 font-outfit text-ice-dark">Notice Board</h4>
+                <p class="text-muted small mb-0 font-inter">Official campus news and updates</p>
             </div>
-          {% empty %}
-            <div class="text-center py-5">
-              <div class="display-1 mb-4">📭</div>
-              <h5 class="fw-bold text-dark">Quiet for now!</h5>
-              <p class="text-muted">No notices have been posted to the board yet.</p>
+            <div class="d-flex align-items-center">
+                <span class="badge bg-soft-primary text-primary rounded-pill px-3 py-2 font-outfit fw-bold shadow-sm border border-primary border-opacity-10">
+                    {{ notices|length }} Announcements
+                </span>
             </div>
-          {% endfor %}
+        </header>
+
+        <div class="p-4 p-lg-5 pt-4 overflow-auto">
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-10 col-xl-9">
+                    
+                    {% for notice in notices %}
+                        <div class="glass-card mb-4 overflow-hidden border-0 shadow-sm transition-up">
+                            
+                            {% if notice.is_pinned %}
+                                <div class="bg-ice-primary py-2 text-center shadow-sm">
+                                    <small class="text-white fw-800 font-outfit text-uppercase tracking-widest" style="font-size: 0.7rem;">
+                                        <i class="bi bi-pin-angle-fill me-2"></i> Priority Announcement
+                                    </small>
+                                </div>
+                            {% endif %}
+
+                            <div class="card-body p-4 p-lg-5">
+                                <div class="d-flex justify-content-between align-items-start mb-4">
+                                    <div>
+                                        <h3 class="fw-800 font-outfit text-ice-dark mb-2">{{ notice.title }}</h3>
+                                        <div class="d-flex align-items-center text-muted small font-inter">
+                                            <div class="bg-soft-primary text-primary rounded-pill px-2 py-1 me-3 fw-600">
+                                                <i class="bi bi-calendar-event me-1"></i> {{ notice.created_at|date:"M d, Y" }}
+                                            </div>
+                                            <span class="opacity-75">
+                                                <i class="bi bi-person-circle me-1"></i> Administration
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="notice-content text-secondary mb-4 font-inter">
+                                    {{ notice.content|linebreaks }}
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center pt-4 border-top border-light border-opacity-50">
+                                    {% if notice.expiry_date %}
+                                        <div class="text-warning small d-flex align-items-center fw-700 font-outfit bg-soft-warning px-3 py-1 rounded-pill">
+                                            <i class="bi bi-hourglass-split me-2"></i>
+                                            Valid until {{ notice.expiry_date|date:"M d, Y" }}
+                                        </div>
+                                    {% else %}
+                                        <div class="text-muted small italic font-inter opacity-50">
+                                            <i class="bi bi-hash"></i> Announcement
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <div class="d-flex gap-2">
+                                       
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="text-center py-5 glass-card mx-auto mt-4" style="max-width: 500px;">
+                            <div class="brand-avatar-xl mx-auto mb-4 bg-soft-primary text-primary">
+                                <i class="bi bi-mailbox2"></i>
+                            </div>
+                            <h4 class="fw-800 font-outfit text-ice-dark">Quiet for now!</h4>
+                            <p class="text-muted px-4 font-inter">
+                                No new notices have been posted. Check back later for campus updates.
+                            </p>
+                        </div>
+                    {% endfor %}
+
+                </div>
+            </div>
 
         </div>
-      </div>
-
     </div>
-  </div>
 </div>
 
 <style>
-  /* SaaS-style card refinements */
-  .bg-indigo-soft {
-    background-color: #eef2ff;
-  }
-  .hover-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important;
-  }
-  .transition {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .notice-content p {
-    margin-bottom: 1rem;
-  }
+    /* Notice Board Specific Refinements */
+    .bg-ice-primary {
+        background: linear-gradient(90deg, var(--ice-primary), var(--ice-dark));
+    }
+
+    .fw-800 { font-weight: 800; }
+    .fw-700 { font-weight: 700; }
+    .fw-600 { font-weight: 600; }
+    .text-ice-dark { color: #001f4d; }
+    .font-inter { font-family: 'Inter', sans-serif; }
+
+    .bg-soft-primary { background-color: rgba(0, 74, 173, 0.08); }
+    .bg-soft-warning { background-color: rgba(245, 158, 11, 0.1); }
+
+    .transition-up {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .transition-up:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 15px 35px rgba(0, 31, 77, 0.1) !important;
+    }
+
+    .notice-content {
+        line-height: 1.8;
+        font-size: 1.05rem;
+        color: #475569 !important;
+    }
+
+    .notice-content p:last-child {
+        margin-bottom: 0;
+    }
+
+    .btn-outline-ice {
+        border: 1px solid #e2e8f0;
+        color: #94a3b8;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+
+    .btn-outline-ice:hover {
+        border-color: var(--ice-primary);
+        color: var(--ice-primary);
+        background: var(--ice-light);
+    }
+
+    .brand-avatar-xl {
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 24px;
+        font-size: 2.5rem;
+    }
+
+    .tracking-widest { letter-spacing: 2px; }
 </style>
 {% endblock %}

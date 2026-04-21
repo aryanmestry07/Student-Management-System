@@ -1,45 +1,144 @@
-<div class="container mt-4">
-    <h2 class="fw-bold mb-3">Update Student</h2>
+{% extends "myapp/index.html" %}
+{% block content %}
+<div class="d-flex min-vh-100 w-100">
 
-    <form method="post">
-        {% csrf_token %}
+    <div class="flex-grow-1 bg-light d-flex flex-column" style="min-width: 0;">
 
-        <!-- USER INFO -->
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-                <h5 class="text-primary mb-3">User Information</h5>
-                {{ user_form.as_p }}
+        <!-- Top Header -->
+        <header class="bg-white border-bottom px-4 d-flex justify-content-between align-items-center shadow-sm" style="height: 70px;">
+            <div class="d-flex align-items-center">
+                <a href="{% url 'myapp:student_detail' student.id %}" class="btn btn-sm btn-light rounded-circle me-3">←</a>
+                <h5 class="fw-bold mb-0 text-dark">Update Student Profile</h5>
             </div>
-        </div>
+            <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 fw-bold small">
+                ID: #{{ student.roll_number|default:student.id }}
+            </span>
+        </header>
 
-        <!-- STUDENT INFO -->
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-                <h5 class="text-primary mb-3">Student Information</h5>
-
-                {% for field in student_form %}
-                    {% if field.name != "fees_status" %}
-                        <div class="mb-3">
-                            {{ field.label_tag }}
-                            {{ field }}
-                        </div>
-                    {% endif %}
-                {% endfor %}
-
-                <!-- ✅ FEES STATUS -->
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Fees Status</label>
-                    {{ student_form.fees_status }}
+        <div class="p-4 p-lg-5 overflow-auto">
+            <div class="container-fluid" style="max-width: 900px;">
+                
+                <div class="mb-4">
+                    <h3 class="fw-bold text-dark mb-1">Edit Information</h3>
+                    <p class="text-muted">Modify student credentials and academy-specific details below.</p>
                 </div>
 
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+
+                    <!-- USER ACCOUNT SECTION -->
+                    <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+                        <div class="card-header bg-white border-bottom py-3 px-4">
+                            <h6 class="fw-bold mb-0 text-primary">
+                                <span class="me-2">👤</span> Account Credentials
+                            </h6>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row g-3">
+                                {% for field in user_form %}
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.errors %}
+                                        <div class="text-danger x-small mt-1">{{ field.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STUDENT PROFILE SECTION -->
+                    <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+                        <div class="card-header bg-white border-bottom py-3 px-4">
+                            <h6 class="fw-bold mb-0 text-primary">
+                                <span class="me-2">🎓</span> Academy Details
+                            </h6>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row g-3">
+
+                                {% for field in student_form %}
+                                    {% if field.name != "fees_status" and field.name != "courses" %}
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-muted">{{ field.label }}</label>
+                                        {{ field }}
+                                        {% if field.errors %}
+                                            <div class="text-danger x-small mt-1">{{ field.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+
+                                <!-- 🔥 COURSES MULTI-SELECT DROPDOWN -->
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Select Courses</label>
+                                    <select name="courses" multiple class="form-select">
+                                        {% for course in student_form.fields.courses.queryset %}
+                                            <option value="{{ course.id }}"
+                                                {% if course in student.courses.all %}selected{% endif %}>
+                                                {{ course.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="text-muted">Hold Ctrl (Windows) / Cmd (Mac) to select multiple</small>
+                                </div>
+
+                                <!-- Fees Status -->
+                                <div class="col-md-12 mt-4 pt-3 border-top">
+                                    <div class="bg-light p-3 rounded-4 d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <label class="form-label fw-bold text-dark mb-0 d-block">Fees Payment Status</label>
+                                            <small class="text-muted">Update the current financial standing of this student.</small>
+                                        </div>
+                                        <div style="width: 200px;">
+                                            {{ student_form.fees_status }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ACTION BUTTONS -->
+                    <div class="d-flex align-items-center justify-content-end gap-3 mb-5">
+                        <a href="{% url 'myapp:student_detail' student.id %}" class="btn btn-light rounded-pill px-4 fw-medium text-muted">
+                            Cancel Changes
+                        </a>
+                        <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold shadow">
+                            Save & Update Profile
+                        </button>
+                    </div>
+
+                </form>
             </div>
         </div>
-
-        <!-- ACTION BUTTONS -->
-        <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-primary px-4">Save Changes</button>
-            <a href="{% url 'myapp:student_detail' student.id %}" class="btn btn-secondary">Cancel</a>
-        </div>
-
-    </form>
+    </div>
 </div>
+
+<style>
+input, select, textarea {
+    display: block;
+    width: 100%;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    color: #1e293b;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+}
+
+input:focus, select:focus {
+    background-color: #fff;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+}
+
+.btn-primary {
+    background-color: #4f46e5;
+    border: none;
+}
+</style>
+
+{% endblock %}

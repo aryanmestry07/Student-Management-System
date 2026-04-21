@@ -65,6 +65,9 @@ path('notices/add/', views.add_notice, name='add_notice'),
 
 path('notices/edit/<int:notice_id>/', views.edit_notice, name='edit_notice'),
 path('notices/delete/<int:notice_id>/', views.delete_notice, name='delete_notice'),
+path("messages/", views.contact_messages, name="contact_messages"),
+path('assignment/view/<int:assignment_id>/', views.view_assignment, name='view_assignment'),
+path('assignment/delete/<int:assignment_id>/', views.delete_assignment, name='delete_assignment'),
 
 
 ]

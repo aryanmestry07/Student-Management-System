@@ -4,147 +4,189 @@
 {% block content %}
 <div class="d-flex min-vh-100 w-100">
 
-  {% include "student/sidebar.html" %}
+    {% include "student/sidebar.html" %}
 
-  <div class="flex-grow-1 bg-light d-flex flex-column" style="min-width: 0;">
+    <div class="flex-grow-1 d-flex flex-column" style="min-width: 0;">
 
-    <!-- HEADER -->
-    <header class="bg-white border-bottom px-4 d-flex justify-content-between align-items-center shadow-sm" style="height: 70px;">
-      <div class="d-flex align-items-center">
-        <a href="{% url 'student:my_courses' %}" class="btn btn-sm btn-light rounded-circle me-3">←</a>
-        <h5 class="mb-0 fw-bold text-dark">{{ course.name }}</h5>
-      </div>
-      <a href="{% url 'student:course_assignments' course.id %}"
-         class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm">
-        📝 View Assignments
-      </a>
-    </header>
+        <header class="px-4 d-flex justify-content-between align-items-center sticky-top" style="height: 85px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); z-index: 1000; border-bottom: 1px solid rgba(0,0,0,0.05);">
+            <div class="d-flex align-items-center">
+                <a href="{% url 'student:my_courses' %}" class="btn btn-ice-outline rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h4 class="fw-800 mb-0 font-outfit text-ice-dark d-none d-md-block">{{ course.name }}</h4>
+                <h6 class="fw-800 mb-0 font-outfit text-ice-dark d-md-none">Course Details</h6>
+            </div>
+            <a href="{% url 'student:course_assignments' course.id %}"
+               class="btn btn-ice rounded-pill px-4 shadow-sm font-outfit fw-bold transition">
+               View Assignments
+            </a>
+        </header>
 
-    <!-- CONTENT -->
-    <div class="p-4 overflow-auto">
+        <div class="p-4 p-lg-5 pt-4 overflow-auto">
 
-      <!-- COURSE OVERVIEW -->
-      <div class="card border-0 shadow-sm rounded-4 mb-5 overflow-hidden">
-        <div style="height: 8px; background: linear-gradient(90deg, #4f46e5 0%, #06b6d4 100%);"></div>
-        
-        <div class="card-body p-4 p-lg-5">
-          <div class="row g-4 align-items-center">
-            <div class="col-lg-8">
-              <span class="badge bg-primary bg-opacity-10 text-primary mb-2 px-3 py-2 rounded-pill small fw-bold">
-                COURSE OVERVIEW
-              </span>
-              <h2 class="fw-bold text-dark mb-3">{{ course.name }}</h2>
-              <p class="text-muted mb-0" style="line-height: 1.8; font-size: 1rem;">
-                {{ course.description }}
-              </p>
+            <div class="glass-card mb-5 overflow-hidden border-0 shadow-lg">
+                <div style="height: 6px; background: linear-gradient(90deg, var(--ice-primary) 0%, var(--ice-accent) 100%);"></div>
+                
+                <div class="card-body p-4 p-lg-5">
+                    <div class="row g-4 align-items-center">
+                        <div class="col-lg-8">
+                            <span class="badge bg-soft-primary text-primary mb-3 px-3 py-2 rounded-pill font-outfit fw-bold tracking-widest text-uppercase" style="font-size: 0.7rem;">
+                                Academic Track
+                            </span>
+                            <h1 class="fw-800 text-ice-dark mb-4 font-outfit display-6">{{ course.name }}</h1>
+                            <p class="text-muted font-inter mb-0" style="line-height: 1.8; font-size: 1.1rem;">
+                                {{ course.description }}
+                            </p>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="p-4 rounded-4 bg-white border border-light shadow-inner">
+                                <div class="d-flex justify-content-between mb-3 pb-2 border-bottom border-light">
+                                    <span class="text-muted-alt fw-800 small tracking-widest">CATEGORY</span>
+                                    <span class="text-ice-dark small fw-bold font-outfit">{{ course.category|upper }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3 pb-2 border-bottom border-light">
+                                    <span class="text-muted-alt fw-800 small tracking-widest">DURATION</span>
+                                    <span class="text-ice-dark small fw-bold font-outfit">{{ course.duration }} HOURS</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span class="text-muted-alt fw-800 small tracking-widest">ENROLLMENT</span>
+                                    <span class="badge bg-soft-success text-success rounded-pill px-3 font-outfit">ACTIVE</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="col-lg-4">
-              <div class="p-4 rounded-4 bg-light border border-white shadow-sm">
-                <div class="d-flex justify-content-between mb-3 pb-2 border-bottom">
-                  <span class="text-muted small fw-bold">CATEGORY</span>
-                  <span class="text-dark small fw-bold">{{ course.category }}</span>
-                </div>
-                <div class="d-flex justify-content-between mb-3 pb-2 border-bottom">
-                  <span class="text-muted small fw-bold">DURATION</span>
-                  <span class="text-dark small fw-bold">{{ course.duration }} Hours</span>
-                </div>
-                <div class="d-flex justify-content-between">
-                  <span class="text-muted small fw-bold">YOUR STATUS</span>
-                  <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">Enrolled</span>
-                </div>
-              </div>
+            <div class="d-flex align-items-center mb-4">
+                <div class="brand-dot-mini me-2"></div>
+                <h4 class="fw-800 mb-0 font-outfit text-ice-dark">Course Curriculum</h4>
             </div>
-          </div>
+
+            {% if topics %}
+            <div class="row g-4">
+                {% for topic in topics %}
+                <div class="col-md-6 col-lg-4">
+                    <a href="{% url 'student:topic_detail' topic.id %}" class="text-decoration-none h-100">
+                        <div class="glass-card h-100 transition-up hover-glow border-0 d-flex flex-column">
+                            <div class="card-body p-4 d-flex flex-column">
+                                <div class="d-flex align-items-start mb-3">
+                                    <div class="brand-avatar-sm me-3 flex-shrink-0">
+                                        {{ forloop.counter }}
+                                    </div>
+                                    <h5 class="fw-700 text-ice-dark font-outfit mb-0 mt-1 line-clamp-2">{{ topic.title }}</h5>
+                                </div>
+
+                                <p class="small text-muted font-inter flex-grow-1 mb-4" style="line-height: 1.6;">
+                                    {{ topic.description|truncatechars:100|default:"Explore the fundamental concepts and practical applications of this module." }}
+                                </p>
+
+                                <div class="d-flex align-items-center justify-content-between mt-auto pt-3 border-top border-light border-opacity-50">
+                                    {% if topic.notes_file %}
+                                    <span class="badge bg-soft-success text-success px-2 py-1 rounded-pill small font-outfit">
+                                        <i class="bi bi-file-earmark-text me-1"></i> Resource Available
+                                    </span>
+                                    {% else %}
+                                    <span></span>
+                                    {% endif %}
+
+                                    <div class="text-primary fw-bold font-outfit small d-flex align-items-center">
+                                        Explore <i class="bi bi-chevron-right ms-1"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="glass-card p-5 border-dashed text-center">
+                <div class="brand-avatar-xl mx-auto mb-3 bg-soft-primary text-primary" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                    <i class="bi bi-stack"></i>
+                </div>
+                <h5 class="fw-700 font-outfit text-ice-dark">Curriculum Under Review</h5>
+                <p class="text-muted font-inter mb-0 small">The syllabus for this track is currently being updated by the administration.</p>
+            </div>
+            {% endif %}
+
         </div>
-      </div>
-
-      <!-- CURRICULUM -->
-      <div class="d-flex align-items-center mb-4">
-        <div class="bg-primary rounded-2 me-2" style="width: 4px; height: 24px;"></div>
-        <h5 class="fw-bold mb-0 text-dark">📚 Course Curriculum</h5>
-      </div>
-
-      {% if topics %}
-      <div class="row g-4">
-        {% for topic in topics %}
-        <div class="col-md-6 col-lg-4">
-
-          <a href="{% url 'student:topic_detail' topic.id %}" class="text-decoration-none h-100">
-            <div class="card border-0 shadow-sm h-100 transition hover-card rounded-4 bg-white">
-
-              <div class="card-body p-4 d-flex flex-column">
-
-                <!-- TITLE -->
-                <div class="d-flex align-items-start mb-3">
-                  <div class="bg-indigo-soft text-primary rounded-3 p-2 me-3"
-                       style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                    <span class="fw-bold">{{ forloop.counter }}</span>
-                  </div>
-                  <h6 class="fw-bold text-dark mb-0 mt-2">{{ topic.title }}</h6>
-                </div>
-
-                <!-- DESCRIPTION -->
-                <p class="small text-muted flex-grow-1 mb-3" style="line-height: 1.6;">
-                  {{ topic.description|truncatechars:90|default:"Explore the core concepts of this module." }}
-                </p>
-
-                <!-- ✅ NOTES INDICATOR -->
-                {% if topic.notes_file %}
-                <span class="badge bg-success bg-opacity-10 text-success mb-3 px-3 py-1 rounded-pill small">
-                  📄 Notes Available
-                </span>
-                {% endif %}
-
-                <!-- CTA -->
-                <div class="d-flex align-items-center text-primary fw-bold small mt-auto">
-                  Explore Module
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
-                       fill="currentColor" class="bi bi-arrow-right ms-2" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd"
-                          d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
-                  </svg>
-                </div>
-
-              </div>
-            </div>
-          </a>
-
-        </div>
-        {% endfor %}
-      </div>
-
-      {% else %}
-      <div class="p-5 rounded-4 border border-dashed text-center bg-white bg-opacity-50">
-        <p class="text-muted mb-0">No topics have been added to this curriculum yet.</p>
-      </div>
-      {% endif %}
-
     </div>
-  </div>
 </div>
 
 <style>
-  .bg-indigo-soft {
-    background-color: #eef2ff;
-  }
-  
-  .hover-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(79, 70, 229, 0.08) !important;
-  }
-  
-  .transition {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
+    /* Course Detail Specific Styles */
+    .fw-800 { font-weight: 800; }
+    .fw-700 { font-weight: 700; }
+    .text-ice-dark { color: #001f4d; }
+    .text-muted-alt { color: #94a3b8; }
+    .font-inter { font-family: 'Inter', sans-serif; }
+    
+    .bg-soft-primary { background-color: rgba(0, 74, 173, 0.08); }
+    .bg-soft-success { background-color: rgba(34, 197, 94, 0.1); }
 
-  .border-dashed {
-    border: 2px dashed #e2e8f0 !important;
-  }
+    .btn-ice-outline {
+        border: 1.5px solid #e2e8f0;
+        color: #64748b;
+        background: white;
+        transition: var(--transition);
+    }
+    .btn-ice-outline:hover {
+        border-color: var(--ice-primary);
+        color: var(--ice-primary);
+        background: var(--ice-light);
+    }
 
-  h2 {
-    letter-spacing: -0.5px;
-  }
+    .shadow-inner {
+        box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+    }
+
+    .brand-dot-mini {
+        width: 6px;
+        height: 24px;
+        background: var(--ice-primary);
+        border-radius: 4px;
+    }
+
+    .brand-avatar-sm {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, var(--ice-primary), var(--ice-dark));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        font-weight: 800;
+        font-family: 'Outfit';
+        box-shadow: 0 4px 10px rgba(0, 74, 173, 0.15);
+    }
+
+    .transition-up {
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+    }
+    .transition-up:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 31, 77, 0.1) !important;
+    }
+
+    .hover-glow:hover {
+        border: 1px solid rgba(0, 74, 173, 0.2) !important;
+    }
+
+    .border-dashed {
+        border: 2px dashed rgba(0, 74, 173, 0.1) !important;
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .tracking-widest { letter-spacing: 2px; }
+
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
 </style>
-
 {% endblock %}

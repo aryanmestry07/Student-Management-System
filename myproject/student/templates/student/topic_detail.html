@@ -4,159 +4,229 @@
 {% block content %}
 <div class="d-flex min-vh-100 w-100">
 
-  {% include "student/sidebar.html" %}
+    {% include "student/sidebar.html" %}
 
-  <div class="flex-grow-1 bg-light d-flex flex-column" style="min-width: 0;">
+    <div class="flex-grow-1 d-flex flex-column" style="min-width: 0;">
 
-    <!-- HEADER -->
-    <header class="bg-white border-bottom px-4 d-flex justify-content-between align-items-center shadow-sm" style="height: 75px;">
-      <div>
-        <h5 class="mb-0 fw-bold text-dark">
-          <span class="text-primary me-2">📘</span> {{ topic.title }}
-        </h5>
-        <p class="text-muted small mb-0">Topic Learning Panel</p>
-      </div>
-
-      <!-- ✅ ATTENDANCE -->
-      <form id="attendanceForm" method="post" action="{% url 'student:mark_attendance' topic.id %}">
-        {% csrf_token %}
-
-        <!-- 📍 Lecture Type Dropdown -->
-        <select id="lectureType" class="form-select form-select-sm me-2" style="width: 140px;">
-          <option value="theory" {% if lecture_type == "theory" %}selected{% endif %}>Theory</option>
-          <option value="practical" {% if lecture_type == "practical" %}selected{% endif %}>Practical</option>
-        </select>
-
-        <!-- Hidden fields -->
-        <input type="hidden" name="latitude" id="lat">
-        <input type="hidden" name="longitude" id="lng">
-        <input type="hidden" name="lecture_type" id="lectureTypeInput">
-
-        {% if attendance_marked %}
-          <button type="button" class="btn btn-sm btn-success rounded-pill px-4 shadow-sm fw-medium" disabled>
-            ✅ Attendance Marked
-          </button>
-        {% else %}
-          <button id="attendanceBtn" type="button" onclick="markAttendance()" class="btn btn-sm btn-primary rounded-pill px-4 shadow-sm fw-medium">
-            📍 Mark Attendance
-          </button>
-        {% endif %}
-      </form>
-    </header>
-
-    <!-- CONTENT -->
-    <div class="p-4">
-
-      <!-- TABS -->
-      <ul class="nav nav-pills mb-4 p-1 bg-white rounded-pill shadow-sm d-inline-flex border">
-        <li class="nav-item">
-          <button class="nav-link active rounded-pill px-4 fw-bold" data-bs-toggle="pill" data-bs-target="#notes">
-            📒 Study Notes
-          </button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-link rounded-pill px-4 fw-bold" data-bs-toggle="pill" data-bs-target="#quizzes">
-            📝 Assessment
-          </button>
-        </li>
-      </ul>
-
-      <div class="tab-content">
-
-        <!-- NOTES -->
-        <div class="tab-pane fade show active" id="notes">
-          <div class="card border-0 shadow-sm rounded-4">
-            <div class="card-header bg-white border-bottom py-3 px-4">
-              <h6 class="fw-bold mb-0 text-dark">📖 Study Material</h6>
+        <header class="px-4 d-flex justify-content-between align-items-center sticky-top" style="height: 85px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); z-index: 1000; border-bottom: 1px solid rgba(0,0,0,0.05);">
+            <div class="d-flex align-items-center">
+                <div class="brand-avatar-sm me-3 flex-shrink-0 bg-primary text-white">
+                    <i class="bi bi-book"></i>
+                </div>
+                <div>
+                    <h4 class="fw-800 mb-0 font-outfit text-ice-dark">{{ topic.title }}</h4>
+                    <p class="text-muted small mb-0 font-inter">Topic Learning & Verification</p>
+                </div>
             </div>
 
-            <div class="card-body p-5 text-center">
+            <div class="bg-white p-2 rounded-4 shadow-sm border border-light d-flex align-items-center">
+                <form id="attendanceForm" method="post" action="{% url 'student:mark_attendance' topic.id %}" class="d-flex align-items-center">
+                    {% csrf_token %}
+                    
+                    <div class="me-2 d-none d-lg-block">
+                        <select id="lectureType" class="form-select form-select-sm border-0 bg-light font-outfit fw-bold text-ice-dark rounded-3" style="width: 120px; cursor: pointer;">
+                            <option value="theory" {% if lecture_type == "theory" %}selected{% endif %}>Theory</option>
+                            <option value="practical" {% if lecture_type == "practical" %}selected{% endif %}>Practical</option>
+                        </select>
+                    </div>
 
-              {% if topic.notes_file %}
-                <div style="font-size: 60px;">📄</div>
-                <h5 class="fw-bold mt-3">PDF Notes Available</h5>
-                <p class="text-muted">Click below to view your study material</p>
+                    <input type="hidden" name="latitude" id="lat">
+                    <input type="hidden" name="longitude" id="lng">
+                    <input type="hidden" name="lecture_type" id="lectureTypeInput">
 
-                <a href="{{ topic.notes_file.url }}" target="_blank"
-                   class="btn btn-primary px-4 py-2 mt-2 shadow-sm">
-                  📖 Open Notes
-                </a>
+                    {% if attendance_marked %}
+                        <button type="button" class="btn btn-sm btn-success rounded-pill px-4 font-outfit fw-bold" disabled>
+                            <i class="bi bi-check-circle-fill me-2"></i>Verified
+                        </button>
+                    {% else %}
+                        <button id="attendanceBtn" type="button" onclick="markAttendance()" class="btn btn-sm btn-ice rounded-pill px-4 font-outfit fw-bold shadow-sm transition">
+                            <i class="bi bi-geo-alt-fill me-2"></i>Mark Attendance
+                        </button>
+                    {% endif %}
+                </form>
+            </div>
+        </header>
 
-              {% elif topic.description %}
-                <div class="text-start text-secondary" style="line-height: 2; font-size: 1.05rem;">
-                  {{ topic.description|linebreaks }}
+        <div class="p-4 p-lg-5 pt-4 overflow-auto">
+
+            <div class="glass-card p-2 mb-5 d-inline-flex border-0 shadow-sm rounded-pill mx-auto">
+                <ul class="nav nav-pills border-0" id="topicTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active rounded-pill px-5 py-2 font-outfit fw-bold transition" data-bs-toggle="pill" data-bs-target="#notes">
+                            Study Notes
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-pill px-5 py-2 font-outfit fw-bold transition" data-bs-toggle="pill" data-bs-target="#quizzes">
+                            Assessment
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="tab-content pt-2">
+
+                <div class="tab-pane fade show active" id="notes">
+                    <div class="glass-card border-0 shadow-lg overflow-hidden">
+                        <div class="bg-ice-primary p-3 px-4 d-flex align-items-center">
+                            <i class="bi bi-file-earmark-text text-white me-2"></i>
+                            <h6 class="fw-700 mb-0 font-outfit text-white">Study Material & Module Guide</h6>
+                        </div>
+
+                        <div class="card-body p-4 p-lg-5">
+                            {% if topic.notes_file %}
+                                <div class="text-center py-4">
+                                    <div class="brand-avatar-xl mx-auto mb-4 bg-soft-primary text-primary">
+                                        <i class="bi bi-file-earmark-pdf"></i>
+                                    </div>
+                                    <h4 class="fw-800 font-outfit text-ice-dark">PDF Notes Ready</h4>
+                                    <p class="text-muted font-inter mb-4 px-lg-5">Your instructor has provided detailed documentation for this module. You can view it directly in your browser or download it for offline study.</p>
+
+                                    <a href="{{ topic.notes_file.url }}" target="_blank"
+                                       class="btn btn-ice px-5 py-3 rounded-4 shadow-lg font-outfit fw-800 tracking-tight">
+                                        <i class="bi bi-eye-fill me-2"></i> Open Notes
+                                    </a>
+                                </div>
+                            {% elif topic.description %}
+                                <div class="font-inter text-ice-dark content-viewer" style="line-height: 2; font-size: 1.1rem;">
+                                    {{ topic.description|linebreaks }}
+                                </div>
+                            {% else %}
+                                <div class="text-center py-5 opacity-50">
+                                    <i class="bi bi-cloud-slash display-4 mb-3 d-block"></i>
+                                    <p class="font-outfit fw-700">No notes uploaded for this topic yet.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
 
-              {% else %}
-                <p class="text-muted">No notes uploaded yet.</p>
-              {% endif %}
+                <div class="tab-pane fade" id="quizzes">
+                    {% if quizzes %}
+                        <div class="row g-4">
+                            {% for quiz in quizzes %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="glass-card h-100 transition-up border-0 overflow-hidden shadow-sm">
+                                    <div style="height: 5px; background: var(--ice-primary);"></div>
+                                    <div class="card-body p-4 d-flex flex-column">
+                                        <div class="d-flex justify-content-between mb-3">
+                                            <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill font-outfit small">Knowledge Check</span>
+                                            <i class="bi bi-patch-question-fill text-muted opacity-50"></i>
+                                        </div>
+                                        <h5 class="fw-700 font-outfit text-ice-dark mb-2">{{ quiz.title }}</h5>
+                                        <p class="small text-muted font-inter flex-grow-1 mb-4">
+                                            {{ quiz.description|truncatewords:15 }}
+                                        </p>
 
-            </div>
-          </div>
-        </div>
-
-        <!-- QUIZZES -->
-        <div class="tab-pane fade" id="quizzes">
-          {% if quizzes %}
-          <div class="row g-4">
-            {% for quiz in quizzes %}
-            <div class="col-md-6 col-lg-4">
-              <div class="card border-0 shadow-sm h-100 rounded-4">
-                <div style="height: 4px; background: #4f46e5;"></div>
-
-                <div class="card-body d-flex flex-column p-4">
-                  <h6 class="fw-bold text-dark">{{ quiz.title }}</h6>
-                  <p class="small text-muted flex-grow-1">
-                    {{ quiz.description|truncatewords:15 }}
-                  </p>
-
-                  <a href="{% url 'student:take_quiz' quiz.id %}" 
-                     class="btn btn-primary btn-sm mt-auto">
-                    Start Quiz
-                  </a>
+                                        <a href="{% url 'student:take_quiz' quiz.id %}" 
+                                           class="btn btn-outline-ice w-100 rounded-3 py-2 fw-bold font-outfit">
+                                            Start Quiz <i class="bi bi-arrow-right ms-2"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="glass-card p-5 text-center mx-auto mt-4" style="max-width: 500px;">
+                            <div class="brand-avatar-xl mx-auto mb-4 bg-soft-warning text-warning">
+                                <i class="bi bi-pencil-square"></i>
+                            </div>
+                            <h5 class="fw-800 font-outfit text-ice-dark">No Assessments Available</h5>
+                            <p class="text-muted px-4 font-inter">Tests will appear here once the instructor releases the module evaluation.</p>
+                        </div>
+                    {% endif %}
                 </div>
-              </div>
-            </div>
-            {% endfor %}
-          </div>
-          {% else %}
-          <div class="text-center p-5">
-            <h6>No quizzes available</h6>
-          </div>
-          {% endif %}
-        </div>
 
-      </div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
-<!-- ✅ UPDATED SCRIPT -->
+<style>
+    /* Premium Logic Updates */
+    .fw-800 { font-weight: 800; }
+    .fw-700 { font-weight: 700; }
+    .text-ice-dark { color: #001f4d; }
+    .font-inter { font-family: 'Inter', sans-serif; }
+    .bg-ice-primary { background: linear-gradient(90deg, var(--ice-primary), var(--ice-dark)); }
+    .bg-soft-primary { background-color: rgba(0, 74, 173, 0.08); }
+    .bg-soft-warning { background-color: rgba(245, 158, 11, 0.1); }
+
+    /* Nav Pills Update */
+    .nav-pills .nav-link {
+        color: #64748b;
+        background: transparent;
+        border: none;
+    }
+    .nav-pills .nav-link.active {
+        background: var(--ice-primary) !important;
+        color: white !important;
+        box-shadow: 0 8px 15px rgba(0, 74, 173, 0.2);
+    }
+
+    .brand-avatar-sm {
+        width: 44px; height: 44px;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 12px;
+        font-size: 1.25rem;
+    }
+
+    .brand-avatar-xl {
+        width: 80px; height: 80px;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 24px;
+        font-size: 2.5rem;
+    }
+
+    .btn-outline-ice {
+        border: 1.5px solid #e2e8f0;
+        color: #475569;
+        transition: all 0.2s ease;
+    }
+    .btn-outline-ice:hover {
+        border-color: var(--ice-primary);
+        color: var(--ice-primary);
+        background: rgba(0, 74, 173, 0.02);
+    }
+
+    .transition-up {
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+    }
+    .transition-up:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 31, 77, 0.1) !important;
+    }
+
+    .content-viewer {
+        background: #fcfdfe;
+        padding: 30px;
+        border-radius: 20px;
+        border: 1px solid #f1f5f9;
+    }
+</style>
+
 <script>
 function markAttendance() {
     const btn = document.getElementById("attendanceBtn");
-
-    // ✅ Get lecture type
     const type = document.getElementById("lectureType").value;
     document.getElementById("lectureTypeInput").value = type;
 
     if (navigator.geolocation) {
-        btn.innerText = "📍 Getting Location...";
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Locating...';
         btn.disabled = true;
 
         navigator.geolocation.getCurrentPosition(
             function(position) {
                 document.getElementById("lat").value = position.coords.latitude;
                 document.getElementById("lng").value = position.coords.longitude;
-
-                btn.innerText = "⏳ Marking...";
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Verifying...';
                 document.getElementById("attendanceForm").submit();
             },
             function(error) {
-                btn.innerText = "📍 Mark Attendance";
+                btn.innerHTML = '<i class="bi bi-geo-alt-fill me-2"></i>Mark Attendance';
                 btn.disabled = false;
-
-                alert("⚠️ Please allow location access.");
+                alert("⚠️ Please allow location access to verify your attendance on campus.");
             }
         );
     }

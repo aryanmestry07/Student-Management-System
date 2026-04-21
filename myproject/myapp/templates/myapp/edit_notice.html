@@ -1,16 +1,155 @@
 {% extends "myapp/index.html" %}
+{% load static %}
+
 {% block content %}
+<style>
+    /* EDIT HUB STYLING */
+    .edit-hub-card {
+        background: #ffffff;
+        border-radius: 32px;
+        border: 1px solid rgba(0, 74, 173, 0.05);
+        box-shadow: 0 20px 50px rgba(0, 31, 77, 0.05);
+        overflow: hidden;
+        max-width: 800px;
+        margin: 0 auto;
+    }
 
-<div class="container mt-4">
-    <h2>Edit Notice</h2>
+    .edit-header-accent {
+        background: linear-gradient(to right, #fff5f5, transparent);
+        padding: 35px 45px;
+        border-bottom: 1px solid #f1f5f9;
+    }
 
-    <form method="post" class="card p-4 shadow-sm">
-        {% csrf_token %}
-        {{ form.as_p }}
+    .form-label-elite {
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: #94a3b8;
+        margin-bottom: 8px;
+        display: block;
+    }
 
-        <button type="submit" class="btn btn-primary">Update Notice</button>
-        <a href="{% url 'myapp:notice_list' %}" class="btn btn-secondary">Cancel</a>
-    </form>
+    /* Target Django auto-fields */
+    .edit-hub-card input, 
+    .edit-hub-card textarea,
+    .edit-hub-card select {
+        display: block;
+        width: 100%;
+        padding: 14px 18px;
+        background-color: #f8fafc;
+        border: 2px solid #f1f5f9;
+        border-radius: 16px;
+        transition: var(--transition);
+        font-weight: 500;
+        color: var(--ice-dark);
+    }
+
+    .edit-hub-card input:focus, 
+    .edit-hub-card textarea:focus {
+        background-color: #ffffff;
+        border-color: var(--ice-primary);
+        outline: 0;
+        box-shadow: 0 10px 25px rgba(0, 74, 173, 0.08);
+    }
+
+    /* Checkbox Styling */
+    .form-check-elite {
+        background: #f8fafc;
+        padding: 15px 20px;
+        border-radius: 16px;
+        border: 2px solid #f1f5f9;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .form-check-elite:hover {
+        border-color: var(--ice-primary-light);
+    }
+
+    .form-check-input {
+        width: 20px !important;
+        height: 20px !important;
+        margin: 0 !important;
+        cursor: pointer;
+    }
+
+    .btn-update {
+        background: var(--ice-primary);
+        color: white;
+        border: none;
+        padding: 14px 35px;
+        border-radius: 18px;
+        font-weight: 700;
+        font-family: 'Outfit';
+        transition: var(--transition);
+        box-shadow: 0 10px 25px rgba(0, 74, 173, 0.2);
+    }
+
+    .btn-update:hover {
+        background: var(--ice-dark);
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(0, 74, 173, 0.3);
+    }
+</style>
+
+<div class="container-fluid py-2">
+    <div class="mb-4">
+        <a href="{% url 'myapp:notice_list' %}" class="text-decoration-none text-muted small fw-bold">
+            <i class="bi bi-arrow-left me-2"></i> RETURN TO DISPATCH LOG
+        </a>
+    </div>
+
+    <div class="edit-hub-card">
+        <div class="edit-header-accent d-flex align-items-center">
+            <div class="icon-circle-sm bg-warning bg-opacity-10 text-warning me-3" style="width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-pencil-square fs-4"></i>
+            </div>
+            <div>
+                <h2 class="h4 fw-800 mb-0" style="font-family: 'Outfit'; color: var(--ice-dark);">Edit Dispatch</h2>
+                <p class="text-muted small mb-0">Modify the content or priority of this announcement.</p>
+            </div>
+        </div>
+
+        <div class="p-5">
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="mb-4">
+                    <label class="form-label-elite">Subject / Title</label>
+                    {{ form.title }}
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label-elite">Announcement Content</label>
+                    {{ form.content }}
+                </div>
+
+                <div class="row g-4 mb-5">
+                    <div class="col-md-7">
+                        <label class="form-label-elite">Expiry Date (Optional)</label>
+                        {{ form.expiry_date }}
+                    </div>
+
+                    <div class="col-md-5 d-flex align-items-end">
+                        <label class="form-check-elite w-100">
+                            {{ form.is_pinned }}
+                            <span class="fw-bold small text-dark">Pin to Priority</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center pt-4 border-top">
+                    <a href="{% url 'myapp:notice_list' %}" class="text-muted text-decoration-none fw-bold small">Discard Changes</a>
+                    <button type="submit" class="btn-update">
+                        Update Dispatch <i class="bi bi-check-lg ms-2"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
-
 {% endblock %}

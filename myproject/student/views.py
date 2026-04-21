@@ -12,7 +12,7 @@ from .decorators import student_login_required
 
 from myapp.models import Notice
 from django.utils.timezone import now
-
+from myapp.models import StudentAnswer
 
 
 # ----------------------------
@@ -190,16 +190,25 @@ def topic_detail(request, topic_id):
 @student_login_required
 def take_quiz(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id)
-    questions = list(quiz.questions.all())
+
+    # ✅ FIX: force correct order
+    questions = list(quiz.questions.all().order_by("id"))
     total = len(questions)
 
     if total == 0:
         messages.warning(request, "This quiz has no questions yet.")
         return redirect("student:student_dashboard")
 
-    index = request.session.get(f"quiz_{quiz_id}_index", 0)
-    index = min(index, total - 1)
-    question = questions[index]
+    # 🔐 Session keys
+    index_key = f"quiz_{quiz_id}_index"
+    answers_key = f"quiz_{quiz_id}_answers"
+
+    # ✅ Get session data
+    index = request.session.get(index_key, 0)
+    answers = request.session.get(answers_key, {})
+
+    # ✅ Always keep index in range
+    index = max(0, min(index, total - 1))
 
     student = request.user
 
@@ -209,15 +218,22 @@ def take_quiz(request, quiz_id):
         defaults={'score': 0}
     )
 
-    answers = request.session.get(f"quiz_{quiz_id}_answers", {})
-
+    # =========================
+    # HANDLE POST
+    # =========================
     if request.method == "POST":
+
+        current_question = questions[index]
         selected = request.POST.get("answer")
 
+        # ✅ Save answer
         if selected:
-            answers[str(question.id)] = selected
-            request.session[f"quiz_{quiz_id}_answers"] = answers
+            answers[str(current_question.id)] = selected
+            request.session[answers_key] = answers
 
+        # =====================
+        # NAVIGATION
+        # =====================
         if "next" in request.POST and index < total - 1:
             index += 1
 
@@ -225,44 +241,62 @@ def take_quiz(request, quiz_id):
             index -= 1
 
         elif "submit" in request.POST:
-
             score = 0
             review_data = {}
 
+            # ❗ Remove old answers (reattempt safety)
+            submission.answers.all().delete()
+
             for q in questions:
-                selected = answers.get(str(q.id))
+                selected_ans = answers.get(str(q.id))
                 correct = q.correct_answer
 
-                if selected == correct:
+                is_correct = (selected_ans == correct)
+
+                if is_correct:
                     score += 1
 
+                # ✅ Save to DB
+                if selected_ans:
+                    StudentAnswer.objects.create(
+                        submission=submission,
+                        question=q,
+                        selected_answer=selected_ans,
+                        is_correct=is_correct
+                    )
+
                 review_data[q] = {
-                    "selected": selected,
+                    "selected": selected_ans,
                     "correct": correct,
                 }
 
-            submission.score = score
+            # ✅ Percentage score
+            percentage = (score / total) * 100 if total > 0 else 0
+
+            submission.score = percentage
             submission.save()
 
-            # Clear session
-            request.session.pop(f"quiz_{quiz_id}_index", None)
-            request.session.pop(f"quiz_{quiz_id}_answers", None)
-
-            # Calculate percentage
-            percentage = int((score / total) * 100) if total > 0 else 0
+            # ✅ Clear session
+            request.session.pop(index_key, None)
+            request.session.pop(answers_key, None)
 
             return render(request, "student/quiz_result.html", {
                 "quiz": quiz,
                 "score": score,
                 "total": total,
-                "percentage": percentage,   # Added
+                "percentage": int(percentage),
                 "answers": review_data,
             })
 
-        request.session[f"quiz_{quiz_id}_index"] = index
-        question = questions[index]
+        # ✅ Save updated index
+        request.session[index_key] = index
 
-    saved_answer = answers.get(str(question.id), None)
+    # =========================
+    # LOAD QUESTION
+    # =========================
+    question = questions[index]
+
+    saved_answer = answers.get(str(question.id))
 
     return render(request, "student/take_quiz.html", {
         "quiz": quiz,
@@ -271,8 +305,6 @@ def take_quiz(request, quiz_id):
         "total": total,
         "saved_answer": saved_answer,
     })
-
-
 # ----------------------------
 # ASSIGNMENTS
 # ----------------------------

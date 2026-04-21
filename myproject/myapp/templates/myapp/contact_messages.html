@@ -1,0 +1,160 @@
+{% extends "myapp/index.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    .message-card-elite {
+        background: #ffffff;
+        border-radius: 28px;
+        border: 1px solid rgba(0, 74, 173, 0.05);
+        box-shadow: 0 10px 30px rgba(0, 31, 77, 0.02);
+        overflow: hidden;
+    }
+
+    .table-messages {
+        margin-bottom: 0;
+        vertical-align: middle;
+    }
+
+    .table-messages thead th {
+        background: #f8fafc;
+        color: #94a3b8;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        padding: 1.25rem 1.5rem;
+        border-top: none;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .message-row:hover {
+        background-color: var(--ice-primary-light);
+    }
+
+    .unread-row {
+        background-color: rgba(0, 74, 173, 0.02);
+        border-left: 4px solid var(--ice-primary);
+    }
+
+    .visitor-avatar {
+        width: 35px;
+        height: 35px;
+        background: #f1f5f9;
+        color: var(--ice-dark);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.75rem;
+        font-family: 'Outfit';
+    }
+
+    .subject-pill {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--ice-dark);
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        padding: 4px 12px;
+        border-radius: 8px;
+    }
+
+    .message-text {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-top: 4px;
+    }
+</style>
+
+<div class="mb-5 d-flex justify-content-between align-items-end">
+    <div>
+        <h2 class="h3 fw-800 mb-1" style="font-family: 'Outfit'; color: var(--ice-dark);">
+            Visitor Inquiries
+        </h2>
+        <p class="text-muted small mb-0">
+            Manage and respond to messages from the public website
+        </p>
+    </div>
+    <div class="text-muted small fw-bold">
+        Total Messages: <span class="text-primary">{{ messages|length }}</span>
+    </div>
+</div>
+
+<div class="message-card-elite">
+    <div class="table-responsive">
+        <table class="table table-messages">
+            <thead>
+                <tr>
+                    <th>Sender</th>
+                    <th>Inquiry Details</th>
+                    <th>Message</th>
+                    <th>Date & Time</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for m in messages %}
+                <tr class="message-row {% if not m.is_read %}unread-row{% endif %}">
+
+                    <!-- SENDER -->
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="visitor-avatar me-3 shadow-sm">
+                                {{ m.name|slice:":1"|upper }}
+                            </div>
+                            <div>
+                                <div class="fw-bold">{{ m.name }}</div>
+                                <div class="text-muted extra-small" style="font-size: 0.75rem;">
+                                    {{ m.email }}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+
+                    <!-- SUBJECT -->
+                    <td>
+                        <div class="subject-pill">
+                            {{ m.subject|truncatechars:40 }}
+                        </div>
+                    </td>
+
+                    <!-- MESSAGE CONTENT -->
+                    <td>
+                        <div class="message-text">
+                            {{ m.message|truncatechars:80 }}
+                        </div>
+                    </td>
+
+                    <!-- DATE -->
+                    <td>
+                        <div class="fw-bold small">
+                            {{ m.created_at|date:"d M, Y" }}
+                        </div>
+                        <div class="text-muted extra-small" style="font-size: 0.7rem;">
+                            {{ m.created_at|time:"H:i" }}
+                        </div>
+                    </td>
+
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center py-5">
+                        <div class="mb-3">
+                            <i class="bi bi-mailbox display-4 text-muted opacity-25"></i>
+                        </div>
+                        <h6 class="text-muted fw-bold">Inbox is empty</h6>
+                        <p class="small text-muted">
+                            New inquiries from the website will appear here.
+                        </p>
+                    </td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

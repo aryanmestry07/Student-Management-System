@@ -1,50 +1,119 @@
 {% extends 'myapp/index.html' %}
+{% load static %}
 
 {% block content %}
-<div class="container my-5">
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">➕ Add Quiz for {{ course.title }}</h4>
-        </div>
-        <div class="card-body">
-            <form method="post">
-                {% csrf_token %}
+<style>
+    .quiz-hub-container { max-width: 950px; margin: 0 auto; }
+    .question-module {
+        background: #ffffff;
+        border-radius: 24px;
+        border: 1px solid rgba(0, 74, 173, 0.08);
+        padding: 35px;
+        margin-bottom: 30px;
+        position: relative;
+    }
+    .question-number-badge {
+        position: absolute;
+        top: -15px;
+        left: 30px;
+        background: var(--ice-primary);
+        color: white;
+        padding: 5px 20px;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 0.85rem;
+    }
+    .form-control-elite {
+        background-color: #f8fafc !important;
+        border: 2px solid #f1f5f9 !important;
+        padding: 12px 16px !important;
+        border-radius: 14px !important;
+    }
+    .option-input-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+    }
+    .option-letter {
+        width: 32px; height: 32px;
+        background: #f1f5f9;
+        border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800;
+    }
+    .btn-save-quiz {
+        background: var(--ice-primary);
+        color: white;
+        border: none;
+        padding: 16px 45px;
+        border-radius: 18px;
+        font-weight: 700;
+    }
+</style>
 
-                {% for i in questions_range %}
-                <div class="mb-4">
-                    <h5>Question {{ i }}</h5>
-                    <input type="text" name="question_{{ i }}" class="form-control mb-2" 
-                           placeholder="Enter question {{ i }}" required>
+<div class="container-fluid py-2 quiz-hub-container">
+    
+    <form method="post">
+        {% csrf_token %}
 
-                    <input type="text" name="option1_{{ i }}" class="form-control mb-1" placeholder="Option 1" required>
-                    <input type="text" name="option2_{{ i }}" class="form-control mb-1" placeholder="Option 2" required>
-                    <input type="text" name="option3_{{ i }}" class="form-control mb-1" placeholder="Option 3" required>
-                    <input type="text" name="option4_{{ i }}" class="form-control mb-1" placeholder="Option 4" required>
+        {% for i in questions_range %}
+        <div class="question-module">
+            <div class="question-number-badge">QUESTION {{ i }}</div>
+            
+            <!-- QUESTION -->
+            <textarea name="question_{{ i }}" class="form-control-elite w-100" rows="2" required></textarea>
 
-                    <select name="correct_{{ i }}" class="form-select mt-2" required>
-                        <option value="">-- Select Correct Answer --</option>
-                        <option value="1">Option 1</option>
-                        <option value="2">Option 2</option>
-                        <option value="3">Option 3</option>
-                        <option value="4">Option 4</option>
-                    </select>
+            <!-- OPTIONS -->
+            <div class="row mt-3">
+                <div class="col-md-6">
+
+                    <div class="option-input-group">
+                        <div class="option-letter">A</div>
+                        <input type="text" name="option1_{{ i }}" class="form-control-elite w-100" required>
+                    </div>
+
+                    <div class="option-input-group">
+                        <div class="option-letter">B</div>
+                        <input type="text" name="option2_{{ i }}" class="form-control-elite w-100" required>
+                    </div>
+
                 </div>
-                <hr>
-                {% endfor %}
 
-                <button type="submit" class="btn btn-success">
-                    <i class="bi bi-check-circle"></i> Save Quiz
-                </button>
-                <a href="{% url 'myapp:course_detail' course.id %}" class="btn btn-secondary">Cancel</a>
-            </form>
+                <div class="col-md-6">
 
-            <div class="mt-3">
-                <small class="text-muted">
-                    Currently showing {{ questions_range|length }} questions.  
-                    The system supports up to 50 questions per quiz (exam style).
-                </small>
+                    <!-- ✅ FIXED -->
+                    <div class="option-input-group">
+                        <div class="option-letter">C</div>
+                        <input type="text" name="option3_{{ i }}" class="form-control-elite w-100" required>
+                    </div>
+
+                    <!-- ✅ FIXED -->
+                    <div class="option-input-group">
+                        <div class="option-letter">D</div>
+                        <input type="text" name="option4_{{ i }}" class="form-control-elite w-100" required>
+                    </div>
+
+                </div>
             </div>
+
+            <!-- CORRECT ANSWER -->
+            <select name="correct_{{ i }}" class="form-control-elite mt-3" required>
+                <option value="">Select Correct Answer</option>
+                <option value="1">A</option>
+                <option value="2">B</option>
+                <option value="3">C</option>
+                <option value="4">D</option>
+            </select>
+
         </div>
-    </div>
+        {% endfor %}
+
+        <button type="submit" class="btn-save-quiz">
+            Save Quiz
+        </button>
+
+    </form>
 </div>
+
 {% endblock %}

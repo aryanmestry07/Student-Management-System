@@ -1,153 +1,213 @@
 {% extends "student/base.html" %}
-{% block title %}Quiz - {{ quiz.title }}{% endblock %}
+{% load static %}
+{% load student_filters %} {% block title %}Assessment | {{ quiz.title }}{% endblock %}
 
 {% block content %}
 <div class="d-flex min-vh-100 w-100">
 
-  {% include "student/sidebar.html" %}
+    {% include "student/sidebar.html" %}
 
-  <div class="flex-grow-1 bg-light d-flex flex-column" style="min-width: 0;">
+    <div class="flex-grow-1 d-flex flex-column" style="min-width: 0; background-color: var(--ice-bg);">
 
-    <header class="bg-white border-bottom px-4 d-flex justify-content-between align-items-center shadow-sm" style="height: 75px;">
-      <div>
-        <h5 class="fw-bold mb-0 text-dark">{{ quiz.title }}</h5>
-        <p class="text-muted small mb-0">
-          Question <span class="text-primary fw-bold">{{ index|add:1 }}</span> of {{ total }}
-        </p>
-      </div>
-      <div class="d-flex align-items-center">
-        <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary px-3 py-2 fw-bold small">
-          ⏱ Live Assessment
-        </span>
-      </div>
-    </header>
-
-    <div class="p-4 overflow-auto">
-      
-      <div class="row justify-content-center">
-        <div class="col-lg-9 col-xl-8">
-
-          <div class="mb-4">
-            <div class="d-flex justify-content-between mb-2">
-               <small class="text-muted fw-bold">Progress</small>
-               <small class="text-primary fw-bold">{% widthratio index|add:1 total 100 %}%</small>
-            </div>
-            <div class="progress rounded-pill shadow-sm" style="height: 8px;">
-              <div class="progress-bar bg-primary" 
-                   role="progressbar" 
-                   style="width: {% widthratio index|add:1 total 100 %}%">
-              </div>
-            </div>
-          </div>
-
-          <form method="post">
-            {% csrf_token %}
-
-            <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden quiz-question-card">
-              <div class="bg-primary" style="width: 6px; height: 100%; position: absolute; left: 0; top: 0;"></div>
-              
-              <div class="card-body p-4 p-lg-5">
-                <h4 class="fw-bold text-dark mb-4" style="line-height: 1.5;">
-                  {{ question.text }}
-                </h4>
-
-                <div class="quiz-options-list">
-                  {% for key, option in question.get_options.items %}
-                    {% if option %}
-                    <label class="quiz-option-item transition rounded-4 border p-3 mb-3 d-flex align-items-center cursor-pointer">
-                      <input type="radio" 
-                             name="answer" 
-                             value="{{ key }}" 
-                             class="form-check-input me-3"
-                             {% if saved_answer == key %}checked{% endif %}>
-                      
-                      <div class="option-content">
-                        <span class="fw-bold text-muted me-2">{{ key }}.</span>
-                        <span class="text-dark fw-medium">{{ option }}</span>
-                      </div>
-                    </label>
-                    {% endif %}
-                  {% endfor %}
+        <header class="px-4 d-flex justify-content-between align-items-center sticky-top" 
+                style="height: 90px; background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); z-index: 1000; border-bottom: 1px solid rgba(0, 74, 173, 0.05);">
+            <div class="d-flex align-items-center">
+                <div class="brand-avatar-sm me-3 flex-shrink-0 shadow-sm" 
+                     style="background: linear-gradient(135deg, var(--ice-primary), var(--ice-dark)); color: white; width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-cpu-fill fs-5"></i>
                 </div>
-              </div>
+                <div>
+                    <h4 class="fw-800 mb-0" style="font-family: 'Outfit'; color: var(--ice-dark); letter-spacing: -0.5px;">{{ quiz.title }}</h4>
+                    <p class="text-muted small mb-0" style="font-family: 'Inter'; font-weight: 600;">
+                        Bandra Campus | <span class="text-primary">Q-{{ index|add:1 }} of {{ total }}</span>
+                    </p>
+                </div>
             </div>
-
-            <div class="d-flex justify-content-between align-items-center mt-4">
-              {% if index > 0 %}
-                <button type="submit" name="prev" class="btn btn-outline-secondary rounded-pill px-4 fw-bold shadow-sm">
-                  ← Previous
-                </button>
-              {% else %}
-                <div></div>
-              {% endif %}
-
-              {% if index < total|add:-1 %}
-                <button type="submit" name="next" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
-                  Save & Next →
-                </button>
-              {% else %}
-                <button type="submit" name="submit" class="btn btn-success rounded-pill px-5 fw-bold shadow-sm">
-                  Complete Quiz ✅
-                </button>
-              {% endif %}
+            
+            <div id="quiz-timer" class="badge rounded-pill px-4 py-2 font-outfit fw-800 border" 
+                 style="background: #fff; color: var(--ice-primary); border-color: rgba(0, 74, 173, 0.1); font-size: 0.85rem;">
+                <i class="bi bi-shield-lock-fill me-2"></i>SECURE SESSION
             </div>
+        </header>
 
-          </form>
+        <div class="p-4 p-lg-5 pt-4 overflow-auto">
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-10 col-xl-9">
+
+                    <div class="mb-5">
+                        <div class="d-flex justify-content-between align-items-end mb-2">
+                            <span class="text-muted small fw-800 text-uppercase" style="letter-spacing: 1.5px; font-size: 0.65rem;">System Progress</span>
+                            <span class="text-primary fw-800" style="font-family: 'Outfit';">{% widthratio index|add:1 total 100 %}% SYNCED</span>
+                        </div>
+                        <div class="progress rounded-pill shadow-none" style="height: 6px; background-color: #e2e8f0;">
+                            <div class="progress-bar bg-ice-primary progress-bar-striped progress-bar-animated" 
+                                 role="progressbar" 
+                                 style="width: {% widthratio index|add:1 total 100 %}%">
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="post" id="quizForm">
+                        {% csrf_token %}
+
+                        <div class="glass-card border-0 shadow-sm mb-5 overflow-hidden position-relative" 
+                             style="background: white; border-radius: 32px; padding: 50px;">
+                            <div class="bg-ice-primary" style="width: 10px; height: 100%; position: absolute; left: 0; top: 0;"></div>
+                            
+                            <div class="mb-5">
+                                <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-8 fw-800 small mb-4" 
+                                      style="font-family: 'Outfit'; font-size: 0.7rem; border-radius: 8px;">
+                                    STATION_LOG_{{ index|add:1 }}
+                                </span>
+                                <h2 class="fw-700 text-ice-dark mb-0" 
+                                    style="font-family: 'Outfit'; line-height: 1.4; font-size: 1.8rem; letter-spacing: -0.5px;">
+                                    {{ question.text }}
+                                </h2>
+                            </div>
+
+                            <div class="quiz-options-list">
+                                <div class="row g-4">
+                                    {% for key in "ABCD" %} <div class="col-12 col-md-6">
+                                            <label class="quiz-option-wrapper d-block h-100 position-relative">
+                                                <input type="radio" 
+                                                       name="answer" 
+                                                       value="{{ key }}" 
+                                                       class="quiz-hidden-input"
+                                                       {% if saved_answer == key %}checked{% endif %}
+                                                       required>
+                                                
+                                                <div class="quiz-option-content p-4 rounded-4 border-2 border transition-all d-flex align-items-center h-100">
+                                                    <div class="option-indicator me-3 fw-800" style="font-family: 'Outfit';">{{ key }}</div>
+                                                    <div class="option-text fw-600" style="font-family: 'Inter'; color: #64748b; font-size: 1rem;">
+                                                        {{ question|get_option_text:key }} </div>
+                                                    <i class="bi bi-check-circle-fill ms-auto selected-icon text-primary opacity-0 fs-5"></i>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-4 pb-5">
+                            {% if index > 0 %}
+                                <button type="submit" name="prev" class="btn btn-ice-outline rounded-pill px-4 fw-800 transition py-2" style="font-family: 'Outfit';">
+                                    <i class="bi bi-chevron-left me-2"></i>PREV_LOG
+                                </button>
+                            {% else %}
+                                <div></div>
+                            {% endif %}
+
+                            <div class="d-flex gap-3">
+                                {% if index < total|add:-1 %}
+                                    <button type="submit" name="next" class="btn btn-ice rounded-pill px-5 fw-800 shadow-ice transition py-3" style="font-family: 'Outfit';">
+                                        SAVE_CONTINUE <i class="bi bi-chevron-right ms-2"></i>
+                                    </button>
+                                {% else %}
+                                    <button type="submit" name="submit" class="btn btn-success rounded-pill px-5 fw-800 shadow-lg border-0 transition py-3" 
+                                            style="background: linear-gradient(135deg, #10b981, #059669); font-family: 'Outfit';">
+                                        FINALIZE_SESSION <i class="bi bi-send-fill ms-2"></i>
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
         </div>
-      </div>
-
     </div>
-  </div>
 </div>
 
 <style>
-  /* Modern Quiz Styling */
-  .cursor-pointer { cursor: pointer; }
-  
-  .quiz-option-item {
-    background-color: #ffffff;
-    border: 2px solid #f1f5f9 !important;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
+    :root {
+        --ice-primary: #004aad;
+        --ice-dark: #001f4d;
+        --ice-bg: #f8fbff;
+    }
 
-  .quiz-option-item:hover {
-    background-color: #f8fafc;
-    border-color: #e2e8f0 !important;
-  }
+    .bg-ice-primary { background: linear-gradient(135deg, var(--ice-primary), var(--ice-dark)); }
+    .shadow-ice { box-shadow: 0 10px 25px rgba(0, 74, 173, 0.2); }
+    .bg-soft-primary { background-color: rgba(0, 74, 173, 0.05); }
+    .fw-800 { font-weight: 800; }
+    .fw-700 { font-weight: 700; }
 
-  /* Radio Checked State Styling */
-  .quiz-option-item input:checked {
-    background-color: #4f46e5;
-    border-color: #4f46e5;
-  }
+    /* Hide Original Radio but maintain Tab Index */
+    .quiz-hidden-input {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
 
-  .quiz-option-item:has(input:checked) {
-    background-color: #eef2ff;
-    border-color: #4f46e5 !important;
-    transform: translateX(5px);
-  }
+    /* THE ELITE OPTION CARD */
+    .quiz-option-content {
+        background: #ffffff;
+        border-color: #f1f5f9 !important;
+        cursor: pointer;
+        min-height: 90px;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
 
-  .quiz-option-item:has(input:checked) .option-content span {
-    color: #4f46e5 !important;
-  }
+    .option-indicator {
+        width: 40px;
+        height: 40px;
+        background: #f8fafc;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        border: 1px solid #f1f5f9;
+        font-size: 0.9rem;
+    }
 
-  .transition {
-    transition: all 0.3s ease;
-  }
+    /* INTERACTION: HOVER */
+    .quiz-option-wrapper:hover .quiz-option-content {
+        border-color: var(--ice-primary-light) !important;
+        background-color: #fcfdfe;
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0, 31, 77, 0.04);
+    }
 
-  .form-check-input {
-    width: 1.25rem;
-    height: 1.25rem;
-    margin-top: 0;
-  }
+    /* INTERACTION: SELECTED (The Bandra Blue Glow) */
+    .quiz-hidden-input:checked + .quiz-option-content {
+        background-color: #f0f7ff;
+        border-color: var(--ice-primary) !important;
+        box-shadow: 0 15px 35px rgba(0, 74, 173, 0.12);
+        transform: translateY(-5px) scale(1.02);
+    }
 
-  .btn-primary {
-    background-color: #4f46e5;
-    border: none;
-  }
+    .quiz-hidden-input:checked + .quiz-option-content .option-indicator {
+        background: var(--ice-primary);
+        color: white;
+        border-color: var(--ice-primary);
+        box-shadow: 0 4px 12px rgba(0, 74, 173, 0.3);
+    }
 
-  .bg-indigo-soft {
-    background-color: #eef2ff;
-  }
+    .quiz-hidden-input:checked + .quiz-option-content .option-text {
+        color: var(--ice-dark) !important;
+        font-weight: 700;
+    }
+
+    .quiz-hidden-input:checked + .quiz-option-content .selected-icon {
+        opacity: 1;
+        transform: rotate(360deg);
+        transition: transform 0.5s ease;
+    }
+
+    /* BUTTONS */
+    .btn-ice { background: var(--ice-primary); color: white; border: none; }
+    .btn-ice:hover { background: var(--ice-dark); color: white; transform: translateY(-2px); }
+    .btn-ice-outline { border: 2px solid #e2e8f0; color: #94a3b8; background: white; }
+    .btn-ice-outline:hover { border-color: var(--ice-primary); color: var(--ice-primary); }
+
+    /* MOBILE ADAPTATION */
+    @media (max-width: 768px) {
+        .glass-card { padding: 30px !important; }
+        .quiz-option-content { padding: 20px !important; }
+    }
 </style>
 {% endblock %}
