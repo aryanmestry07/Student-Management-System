@@ -3,264 +3,498 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}ICE Institute | Shaping Tomorrow{% endblock %}</title>
+    <title>{% block title %}ICE Institute | Shaping Tomorrow's Digital Leaders{% endblock %}</title>
+    <meta name="description" content="ICE Institute — Premier technical education in Bandra (East), Mumbai. MS Excel, Graphic Design, and more industry-aligned certification programs.">
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --ice-primary: #004aad;
-            --ice-primary-light: #e6effc;
-            --ice-secondary: #00c6ff;
-            --ice-dark: #001f4d;
-            --ice-text-muted: #64748b;
-            --ice-bg: #fcfdfe;
-            --glass-bg: rgba(255, 255, 255, 0.85);
+            --ice-primary: #1a4fba;
+            --ice-primary-dark: #0f3494;
+            --ice-primary-light: #ddeaff;
+            --ice-secondary: #06b6d4;
+            --ice-accent: #6366f1;
+            --ice-dark: #040d21;
+            --ice-navy: #0a1628;
+            --ice-text: #1e293b;
+            --ice-muted: #64748b;
+            --ice-bg: #f8faff;
+            --ice-surface: #ffffff;
+            --glass-bg: rgba(255,255,255,0.9);
+            --glass-border: rgba(255,255,255,0.6);
+            --shadow-sm: 0 2px 12px rgba(10,22,40,0.06);
+            --shadow-md: 0 8px 30px rgba(10,22,40,0.10);
+            --shadow-lg: 0 20px 60px rgba(10,22,40,0.14);
+            --shadow-xl: 0 30px 80px rgba(10,22,40,0.18);
+            --radius-lg: 24px;
+            --radius-xl: 32px;
             --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
-        /* Smooth Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--ice-bg); }
-        ::-webkit-scrollbar-thumb { 
-            background: #cbd5e1; 
-            border-radius: 10px; 
-            border: 2px solid var(--ice-bg);
-        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--ice-primary-light); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--ice-primary); }
+
+        html { scroll-behavior: smooth; }
 
         body {
             background-color: var(--ice-bg);
             font-family: 'Inter', sans-serif;
-            color: var(--ice-dark);
-            padding-top: 90px;
+            color: var(--ice-text);
+            padding-top: 82px;
             overflow-x: hidden;
-            line-height: 1.6;
+            line-height: 1.65;
         }
 
-        h1, h2, h3, h4, h5, h6, .navbar-brand {
-            font-family: 'Outfit', sans-serif;
-        }
+        h1, h2, h3, h4, h5, h6, .brand-font { font-family: 'Outfit', sans-serif; }
 
-        /* Floating Premium Navbar */
-        nav.navbar {
-            background: var(--glass-bg) !important;
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-bottom: 1px solid rgba(0, 74, 173, 0.08);
+        /* ============================
+           PREMIUM NAVBAR
+        ============================ */
+        .navbar-ice {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            padding: 0;
             transition: var(--transition);
+        }
+
+        .navbar-ice .nav-inner {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(26, 79, 186, 0.08);
             padding: 18px 0;
+            transition: var(--transition);
         }
 
-        nav.navbar.scrolled {
+        .navbar-ice.scrolled .nav-inner {
             padding: 12px 0;
-            box-shadow: 0 10px 30px rgba(0, 31, 77, 0.05);
+            box-shadow: var(--shadow-md);
         }
 
-        .navbar-brand {
+        .navbar-brand-ice {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .brand-logo {
+            width: 42px; height: 42px;
+            background: linear-gradient(135deg, var(--ice-primary) 0%, var(--ice-secondary) 100%);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            color: white;
+            font-family: 'Outfit', sans-serif;
             font-weight: 800;
-            font-size: 1.4rem;
-            color: var(--ice-dark) !important;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(26,79,186,0.3);
+        }
+
+        .brand-text-wrap { line-height: 1.1; }
+        .brand-name {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: var(--ice-dark);
             letter-spacing: -0.5px;
         }
+        .brand-name span { 
+            background: linear-gradient(135deg, var(--ice-primary) 0%, var(--ice-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .brand-tagline {
+            font-size: 0.65rem;
+            color: var(--ice-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-        .brand-accent {
+        .nav-links { display: flex; align-items: center; gap: 4px; list-style: none; margin: 0; padding: 0; }
+
+        .nav-links a {
+            display: flex; align-items: center; gap: 6px;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--ice-text);
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--ice-primary);
+            background: var(--ice-primary-light);
+        }
+
+        .btn-nav-cta {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 22px;
+            background: var(--ice-primary);
+            color: white !important;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            text-decoration: none;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(26,79,186,0.25);
+            border: none;
+        }
+        .btn-nav-cta:hover {
+            background: var(--ice-primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(26,79,186,0.35);
+        }
+
+        .hamburger {
+            display: none;
+            background: none; border: none;
+            width: 38px; height: 38px;
+            border-radius: 10px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            cursor: pointer;
+            padding: 0;
+            transition: var(--transition);
+        }
+        .hamburger span {
+            display: block;
+            width: 22px; height: 2px;
+            background: var(--ice-dark);
+            border-radius: 2px;
+            transition: var(--transition);
+        }
+        .hamburger:hover { background: var(--ice-primary-light); }
+
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 82px; left: 0; right: 0;
+            background: white;
+            border-bottom: 1px solid rgba(26,79,186,0.08);
+            padding: 20px;
+            box-shadow: var(--shadow-lg);
+            z-index: 999;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .mobile-nav.open { display: flex; }
+        .mobile-nav a {
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-weight: 500;
+            color: var(--ice-text);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .mobile-nav a:hover { background: var(--ice-primary-light); color: var(--ice-primary); }
+
+        /* ============================
+           SECTION UTILITIES
+        ============================ */
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--ice-primary-light);
+            color: var(--ice-primary);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 16px;
+        }
+
+        .section-divider {
+            width: 60px; height: 4px;
+            background: linear-gradient(90deg, var(--ice-primary), var(--ice-secondary));
+            border-radius: 4px;
+            margin: 16px 0 24px;
+        }
+
+        .gradient-text {
             background: linear-gradient(135deg, var(--ice-primary) 0%, var(--ice-secondary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .nav-link {
-            color: var(--ice-dark) !important;
-            font-weight: 500;
-            margin: 0 12px;
-            font-size: 0.95rem;
+        /* ============================
+           PREMIUM FOOTER
+        ============================ */
+        .footer-ice {
+            background: var(--ice-dark);
+            color: rgba(255,255,255,0.7);
+            padding: 80px 0 0;
             position: relative;
-            transition: var(--transition);
+            overflow: hidden;
         }
 
-        .nav-link::after {
+        .footer-ice::before {
             content: '';
             position: absolute;
-            bottom: -5px; left: 50%;
-            width: 0; height: 2px;
-            background: var(--ice-primary);
-            transition: var(--transition);
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--ice-primary), transparent);
+        }
+
+        .footer-glow {
+            position: absolute;
+            top: -200px; left: 50%;
             transform: translateX(-50%);
+            width: 600px; height: 400px;
+            background: radial-gradient(circle, rgba(26,79,186,0.15) 0%, transparent 70%);
+            pointer-events: none;
         }
 
-        .nav-link.active::after, .nav-link:hover::after {
-            width: 20px;
+        .footer-brand-name {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: white;
+        }
+        .footer-brand-name span {
+            background: linear-gradient(135deg, var(--ice-primary) 30%, var(--ice-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .btn-portal {
-            background: var(--ice-primary);
-            color: white !important;
-            border-radius: 12px;
-            padding: 10px 24px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 15px rgba(0, 74, 173, 0.15);
-            transition: var(--transition);
-            border: none;
-        }
-
-        .btn-portal:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 74, 173, 0.25);
-            background: var(--ice-dark);
-        }
-
-        /* SECTION SPACING WRAPPER */
-        .page-wrapper section {
-            padding: 100px 0;
-        }
-
-        .footer-elite {
-            background: white;
-            padding: 80px 0 30px;
-            border-top: 1px solid rgba(0, 0, 0, 0.04);
+        .footer-heading {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 24px;
         }
 
         .footer-link {
-            color: var(--ice-text-muted);
-            text-decoration: none;
-            transition: var(--transition);
             display: block;
-            margin-bottom: 10px;
-            font-size: 0.9rem;
-        }
-
-        .footer-link:hover {
-            color: var(--ice-primary);
-            padding-left: 5px;
-        }
-
-        .social-circle {
-            width: 36px; height: 36px;
-            background: var(--ice-bg);
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center; justify-content: center;
-            color: var(--ice-primary);
+            color: rgba(255,255,255,0.65);
+            text-decoration: none;
+            font-size: 0.92rem;
+            margin-bottom: 12px;
             transition: var(--transition);
-            margin-right: 10px;
+        }
+        .footer-link:hover { color: white; padding-left: 6px; }
+
+        .footer-contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .footer-contact-icon {
+            width: 38px; height: 38px;
+            background: rgba(26,79,186,0.2);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--ice-secondary);
+            flex-shrink: 0;
         }
 
-        .social-circle:hover {
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding: 24px 0;
+            margin-top: 60px;
+        }
+
+        .social-link {
+            width: 38px; height: 38px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            display: inline-flex; align-items: center; justify-content: center;
+            color: rgba(255,255,255,0.5);
+            transition: var(--transition);
+            text-decoration: none;
+        }
+        .social-link:hover {
             background: var(--ice-primary);
+            border-color: var(--ice-primary);
             color: white;
             transform: translateY(-3px);
         }
+
+        @media (max-width: 991px) {
+            .hamburger { display: flex; }
+            .desktop-nav { display: none; }
+        }
+        @media (max-width: 767px) {
+            body { padding-top: 70px; }
+        }
     </style>
+    {% block extra_css %}{% endblock %}
 </head>
-<body data-bs-spy="scroll" data-bs-target="#mainNav" data-bs-offset="100">
-    
-    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="{% url 'visitors:dashboard' %}">
-                <div class="me-2" style="width: 35px; height: 35px; background: var(--ice-primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1rem;">I</div>
-                ICE<span class="brand-accent">INSTITUTE</span>
-            </a>
-            
-            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon" style="width: 20px;"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item"><a class="nav-link " href="#home">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#courses">Programs</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-                    <li class="nav-item ms-lg-4">
-                        <a class="btn btn-portal" href="{% url 'student:student_login' %}">
-                            <svg class="me-1" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
-                            Portal
+<body>
+
+    <!-- ======================== NAVBAR ======================== -->
+    <nav class="navbar-ice" id="mainNav">
+        <div class="nav-inner">
+            <div class="container d-flex align-items-center justify-content-between">
+                <a class="navbar-brand-ice" href="{% url 'visitors:dashboard' %}">
+                    <div class="brand-logo">I</div>
+                    <div class="brand-text-wrap">
+                        <div class="brand-name">ICE<span>INSTITUTE</span></div>
+                        <div class="brand-tagline">Est. 1998 · Bandra, Mumbai</div>
+                    </div>
+                </a>
+
+                <ul class="nav-links desktop-nav">
+                    <li><a href="{% url 'visitors:dashboard' %}#home"><i class="bi bi-house"></i> Home</a></li>
+                    <li><a href="{% url 'visitors:dashboard' %}#courses"><i class="bi bi-grid"></i> Programs</a></li>
+                    <li><a href="{% url 'visitors:dashboard' %}#about"><i class="bi bi-info-circle"></i> About</a></li>
+                    <li><a href="{% url 'visitors:dashboard' %}#contact"><i class="bi bi-envelope"></i> Contact</a></li>
+                    <li style="margin-left: 16px;">
+                        <a href="{% url 'student:student_login' %}" class="btn-nav-cta">
+                            <i class="bi bi-box-arrow-in-right"></i> Student Portal
                         </a>
-                    </li> 
+                    </li>
                 </ul>
+
+                <button class="hamburger" id="hamburgerBtn" onclick="toggleMobileNav()">
+                    <span></span><span></span><span></span>
+                </button>
             </div>
         </div>
     </nav>
 
-    <main class="page-wrapper">
-        <div id="home"></div> 
-        
-        {% block content %}{% endblock %}
+    <div class="mobile-nav" id="mobileNav">
+        <a href="{% url 'visitors:dashboard' %}#home"><i class="bi bi-house me-2"></i>Home</a>
+        <a href="{% url 'visitors:dashboard' %}#courses"><i class="bi bi-grid me-2"></i>Programs</a>
+        <a href="{% url 'visitors:dashboard' %}#about"><i class="bi bi-info-circle me-2"></i>About</a>
+        <a href="{% url 'visitors:dashboard' %}#contact"><i class="bi bi-envelope me-2"></i>Contact</a>
+        <a href="{% url 'student:student_login' %}" style="background: var(--ice-primary); color: white; margin-top: 8px;">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Student Portal
+        </a>
+    </div>
 
+    <!-- ======================== CONTENT ======================== -->
+    <main id="home">
+        {% block content %}{% endblock %}
         {% include 'visitors/about_section.html' %}
         {% include 'visitors/_contact_section.html' %}
     </main>
 
-    <footer class="footer-elite">
-        <div class="container">
-            <div class="row g-5 mb-5">
+    <!-- ======================== FOOTER ======================== -->
+    <footer class="footer-ice">
+        <div class="footer-glow"></div>
+        <div class="container position-relative">
+            <div class="row g-5">
                 <div class="col-lg-4">
-                    <a class="navbar-brand d-flex align-items-center mb-3" href="#">
-                        <div class="me-2" style="width: 30px; height: 30px; background: var(--ice-primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem;">I</div>
-                        ICE<span class="brand-accent">INSTITUTE</span>
-                    </a>
-                    <p class="text-muted small pe-lg-5">
-                        Excellence in technical education since 1998. Bandra (East), Mumbai.
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <div class="brand-logo" style="width:46px;height:46px;font-size:1.2rem;">I</div>
+                        <div>
+                            <div class="footer-brand-name">ICE<span>INSTITUTE</span></div>
+                            <small style="color:rgba(255,255,255,0.35);font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;">Est. 1998</small>
+                        </div>
+                    </div>
+                    <p style="font-size:0.9rem;line-height:1.75;color:rgba(255,255,255,0.5);">
+                        Excellence in technical education since 1998. We empower the next generation of digital professionals in Mumbai.
                     </p>
-                    <div class="mt-4">
-                        <a href="#" class="social-circle"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg></a>
+                    <div class="d-flex gap-2 mt-4">
+                        <a href="#" class="social-link"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" class="social-link"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="bi bi-linkedin"></i></a>
+                        <a href="#" class="social-link"><i class="bi bi-facebook"></i></a>
                     </div>
                 </div>
+
                 <div class="col-6 col-lg-2">
-                    <h6 class="fw-bold mb-4">Explore</h6>
-                    <a href="#home" class="footer-link">Home</a>
-                    <a href="#about" class="footer-link">Our Story</a>
-                    <a href="#courses" class="footer-link">Programs</a>
-                    <a href="#contact" class="footer-link">Contact</a>
+                    <p class="footer-heading">Explore</p>
+                    <a href="{% url 'visitors:dashboard' %}#home" class="footer-link">Home</a>
+                    <a href="{% url 'visitors:dashboard' %}#courses" class="footer-link">Programs</a>
+                    <a href="{% url 'visitors:dashboard' %}#about" class="footer-link">Our Story</a>
+                    <a href="{% url 'visitors:dashboard' %}#contact" class="footer-link">Contact</a>
                 </div>
+
                 <div class="col-6 col-lg-2">
-                    <h6 class="fw-bold mb-4">Students</h6>
+                    <p class="footer-heading">Students</p>
                     <a href="{% url 'student:student_login' %}" class="footer-link">Student Login</a>
-                    <a href="#" class="footer-link">FAQ</a>
+                    <a href="{% url 'visitors:all_courses' %}" class="footer-link">All Courses</a>
+                    <a href="{% url 'student:verify_certificate' %}" class="footer-link">Verify Certificate</a>
                 </div>
+
                 <div class="col-lg-4">
-                    <h6 class="fw-bold mb-4">Contact Info</h6>
-                    <p class="text-muted small mb-1">9867914107 / 9167683259</p>
-                    <p class="text-muted small">Bandra (East), Mumbai</p>
+                    <p class="footer-heading">Get in Touch</p>
+                    <div class="footer-contact-item">
+                        <div class="footer-contact-icon"><i class="bi bi-telephone-fill"></i></div>
+                        <div>
+                            <div style="color:rgba(255,255,255,0.4);font-size:0.75rem;margin-bottom:2px;">CALL US</div>
+                            <div style="color:white;font-weight:600;">9867914107 / 9167683259</div>
+                        </div>
+                    </div>
+                    <div class="footer-contact-item">
+                        <div class="footer-contact-icon"><i class="bi bi-envelope-fill"></i></div>
+                        <div>
+                            <div style="color:rgba(255,255,255,0.4);font-size:0.75rem;margin-bottom:2px;">EMAIL</div>
+                            <div style="color:white;font-weight:600;">info@iceinstitute.com</div>
+                        </div>
+                    </div>
+                    <div class="footer-contact-item">
+                        <div class="footer-contact-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                        <div>
+                            <div style="color:rgba(255,255,255,0.4);font-size:0.75rem;margin-bottom:2px;">LOCATION</div>
+                            <div style="color:white;font-weight:600;font-size:0.88rem;">Gala No. 1, S.R.A. Building,<br>Shastri Nagar, Bandra (East),<br>Mumbai – 400 051</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="pt-4 border-top text-center text-muted small">
-                <p class="mb-0">&copy; 2026 ICE Institute. Built for Excellence.</p>
+
+            <div class="footer-bottom d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                <p style="margin:0;font-size:0.85rem;color:rgba(255,255,255,0.35);">
+                    &copy; 2026 ICE Institute. All rights reserved. Built for Excellence.
+                </p>
+                <p style="margin:0;font-size:0.82rem;color:rgba(255,255,255,0.25);">
+                    Bandra (East), Mumbai — Shaping Tomorrow's Leaders
+                </p>
             </div>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        window.addEventListener('scroll', function() {
-            const nav = document.getElementById('mainNav');
-            if (window.scrollY > 50) { nav.classList.add('scrolled'); } 
-            else { nav.classList.remove('scrolled'); }
+        // Navbar scroll effect
+        const nav = document.getElementById('mainNav');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 60);
         });
 
-          const sections = document.querySelectorAll("section, div[id]");
-    const navLinks = document.querySelectorAll(".nav-link");
+        // Mobile nav toggle
+        function toggleMobileNav() {
+            const mobileNav = document.getElementById('mobileNav');
+            mobileNav.classList.toggle('open');
+        }
 
-    window.addEventListener("scroll", () => {
-        let current = "";
-
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop - 120;
-            if (scrollY >= sectionTop) {
-                current = section.getAttribute("id");
-            }
+        // Active nav link on scroll
+        const sections = document.querySelectorAll('section[id], div[id="home"]');
+        const navLinks = document.querySelectorAll('.desktop-nav a');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(s => {
+                if (window.scrollY >= s.offsetTop - 120) current = s.id;
+            });
+            navLinks.forEach(a => {
+                a.classList.remove('active');
+                if (a.getAttribute('href')?.includes('#' + current)) a.classList.add('active');
+            });
         });
-
-        navLinks.forEach(link => {
-            link.classList.remove("active");
-            if (link.getAttribute("href") === "#" + current) {
-                link.classList.add("active");
-            }
-        });
-    });
     </script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

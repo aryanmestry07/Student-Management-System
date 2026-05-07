@@ -4,145 +4,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Portal Authentication | ICE</title>
+    <title>Student Portal Login | ICE Institute</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --ice-primary: #004aad;
-            --ice-dark: #001f4d;
-            --ice-bg: #f8fbff;
+            --ice-primary: #1a4fba;
+            --ice-primary-dark: #0f3494;
+            --ice-primary-light: #ddeaff;
+            --ice-secondary: #06b6d4;
+            --ice-dark: #040d21;
             --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
         body {
-            background-color: #f8fbff;
-            /* Elite Mesh Gradient */
-            background-image: 
-                radial-gradient(at 0% 0%, hsla(214,100%,95%,1) 0, transparent 50%), 
-                radial-gradient(at 100% 0%, hsla(189,100%,95%,1) 0, transparent 50%),
-                radial-gradient(at 100% 100%, hsla(214,100%,92%,1) 0, transparent 50%),
-                radial-gradient(at 0% 100%, hsla(189,100%,92%,1) 0, transparent 50%);
             font-family: 'Inter', sans-serif;
-            height: 100vh;
             margin: 0;
+            height: 100vh;
             display: flex;
-            align-items: center;
-            justify-content: center;
+            background-color: #f8faff;
             overflow: hidden;
-            position: relative;
         }
 
-        /* Subtle Technical Grid Overlay */
-        body::after {
-            content: "";
+        h1, h2, h3, h4, h5, .brand-font {
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: -0.5px;
+        }
+
+        /* Split Screen Layout & Ken Burns Effect */
+        .login-left {
+            display: none;
+            width: 50%;
+            position: relative;
+            background-color: var(--ice-dark);
+            overflow: hidden;
+        }
+
+        .login-bg-image {
+            position: absolute;
+            top: -5%; left: -5%; right: -5%; bottom: -5%;
+            background-image: url('/media/student_login_bg.png');
+            background-size: cover;
+            background-position: center;
+            animation: kenBurns 20s ease-in-out infinite alternate;
+            z-index: 0;
+        }
+
+        @keyframes kenBurns {
+            0% { transform: scale(1) translate(0, 0); }
+            100% { transform: scale(1.05) translate(-1%, -1%); }
+        }
+
+        @media (min-width: 992px) {
+            .login-left { display: block; }
+        }
+
+        .login-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, rgba(4,13,33,0.8) 0%, rgba(26,79,186,0.5) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 60px;
+            color: white;
+            z-index: 2;
+            backdrop-filter: blur(2px);
+        }
+
+        /* Floating Particles */
+        .particles {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-image: radial-gradient(rgba(0, 74, 173, 0.04) 1px, transparent 0);
-            background-size: 35px 35px;
-            z-index: -1;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .particle {
+            position: absolute;
+            background: rgba(255,255,255,0.4);
+            border-radius: 50%;
+            animation: floatUp 15s infinite linear;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-20vh) scale(1); opacity: 0; }
         }
 
-        .login-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 3rem;
-            border-radius: 32px;
-            box-shadow: 0 40px 100px -20px rgba(0, 31, 77, 0.15);
-            width: 100%;
-            max-width: 450px;
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            position: relative;
-            z-index: 10;
+        .brand-logo-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: white;
+            transition: transform 0.3s ease;
         }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 2.5rem;
+        .brand-logo-left:hover {
+            transform: translateX(5px);
         }
 
         .brand-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--ice-primary) 0%, var(--ice-dark) 100%);
-            border-radius: 18px;
-            display: inline-flex;
+            width: 48px; height: 48px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Outfit'; font-weight: 800; font-size: 1.4rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .quote-box { max-width: 450px; }
+
+        .login-right {
+            width: 100%;
+            height: 100%;
+            display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 1.8rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 10px 20px rgba(0, 74, 173, 0.2);
+            padding: 40px;
+            position: relative;
+            background-color: var(--ice-bg);
+            overflow: hidden;
         }
 
-        .login-header h2 {
-            font-family: 'Outfit', sans-serif;
-            font-weight: 800;
-            color: var(--ice-dark);
-            letter-spacing: -1px;
+        @media (min-width: 992px) {
+            .login-right { width: 50%; padding: 60px; }
         }
 
-        /* Elite Form Controls */
+        /* Glowing Animated Orb */
+        .login-right::before {
+            content: '';
+            position: absolute;
+            top: 30%; left: 50%;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(6,182,212,0.15) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            animation: pulseOrb 8s ease-in-out infinite alternate;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes pulseOrb {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+            100% { transform: translate(-50%, -45%) scale(1.2); opacity: 1; }
+        }
+
+        /* Subtle Pattern on Right Side */
+        .login-right::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: radial-gradient(rgba(26, 79, 186, 0.05) 1px, transparent 0);
+            background-size: 40px 40px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .login-form-container {
+            width: 100%;
+            max-width: 440px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 50px 40px;
+            border-radius: 28px;
+            box-shadow: 0 30px 80px rgba(10,22,40,0.06), 
+                        inset 0 0 0 1px rgba(255,255,255,0.8);
+            position: relative;
+            z-index: 1;
+        }
+
         .form-floating > .form-control {
             border: 2px solid #f1f5f9;
             background-color: #f8fafc;
             border-radius: 16px;
             transition: var(--transition);
+            font-size: 0.95rem;
         }
 
         .form-floating > .form-control:focus {
-            border-color: var(--ice-primary);
+            border-color: transparent;
             background-color: #fff;
-            box-shadow: 0 10px 20px rgba(0, 74, 173, 0.05);
+            box-shadow: 0 0 0 4px rgba(26,79,186,0.1),
+                        0 10px 20px rgba(26,79,186,0.05);
         }
 
         .form-floating > label {
             color: #94a3b8;
             font-weight: 500;
-            padding-left: 1.25rem;
         }
 
-        /* --- Premium Button Logic --- */
-        .btn-primary {
-            background: var(--ice-primary);
+        .btn-login {
+            background: linear-gradient(135deg, var(--ice-primary) 0%, var(--ice-secondary) 100%);
+            color: white;
             border: none;
-            padding: 14px 0;
+            padding: 16px 0;
             border-radius: 16px;
             font-weight: 700;
             font-family: 'Outfit';
             font-size: 1.1rem;
+            width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
             transition: var(--transition);
-            box-shadow: 0 10px 25px rgba(0, 74, 173, 0.2);
+            box-shadow: 0 10px 30px rgba(26,79,186,0.3);
+            margin-top: 35px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
         }
 
-        .btn-primary:hover {
-            background: var(--ice-dark);
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 20px 30px rgba(0, 74, 173, 0.25), 
-                        inset 0 0 10px rgba(255, 255, 255, 0.1);
-            letter-spacing: 0.5px;
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--ice-primary-dark) 0%, var(--ice-primary) 100%);
+            z-index: -1;
+            transition: opacity 0.4s ease;
+            opacity: 0;
         }
 
-        .btn-primary:active {
-            transform: translateY(0) scale(0.98);
+        .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(26,79,186,0.4);
         }
 
-        /* --- Alert Styling --- */
-        .alert-elite {
-            background: #fff1f2;
-            color: #e11d48;
-            border-radius: 14px;
-            border: none;
+        .btn-login:hover::before {
+            opacity: 1;
+        }
+
+        .back-link {
+            color: var(--ice-muted);
+            text-decoration: none;
             font-size: 0.9rem;
             font-weight: 500;
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 1.5rem;
+            gap: 6px;
+            transition: var(--transition);
+            margin-top: 24px;
+        }
+
+        .back-link:hover { color: var(--ice-primary); }
+
+        .alert-error {
+            background: #fff1f2;
+            color: #e11d48;
+            border-radius: 12px;
+            border: 1px solid rgba(225, 29, 72, 0.2);
+            font-size: 0.9rem;
+            font-weight: 500;
             padding: 12px 16px;
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 24px;
             animation: shake 0.4s ease-in-out;
         }
 
@@ -152,56 +271,113 @@
             75% { transform: translateX(5px); }
         }
 
-        .back-link {
-            transition: var(--transition);
-            color: #94a3b8 !important;
+        /* Mobile Logo */
+        .mobile-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 30px;
         }
-
-        .back-link:hover {
-            color: var(--ice-primary) !important;
-            transform: translateX(-3px);
-        }
+        @media (min-width: 992px) { .mobile-brand { display: none; } }
     </style>
 </head>
 <body>
 
-    <div class="login-card">
-        <div class="login-header">
-            <div class="brand-icon">
-                <i class="bi bi-person-badge-fill"></i>
-            </div>
-            <h2>Student Login</h2>
-            <p class="text-muted small">Enter your credentials to access your dashboard</p>
-        </div>
-
-
-        <form method="post">
-            {% csrf_token %}
+    <div class="login-left">
+        <div class="login-bg-image"></div>
+        <div class="particles" id="particles"></div>
+        <div class="login-overlay">
+            <a href="/" class="brand-logo-left">
+                <div class="brand-icon">I</div>
+                <div>
+                    <div class="brand-font fw-bold" style="font-size: 1.3rem; line-height: 1;">ICE <span style="color:var(--ice-secondary);">INSTITUTE</span></div>
+                    <small style="opacity: 0.8; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px;">Student Portal</small>
+                </div>
+            </a>
             
-            <div class="form-floating mb-3">
-                <input type="text" name="username" class="form-control shadow-none" id="floatingInput" placeholder="Username" required>
-                <label for="floatingInput">Student ID / Username</label>
+            <div class="quote-box">
+                <div style="width: 50px; height: 5px; background: linear-gradient(90deg, var(--ice-primary-light), var(--ice-secondary)); margin-bottom: 24px; border-radius: 3px;"></div>
+                <h2 class="fw-bold mb-4 brand-font" style="font-size: 3rem; line-height: 1.1; letter-spacing: -1px;">Your gateway to <br>digital mastery.</h2>
+                <p style="opacity: 0.85; font-size: 1.15rem; line-height: 1.7;">Access your cutting-edge courses, track your progress, and continue building the highly-valued skills that will shape your future.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="login-right">
+        <div class="login-form-container">
+            
+            <div class="mobile-brand">
+                <div class="brand-icon" style="background: var(--ice-primary); color: white;">I</div>
+                <div>
+                    <div class="brand-font fw-bold" style="font-size: 1.2rem; line-height: 1; color: var(--ice-dark);">ICE <span style="color:var(--ice-primary);">INSTITUTE</span></div>
+                    <small class="text-muted" style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px;">Student Portal</small>
+                </div>
             </div>
 
-            <div class="form-floating mb-3">
-                <input type="password" name="password" class="form-control shadow-none" id="floatingPassword" placeholder="Password" required>
-                <label for="floatingPassword">Security Password</label>
+            <div class="text-center mb-5">
+                <h3 class="brand-font fw-bold text-dark">Welcome Back</h3>
+                <p class="text-muted small">Please sign in to your student account</p>
             </div>
 
-          
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert-error">
+                        <i class="bi bi-exclamation-circle-fill"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
 
-            <button type="submit" class="btn btn-primary w-100 mb-4">
-                Sign In to Portal
-            </button>
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-floating mb-4">
+                    <input type="text" name="username" class="form-control shadow-none" id="floatingInput" placeholder="Username" required>
+                    <label for="floatingInput">Student ID / Username</label>
+                </div>
 
-            <div class="text-center">
-                <a href="/" class="back-link text-decoration-none small d-inline-flex align-items-center">
-                    <i class="bi bi-arrow-left me-2"></i> Back to main website
-                </a>
-            </div>
-        </form>
+                <div class="form-floating">
+                    <input type="password" name="password" class="form-control shadow-none" id="floatingPassword" placeholder="Password" required>
+                    <label for="floatingPassword">Security Password</label>
+                </div>
+
+                <button type="submit" class="btn-login">
+                    Sign In to Portal <i class="bi bi-box-arrow-in-right"></i>
+                </button>
+
+                <div class="text-center">
+                    <a href="/" class="back-link">
+                        <i class="bi bi-arrow-left"></i> Return to main website
+                    </a>
+                </div>
+            </form>
+
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Generate floating particles for the left screen overlay
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 15; i++) {
+            let particle = document.createElement('div');
+            particle.classList.add('particle');
+            
+            // Random properties
+            let size = Math.random() * 6 + 2; // 2px to 8px
+            let left = Math.random() * 100; // 0% to 100%
+            let duration = Math.random() * 10 + 10; // 10s to 20s
+            let delay = Math.random() * 15; // 0s to 15s
+            
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            particle.style.left = left + '%';
+            particle.style.animationDuration = duration + 's';
+            particle.style.animationDelay = '-' + delay + 's';
+            
+            particlesContainer.appendChild(particle);
+        }
+    </script>
 </body>
 </html>

@@ -33,4 +33,14 @@ urlpatterns = [
 
     path('notices/', views.notice_board, name='notice_board'),
     path('id-card/', views.id_card, name='id_card'),
+
+    # ✅ FINAL EXAM
+    path('course/<int:course_id>/start-exam/', views.start_exam, name='start_exam'),
+    path('course/<int:course_id>/exam-result/', views.exam_result, name='exam_result'),
+    path('certificate/<int:student_id>/<int:course_id>/',
+     views.generate_certificate_view,
+     name='generate_certificate'),
+
+    path('my-certificates/', views.my_certificates, name='my_certificates'),
+    path('verify-certificate/', views.verify_certificate, name='verify_certificate'),
 ]

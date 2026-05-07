@@ -85,18 +85,49 @@
                                 </div>
 
                                 <!-- Fees Status -->
-                                <div class="col-md-12 mt-4 pt-3 border-top">
-                                    <div class="bg-light p-3 rounded-4 d-flex align-items-center justify-content-between">
-                                        <div>
-                                            <label class="form-label fw-bold text-dark mb-0 d-block">Fees Payment Status</label>
-                                            <small class="text-muted">Update the current financial standing of this student.</small>
-                                        </div>
-                                        <div style="width: 200px;">
-                                            {{ student_form.fees_status }}
-                                        </div>
-                                    </div>
-                                </div>
+                               <!-- 💰 FEES SECTION (NEW) -->
+<div class="col-md-12 mt-4 pt-3 border-top">
+    <div class="bg-light p-3 rounded-4">
 
+        <label class="form-label fw-bold text-dark mb-2">
+            Financial Details
+        </label>
+
+        <div class="row g-3">
+
+            <div class="col-md-6">
+                <label class="form-label small text-muted">Total Fees</label>
+                {{ student_form.total_fees }}
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label small text-muted">Paid Amount</label>
+                {{ student_form.paid_amount }}
+            </div>
+
+        </div>
+
+        <!-- 🔥 LIVE INFO DISPLAY -->
+        <div class="mt-3 p-3 bg-white rounded-3 border">
+            <small class="text-muted d-block">Current Status</small>
+
+            <div class="fw-bold">
+                Pending: ₹{{ student.pending_fees }}
+            </div>
+
+            {% if student.fees_status == "Paid" %}
+                <span class="badge bg-success mt-2">Paid</span>
+
+            {% elif student.fees_status == "Pending" %}
+                <span class="badge bg-danger mt-2">Pending</span>
+
+            {% else %}
+                <span class="badge bg-warning text-dark mt-2">Partial</span>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
                             </div>
                         </div>
                     </div>

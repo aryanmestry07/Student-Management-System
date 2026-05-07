@@ -1,85 +1,222 @@
 {% load static %}
 
-<section id="about" class="py-5" style="background: linear-gradient(180deg, var(--ice-bg) 0%, #ffffff 100%);">
-    <div class="container py-lg-5">
+<style>
+    .about-section {
+        padding: 120px 0;
+        background-color: var(--ice-surface);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .about-section::before {
+        content: '';
+        position: absolute;
+        bottom: -200px; left: -100px;
+        width: 600px; height: 600px;
+        background: radial-gradient(circle, rgba(26,79,186,0.03) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .about-header {
+        max-width: 800px;
+        margin: 0 auto 80px;
+    }
+
+    .about-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: var(--ice-dark);
+        line-height: 1.1;
+        letter-spacing: -1.5px;
+        margin-bottom: 24px;
+    }
+
+    .about-title span {
+        background: linear-gradient(135deg, var(--ice-primary) 0%, var(--ice-secondary) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .about-lead {
+        font-size: 1.15rem;
+        color: var(--ice-muted);
+        line-height: 1.8;
+    }
+
+    .mission-vision-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-bottom: 80px;
+    }
+
+    .mv-card {
+        background: white;
+        padding: 50px 40px;
+        border-radius: var(--radius-xl);
+        border: 1px solid rgba(10,22,40,0.04);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mv-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 6px;
+    }
+
+    .mv-card.mission::before { background: var(--ice-primary); }
+    .mv-card.vision::before { background: var(--ice-secondary); }
+
+    .mv-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .mv-icon {
+        width: 72px; height: 72px;
+        border-radius: 20px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 2rem;
+        margin-bottom: 30px;
+    }
+
+    .mv-card.mission .mv-icon {
+        background: var(--ice-primary-light);
+        color: var(--ice-primary);
+    }
+
+    .mv-card.vision .mv-icon {
+        background: rgba(6,182,212,0.1);
+        color: var(--ice-secondary);
+    }
+
+    .mv-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--ice-dark);
+        margin-bottom: 20px;
+    }
+
+    .mv-desc {
+        color: var(--ice-muted);
+        font-size: 1.05rem;
+        line-height: 1.7;
+    }
+
+    /* Campus Spotlight */
+    .campus-spotlight {
+        background: var(--ice-bg);
+        border-radius: var(--radius-xl);
+        padding: 60px;
+        display: flex;
+        align-items: center;
+        gap: 50px;
+        border: 1px solid rgba(26,79,186,0.05);
+    }
+
+    .campus-content { flex: 1; }
+
+    .campus-image-wrapper {
+        flex: 1;
+        position: relative;
+    }
+
+    .campus-image-wrapper img {
+        width: 100%;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .campus-badge {
+        position: absolute;
+        bottom: -20px; left: -20px;
+        background: var(--ice-primary);
+        color: white;
+        padding: 24px;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        text-align: center;
+    }
+
+    .campus-badge h4 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin: 0;
+        line-height: 1;
+    }
+
+    .campus-badge span {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        opacity: 0.8;
+    }
+
+    @media (max-width: 991px) {
+        .campus-spotlight { flex-direction: column; padding: 40px 30px; }
+        .campus-badge { left: 20px; bottom: 20px; }
+        .about-title { font-size: 2.8rem; }
+    }
+</style>
+
+<section id="about" class="about-section">
+    <div class="container">
         
-        <div class="text-center mb-5 pb-lg-4">
-            <span class="text-primary fw-bold text-uppercase tracking-wider shadow-sm bg-white px-3 py-2 rounded-pill" style="font-size: 0.75rem; letter-spacing: 2px;">Established 1998</span>
-            <h2 class="display-4 fw-800 mt-4" style="color: var(--ice-dark); letter-spacing: -1.5px;">Defining the Future of <br><span class="brand-accent">Technical Education in Mumbai</span></h2>
-            <div class="mx-auto mt-3" style="width: 80px; height: 5px; background: linear-gradient(to right, var(--ice-primary), var(--ice-secondary)); border-radius: 10px;"></div>
-            <p class="lead text-muted mt-4 mx-auto" style="max-width: 750px; font-size: 1.2rem; line-height: 1.7;">
-                ICE Institute has spent over two decades bridging the gap between academic theory and industrial excellence, empowering the next generation of digital leaders in Mumbai.
+        <div class="text-center about-header">
+            <span class="section-label"><i class="bi bi-clock-history"></i> Established 1998</span>
+            <h2 class="about-title">Defining the Future of <br><span>Technical Education</span></h2>
+            <div class="section-divider mx-auto"></div>
+            <p class="about-lead">
+                For over two decades, ICE Institute has bridged the gap between academic theory and industrial excellence, empowering the next generation of digital leaders right here in Mumbai.
             </p>
         </div>
 
-        <div class="row g-4 mb-5 pb-lg-5">
-            <div class="col-lg-6">
-                <div class="p-5 h-100 border-0 shadow-sm transition-up" style="background: white; border-radius: 30px; border-top: 6px solid var(--ice-primary) !important;">
-                    <div class="mb-4 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background: var(--ice-primary-light); border-radius: 18px;">
-                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--ice-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+        <div class="mission-vision-grid">
+            <div class="mv-card mission">
+                <div class="mv-icon"><i class="bi bi-bullseye"></i></div>
+                <h3 class="mv-title">Our Mission</h3>
+                <p class="mv-desc">To provide highly accessible, premium-quality education that equips students with the practical knowledge, technical skills, and ethical values needed to excel in a rapidly changing digital world.</p>
+            </div>
+            
+            <div class="mv-card vision">
+                <div class="mv-icon"><i class="bi bi-eye"></i></div>
+                <h3 class="mv-title">Our Vision</h3>
+                <p class="mv-desc">To be the foremost institution recognized for academic excellence, innovative skill-building, and a profound, lasting commitment to community development and career transformation.</p>
+            </div>
+        </div>
+
+        <div class="campus-spotlight">
+            <div class="campus-content">
+                <span class="section-label" style="background: rgba(26,79,186,0.1);"><i class="bi bi-geo-alt-fill"></i> Our Campus</span>
+                <h3 class="brand-font fw-bold mb-4" style="font-size: 2.2rem; color: var(--ice-dark);">Heart of Mumbai's Tech Growth</h3>
+                <p class="text-muted" style="font-size: 1.1rem; line-height: 1.7; margin-bottom: 30px;">
+                    Located in Bandra (East), our campus is equipped with state-of-the-art computer labs and smart classrooms to provide a superior, distraction-free learning environment. We foster an atmosphere of curiosity, innovation, and intense focus.
+                </p>
+                <div class="d-flex align-items-center gap-3">
+                    <div style="width: 50px; height: 50px; background: var(--ice-primary-light); color: var(--ice-primary); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-family: 'Outfit'; font-weight: 800; font-size: 1.1rem;">I</div>
+                    <div>
+                        <h6 class="mb-0 fw-bold">ICE Institute HQ</h6>
+                        <small class="text-primary text-uppercase fw-bold" style="font-size: 0.75rem; letter-spacing: 1px;">Bandra (East), Mumbai</small>
                     </div>
-                    <h3 class="fw-bold h3 mb-3" style="color: var(--ice-dark);">Our Mission</h3>
-                    <p class="text-muted lh-lg fs-5">To provide accessible, high-quality education that empowers students with the knowledge, skills, and values needed to excel in a rapidly changing world.</p>
                 </div>
             </div>
-            <div class="col-lg-6">
-                <div class="p-5 h-100 border-0 shadow-sm transition-up" style="background: white; border-radius: 30px; border-top: 6px solid var(--ice-secondary) !important;">
-                    <div class="mb-4 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background: #e0faff; border-radius: 18px;">
-                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#00c6ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                    </div>
-                    <h3 class="fw-bold h3 mb-3" style="color: var(--ice-dark);">Our Vision</h3>
-                    <p class="text-muted lh-lg fs-5">To be a leading institution recognized for academic excellence, innovative research, and a profound commitment to community development.</p>
+            <div class="campus-image-wrapper">
+                <img src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&q=80&w=800" alt="Modern Campus Workspace">
+                <div class="campus-badge">
+                    <h4>25+</h4>
+                    <span>Years Legacy</span>
                 </div>
             </div>
         </div>
 
-        {% comment %} <div class="row g-5 align-items-center mt-5 pt-lg-5" style="border-top: 1px solid rgba(0,0,0,0.06);">
-            <div class="col-lg-5 position-relative">
-                <div class="position-absolute translate-middle d-none d-lg-block" style="top: 15%; left: 5%; z-index: 0; opacity: 0.05;">
-                    <svg width="180" height="180" viewBox="0 0 24 24" fill="var(--ice-primary)"><path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C19.5693 16 20.017 15.5523 20.017 15V9C20.017 8.44772 19.5693 8 19.017 8H15.017C14.4647 8 14.017 8.44772 14.017 9V11M10 21L10 18C10 16.8954 9.10457 16 8 16H5C4.44772 16 4 15.5523 4 15V9C4 8.44772 4.44772 8 5 8H9C9.55228 8 10 8.44772 10 9V11"></path></svg>
-                </div>
-                <div class="px-2">
-                    <div class="position-relative">
-                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=600" 
-                             class="img-fluid shadow-lg" 
-                             alt="Director Dr. Evelyn Reed" 
-                             style="border-radius: 40px; position: relative; z-index: 1; border: 8px solid white;">
-                        <div class="position-absolute bottom-0 start-0 m-4 bg-primary text-white p-3 shadow-lg d-none d-md-block" style="z-index: 2; border-radius: 20px;">
-                            <h4 class="mb-0 fw-bold">25+</h4>
-                            <small class="text-uppercase fw-bold" style="font-size: 0.6rem;">Years of Excellence</small>
-                        </div>
-                    </div>
-                </div>
-            </div> {% endcomment %}
-            
-            {% comment %} <div class="col-lg-7">
-                <div class="ps-lg-5">
-                    <h3 class="fw-bold display-6 mb-4" style="color: var(--ice-dark); letter-spacing: -1px;">Our Mumbai Campus</h3>
-                    <div class="mb-4" style="width: 50px; height: 3px; background: var(--ice-primary);"></div>
-                    
-                    <p class="text-muted fs-5 lh-lg mb-5" style="position: relative;">
-                        Located in the heart of Bandra (East), our Mumbai campus is equipped with state-of-the-art labs and classrooms to provide a superior learning environment. We are committed to fostering an atmosphere of curiosity and innovation.
-                    </p>
-                    
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="avatar-sm" style="width: 50px; height: 50px; background: var(--ice-primary-light); border-radius: 50%; d-flex; align-items: center; justify-content: center; color: var(--ice-primary); font-weight: bold;">ICE</div>
-                        <div>
-                            <h5 class="fw-bold mb-0">Mumbai Campus</h5>
-                            <small class="text-primary text-uppercase fw-bold" style="letter-spacing: 1px; font-size: 0.75rem;">Bandra (East)</small>
-                        </div>
-                    </div>
-                </div>
-            </div> {% endcomment %}
     </div>
 </section>
-
-<style>
-    .fw-800 { font-weight: 800; }
-    .transition-up {
-        transition: all 0.3s ease;
-    }
-    .transition-up:hover {
-        transform: translateY(-10px);
-    }
-    #about .display-4 { line-height: 1.1; }
-</style>

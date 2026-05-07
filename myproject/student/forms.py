@@ -33,8 +33,9 @@ class StudentSignupForm(forms.ModelForm):
         fields = [
             "first_name", "middle_name", "last_name",
             "phone", "birthdate", "education",
-            "courses",        # 🔥 ADD THIS
-            "fees_status"     # 🔥 ADD THIS
+            "courses",
+            "total_fees",     # ✅ NEW
+            "paid_amount"     # ✅ NEW
         ]
 
         widgets = {
@@ -45,19 +46,30 @@ class StudentSignupForm(forms.ModelForm):
             "birthdate": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
             "education": forms.TextInput(attrs={"class": "form-control"}),
 
-            # 🔥 IMPORTANT
+            # Courses
             "courses": forms.CheckboxSelectMultiple(),
-            "fees_status": forms.Select(attrs={"class": "form-select"}),
+
+            # ✅ NEW FIELDS
+            "total_fees": forms.NumberInput(attrs={"class": "form-control"}),
+            "paid_amount": forms.NumberInput(attrs={"class": "form-control"}),
         }
 
     def clean(self):
         cleaned_data = super().clean()
         password = cleaned_data.get("password")
         confirm_password = cleaned_data.get("confirm_password")
+
         if password and confirm_password and password != confirm_password:
             raise forms.ValidationError("Passwords do not match.")
-        return cleaned_data
 
+        # 🔥 OPTIONAL VALIDATION (VERY GOOD)
+        total = cleaned_data.get("total_fees") or 0
+        paid = cleaned_data.get("paid_amount") or 0
+
+        if paid > total:
+            raise forms.ValidationError("Paid amount cannot be greater than total fees.")
+
+        return cleaned_data
 
 class AssignmentUploadForm(forms.ModelForm):
     class Meta:

@@ -8,8 +8,8 @@ from myapp.models import Course, Topic, Assignment
 
 class Student(models.Model):
     user = models.OneToOneField(
-        User, 
-        on_delete=models.CASCADE, 
+        User,
+        on_delete=models.CASCADE,
         related_name="student_profile"
     )
 
@@ -23,26 +23,32 @@ class Student(models.Model):
     enrollment_date = models.DateField(auto_now_add=True)
 
     courses = models.ManyToManyField(
-        Course, 
+        Course,
         related_name="enrolled_students",
         blank=True
     )
 
-    # ✅ FEES STATUS FIELD (NEW)
-    FEES_STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('completed', 'Completed'),
-    ]
-    fees_status = models.CharField(
-        max_length=10,
-        choices=FEES_STATUS_CHOICES,
-        default='pending'
-    )
+    # ================= NEW FINANCIAL SYSTEM =================
+    total_fees = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    paid_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
-    # IMPORTANT: Make unique
+    # ================= AUTO CALCULATED =================
+    @property
+    def pending_fees(self):
+        return self.total_fees - self.paid_amount
+
+    @property
+    def fees_status(self):
+        if self.paid_amount == 0:
+            return "Pending"
+        elif self.paid_amount >= self.total_fees:
+            return "Paid"
+        else:
+            return "Partially Paid"
+
+    # ================= ROLL NUMBER =================
     roll_number = models.CharField(max_length=20, unique=True, blank=True)
 
-    # AUTO GENERATE ROLL NUMBER
     def save(self, *args, **kwargs):
         if not self.roll_number:
             year = now().year
@@ -55,18 +61,16 @@ class Student(models.Model):
 
         super().save(*args, **kwargs)
 
-    # FULL NAME PROPERTY
+    # ================= NAME =================
     @property
     def full_name(self):
         return f"{self.user.first_name} {self.middle_name or ''} {self.last_name}".strip()
 
-    # DISPLAY
     def __str__(self):
         return f"{self.full_name} ({self.roll_number})"
 
     class Meta:
         ordering = ['-enrollment_date']
-
 
 class Submission(models.Model):
     """Submissions made by students for assignments"""
@@ -110,3 +114,89 @@ class Attendance(models.Model):
 
     def __str__(self):
         return f"{self.student.user.username} - {self.topic.title} - {self.date} - {'Present' if self.status else 'Absent'}"
+    
+
+class QuizAttempt(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
+
+    is_completed = models.BooleanField(default=False)
+    score = models.IntegerField(default=0)
+    attempted_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('student', 'topic')
+
+    def __str__(self):
+        return f"{self.student} - {self.topic} - Completed: {self.is_completed}"
+    
+
+class FinalExam(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    total_marks = models.IntegerField(default=0)
+    obtained_marks = models.IntegerField(blank=True, null=True)
+
+    is_completed = models.BooleanField(default=False)
+    attempted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.student} - {self.course} Exam"
+    
+
+
+class Result(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    marks = models.IntegerField()
+    status = models.CharField(max_length=10, choices=[
+        ('pass', 'Pass'),
+        ('fail', 'Fail')
+    ])
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    total_marks = models.IntegerField(default=0)
+    percentage = models.FloatField(default=0)
+
+    def __str__(self):
+        return f"{self.student} - {self.course} - {self.status}"
+    
+    
+import uuid
+
+
+
+class Certificate(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    # ✅ Upload / Generated File
+    certificate_file = models.FileField(upload_to='certificates/', blank=True, null=True)
+
+    # ✅ Status
+    generated = models.BooleanField(default=False)
+    generated_at = models.DateTimeField(blank=True, null=True)
+
+    # ✅ Extra Info (for manual/admin use)
+    marks = models.IntegerField(blank=True, null=True)
+    year = models.IntegerField(blank=True, null=True)
+
+    # ✅ Unique Certificate ID
+    certificate_id = models.CharField(max_length=20, unique=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        # 🔹 Auto Certificate ID
+        if not self.certificate_id:
+            self.certificate_id = f"CERT-{uuid.uuid4().hex[:8].upper()}"
+
+        # 🔹 Auto set generated fields when file uploaded
+        if self.certificate_file and not self.generated:
+            self.generated = True
+            self.generated_at = now()
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.student.full_name} - {self.course.name} - {self.certificate_id}"

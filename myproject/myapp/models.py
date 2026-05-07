@@ -135,3 +135,6 @@ class Notice(models.Model):
 
     def __str__(self):
         return f"{'[PIN] ' if self.is_pinned else ''}{self.title}"
+    
+
+

@@ -1,136 +1,231 @@
 {% load static %}
 
-<section id="contact" class="py-5">
-    <div class="container py-lg-5">
-        
-        <div class="row g-0 shadow-lg border-0" style="border-radius: 40px; overflow: hidden; background: white;">
-            
-            <div class="col-lg-5 p-5 text-white d-flex flex-column justify-content-between" 
-                 style="background: linear-gradient(135deg, var(--ice-primary) 0%, var(--ice-dark) 100%) !important; min-height: 500px;">
-                
-                <div>
-                    <span class="badge rounded-pill bg-white text-primary px-3 py-2 mb-3 fw-bold shadow-sm">CONNECT</span>
-                    <h2 class="fw-bold display-5 mb-4" style="letter-spacing: -1.5px;">Get in Touch</h2>
-                    <p class="opacity-75 mb-5 fs-5">Have questions about our programs or admissions? Our team is here to guide you every step of the way.</p>
-                    
-                    <div class="d-flex align-items-center mb-4">
-                        <div class="me-3 d-flex align-items-center justify-content-center" 
-                             style="width: 50px; height: 50px; background: rgba(255,255,255,0.1); border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                        </div>
-                        <div>
-                            <p class="small mb-0 opacity-50 fw-bold text-uppercase" style="letter-spacing: 1px;">Call us</p>
-                            <p class="fw-bold mb-0 fs-5">9867914107</p>
-                        </div>
-                    </div>
-
-                    <div class="d-flex align-items-center mb-4">
-                        <div class="me-3 d-flex align-items-center justify-content-center" 
-                             style="width: 50px; height: 50px; background: rgba(255,255,255,0.1); border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                        </div>
-                        <div>
-                            <p class="small mb-0 opacity-50 fw-bold text-uppercase" style="letter-spacing: 1px;">Mobile</p>
-                            <p class="fw-bold mb-0 fs-5">9167683259</p>
-                        </div>
-                    </div>
-
-                    <div class="d-flex align-items-center">
-                        <div class="me-3 d-flex align-items-center justify-content-center" 
-                             style="width: 50px; height: 50px; background: rgba(255,255,255,0.1); border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                        </div>
-                        <div>
-                            <p class="small mb-0 opacity-50 fw-bold text-uppercase" style="letter-spacing: 1px;">Visit Campus</p>
-                            <p class="fw-bold mb-0" style="font-size: 0.95rem;">Gala No. 1, S.R.A. Building, <br>Near HQ Tower & Dr. Babasaheb Ambedkar Udyan, <br>Shastri Nagar, Bandra (East), Mumbai - 400 051</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-5 d-flex gap-3 pt-4 border-top border-white border-opacity-10">
-                    <small class="opacity-50">Follow us on social media for updates.</small>
-                </div>
-            </div>
-
-          <div class="col-lg-7 p-4 p-md-5 bg-white">
-    <form method="POST" action="{% url 'visitors:contact_submit' %}">
-        {% csrf_token %}
-        
-        <div class="row g-4">
-
-            <div class="col-md-6">
-                <label class="form-label small fw-bold text-uppercase text-muted">Full Name</label>
-                <input type="text" name="name" class="form-control custom-input" placeholder="John Doe" required>
-            </div>
-
-            <div class="col-md-6">
-                <label class="form-label small fw-bold text-uppercase text-muted">Email Address</label>
-                <input type="email" name="email" class="form-control custom-input" placeholder="john@example.com" required>
-            </div>
-
-            <div class="col-12">
-                <label class="form-label small fw-bold text-uppercase text-muted">Subject</label>
-                <input type="text" name="subject" class="form-control custom-input" placeholder="Admission Inquiry">
-            </div>
-
-            <div class="col-12">
-                <label class="form-label small fw-bold text-uppercase text-muted">Message</label>
-                <textarea name="message" class="form-control custom-input" rows="5" placeholder="How can we help you?" required></textarea>
-            </div>
-
-            <div class="col-12 mt-4">
-                <button type="submit" class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-sm elite-btn">
-                    Send Message
-                    <svg class="ms-2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <line x1="22" y1="2" x2="11" y2="13"></line>
-                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                    </svg>
-                </button>
-            </div>
-
-        </div>
-    </form>
-</div>
-
-        <div class="mt-5 pt-lg-4">
-            <div class="rounded-4 overflow-hidden shadow-sm" style="height: 450px; border: 1px solid rgba(0,0,0,0.05);">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15082.529851608675!2d72.83151859341494!3d19.076391494871954!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c8e678434e7f%3A0x6d11a2f1837943!2sBandra%20East%2C%20Mumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1713437145211!5m2!1sen!2sin" 
-                        width="100%" height="100%" style="border:0; filter: contrast(1.1) brightness(1.05);" allowfullscreen="" loading="lazy">
-                </iframe>
-            </div>
-        </div>
-    </div>
-</section>
-
 <style>
-    .custom-input {
-        background-color: #f8fafc !important;
-        border: 2px solid #f1f5f9 !important;
-        padding: 1rem 1.2rem !important;
-        border-radius: 16px !important;
-        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+    .contact-section {
+        padding: 100px 0;
+        background-color: var(--ice-bg);
+    }
+
+    .contact-wrapper {
+        background: white;
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        flex-direction: column;
+    }
+
+    @media (min-width: 992px) {
+        .contact-wrapper { flex-direction: row; }
+    }
+
+    .contact-info-panel {
+        background: linear-gradient(135deg, var(--ice-primary) 0%, var(--ice-primary-dark) 100%);
+        color: white;
+        padding: 60px 50px;
+        flex: 0 0 40%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .contact-info-panel::after {
+        content: '';
+        position: absolute;
+        bottom: -100px; right: -100px;
+        width: 300px; height: 300px;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    .contact-form-panel {
+        padding: 60px 50px;
+        flex: 1;
+        background: white;
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        margin-bottom: 36px;
+    }
+
+    .contact-icon-box {
+        width: 52px; height: 52px;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.4rem;
+        flex-shrink: 0;
+        color: var(--ice-secondary);
+    }
+
+    .contact-item h6 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: rgba(255,255,255,0.6);
+        margin-bottom: 6px;
+    }
+
+    .contact-item p {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    /* Form Styles */
+    .form-group { margin-bottom: 24px; }
+    
+    .form-label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--ice-muted);
+        margin-bottom: 8px;
+    }
+
+    .form-control-ice {
+        width: 100%;
+        background-color: var(--ice-bg);
+        border: 2px solid transparent;
+        padding: 14px 20px;
+        border-radius: 14px;
+        font-family: 'Inter', sans-serif;
         font-size: 0.95rem;
-    }
-
-    .custom-input:focus {
-        background-color: #ffffff !important;
-        border-color: var(--ice-primary) !important;
-        box-shadow: 0 10px 20px rgba(0, 74, 173, 0.05) !important;
-        outline: none;
-    }
-
-    .elite-btn {
-        background: var(--ice-primary);
-        border: none;
+        color: var(--ice-dark);
         transition: var(--transition);
     }
 
-    .elite-btn:hover {
-        transform: translateY(-3px);
-        background: var(--ice-dark);
-        box-shadow: 0 15px 30px rgba(0, 74, 173, 0.2) !important;
+    .form-control-ice::placeholder { color: #94a3b8; }
+
+    .form-control-ice:focus {
+        background-color: white;
+        border-color: var(--ice-primary);
+        outline: none;
+        box-shadow: 0 4px 15px rgba(26,79,186,0.1);
     }
 
-    .hover-opacity-100:hover { opacity: 1 !important; }
-    .transition-all { transition: all 0.3s ease; }
+    textarea.form-control-ice {
+        min-height: 140px;
+        resize: vertical;
+    }
+
+    .btn-submit-ice {
+        background: var(--ice-primary);
+        color: white;
+        border: none;
+        padding: 16px 32px;
+        border-radius: 14px;
+        font-weight: 700;
+        font-size: 1.05rem;
+        width: 100%;
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        transition: var(--transition);
+        box-shadow: 0 8px 20px rgba(26,79,186,0.25);
+        cursor: pointer;
+    }
+
+    .btn-submit-ice:hover {
+        background: var(--ice-primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 25px rgba(26,79,186,0.35);
+    }
+
+    .map-container {
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        border: 1px solid rgba(10,22,40,0.05);
+        height: 400px;
+        margin-top: 60px;
+        box-shadow: var(--shadow-sm);
+    }
 </style>
+
+<section id="contact" class="contact-section">
+    <div class="container">
+        
+        <div class="text-center mb-5 pb-2">
+            <span class="section-label"><i class="bi bi-headset"></i> Connect</span>
+            <h2 class="display-5 fw-bold brand-font" style="letter-spacing: -1px;">Get in Touch</h2>
+            <div class="section-divider mx-auto"></div>
+        </div>
+
+        <div class="contact-wrapper">
+            <!-- Left Info Panel -->
+            <div class="contact-info-panel">
+                <h3 class="brand-font fw-bold mb-3" style="font-size: 2.4rem;">Let's Talk.</h3>
+                <p style="color: rgba(255,255,255,0.7); font-size: 1.05rem; margin-bottom: 50px;">
+                    Have questions about our certification programs, batches, or admissions? Our team is ready to guide you.
+                </p>
+
+                <div class="contact-item">
+                    <div class="contact-icon-box"><i class="bi bi-telephone-fill"></i></div>
+                    <div>
+                        <h6>Office Phone</h6>
+                        <p>9867914107</p>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-icon-box"><i class="bi bi-phone-fill"></i></div>
+                    <div>
+                        <h6>Mobile</h6>
+                        <p>9167683259</p>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-icon-box"><i class="bi bi-geo-alt-fill"></i></div>
+                    <div>
+                        <h6>Campus Location</h6>
+                        <p style="font-size: 0.95rem;">Gala No. 1, S.R.A. Building,<br>Near HQ Tower & Dr. Babasaheb Ambedkar Udyan,<br>Shastri Nagar, Bandra (East), Mumbai - 400 051</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Form Panel -->
+            <div class="contact-form-panel">
+                <form method="POST" action="{% url 'visitors:contact_submit' %}">
+                    {% csrf_token %}
+                    
+                    <div class="row g-4">
+                        <div class="col-md-6 form-group mb-0">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" name="name" class="form-control-ice" placeholder="John Doe" required>
+                        </div>
+                        <div class="col-md-6 form-group mb-0">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" name="email" class="form-control-ice" placeholder="john@example.com" required>
+                        </div>
+                        <div class="col-12 form-group mb-0">
+                            <label class="form-label">Subject</label>
+                            <input type="text" name="subject" class="form-control-ice" placeholder="Admission Inquiry">
+                        </div>
+                        <div class="col-12 form-group mb-0">
+                            <label class="form-label">Message</label>
+                            <textarea name="message" class="form-control-ice" placeholder="How can we help you?" required></textarea>
+                        </div>
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn-submit-ice">
+                                Send Message <i class="bi bi-send"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15082.529851608675!2d72.83151859341494!3d19.076391494871954!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c8e678434e7f%3A0x6d11a2f1837943!2sBandra%20East%2C%20Mumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1713437145211!5m2!1sen!2sin" 
+                    width="100%" height="100%" style="border:0; filter: grayscale(20%) contrast(1.1);" allowfullscreen="" loading="lazy">
+            </iframe>
+        </div>
+
+    </div>
+</section>

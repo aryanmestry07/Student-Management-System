@@ -83,36 +83,117 @@ def students_view(request):
         "students": students,
         "query": query
     })
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404
-from student.models import Student, Attendance
+from student.models import Student, Attendance, Submission, Result
+
 
 @login_required
 def student_detail(request, student_id):
-    # ✅ Get student
     student = get_object_or_404(Student, id=student_id)
 
-    # ✅ Fetch attendance records
+    from student.models import Certificate
+
+    # ----------------------------
+    # 🔥 HANDLE POST ACTIONS
+    # ----------------------------
+    if request.method == "POST":
+        action = request.POST.get("action")
+
+        # ✅ CERTIFICATE UPLOAD
+        if action == "upload_certificate":
+            file = request.FILES.get("certificate_file")
+            course_id = request.POST.get("course")
+
+            if not file:
+                messages.error(request, "Please select a file.")
+                return redirect("myapp:student_detail", student_id=student.id)  # ✅ FIXED
+
+            course = get_object_or_404(Course, id=course_id)
+
+            certificate, _ = Certificate.objects.get_or_create(
+                student=student,
+                course=course
+            )
+
+            certificate.certificate_file = file
+            certificate.save()
+
+            messages.success(request, "Certificate uploaded successfully!")
+            return redirect("myapp:student_detail", student_id=student.id)
+
+    # ----------------------------
+    # ATTENDANCE
+    # ----------------------------
     attendance_records = Attendance.objects.filter(
         student=student
     ).select_related("topic").order_by("-date")
 
-    # ✅ Attendance stats
     total_classes = attendance_records.count()
     present_classes = attendance_records.filter(status=True).count()
 
-    # ✅ Calculate percentage
     attendance_percentage = 0
     if total_classes > 0:
         attendance_percentage = round((present_classes / total_classes) * 100, 2)
 
-    # ✅ Pass data to template
+    # ----------------------------
+    # 🎯 FINAL EXAM RESULTS
+    # ----------------------------
+    results = Result.objects.filter(
+        student=student
+    ).select_related("course").order_by("-created_at")
+
+    for r in results:
+        if not r.total_marks:
+            r.total_marks = 0
+        if r.percentage is None:
+            r.percentage = round((r.marks / r.total_marks) * 100, 2) if r.total_marks > 0 else 0
+
+    # ----------------------------
+    # 📄 ASSIGNMENTS
+    # ----------------------------
+    submissions = Submission.objects.filter(
+        student=student
+    ).select_related("assignment").order_by("-submitted_at")
+
+    # ----------------------------
+    # 🎓 CERTIFICATES
+    # ----------------------------
+    certificates = Certificate.objects.filter(
+        student=student,
+        certificate_file__isnull=False
+    ).select_related("course")
+
+    # ----------------------------
+    # 💰 FEES DATA (NEW 🔥)
+    # ----------------------------
+    total_fees = student.total_fees
+    paid_amount = student.paid_amount
+    pending_fees = student.pending_fees
+    fees_status = student.fees_status
+
+    # ----------------------------
     context = {
         "student": student,
+
+        # attendance
         "attendance_records": attendance_records,
         "total_classes": total_classes,
         "present_classes": present_classes,
         "attendance_percentage": attendance_percentage,
+
+        # results
+        "results": results,
+
+        # assignments
+        "submissions": submissions,
+
+        # certificates
+        "certificates": certificates,
+
+        # 🔥 NEW FEES DATA
+        "total_fees": total_fees,
+        "paid_amount": paid_amount,
+        "pending_fees": pending_fees,
+        "fees_status": fees_status,
     }
 
     return render(request, "myapp/student_detail.html", context)
@@ -164,19 +245,14 @@ def update_student(request, student_id):
         user_form = UserUpdateForm(request.POST, instance=student.user)
 
         if student_form.is_valid() and user_form.is_valid():
-            # Save student basic fields
-            updated_student = student_form.save(commit=False)
+            # ✅ Save student (includes total_fees & paid_amount)
+            updated_student = student_form.save()
 
-            # 🔥 FIX 1: Fees Status (manual binding)
-            updated_student.fees_status = request.POST.get("fees_status")
-
-            updated_student.save()
-
-            # 🔥 FIX 2: Courses (custom multi-select)
+            # ✅ Handle courses
             courses = request.POST.getlist("courses")
             student.courses.set(courses)
 
-            # Save user info
+            # ✅ Save user info
             user_form.save()
 
             messages.success(request, "Student updated successfully!")
@@ -195,8 +271,6 @@ def update_student(request, student_id):
         "user_form": user_form,
         "student": student,
     })
-
-
 @login_required
 def edit_student(request, student_id):
     student = get_object_or_404(Student, id=student_id)
@@ -209,7 +283,7 @@ def delete_student(request, student_id):
     student.delete()
     user.delete()
     messages.success(request, "Student deleted successfully 🗑️")
-    return redirect("students")
+    return redirect("myapp:students")
 
 @login_required
 def reset_student_password(request, student_id):

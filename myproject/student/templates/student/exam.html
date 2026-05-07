@@ -1,0 +1,104 @@
+{% extends "student/base.html" %}
+{% block title %}Final Exam{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+    <!-- Header -->
+    <div class="mb-4 text-center">
+        <h2 class="fw-bold">{{ course.name }} - Final Exam</h2>
+        <p class="text-muted">
+            Total Questions: {{ questions|length }} | Total Marks: 50
+        </p>
+
+        <!-- ⏱️ TIMER -->
+        <div class="alert alert-warning fw-bold">
+            ⏳ Time Left: <span id="timer">30:00</span>
+        </div>
+    </div>
+
+    <form method="POST" action="{% url 'student:exam_result' course.id %}" id="examForm">
+        {% csrf_token %}
+
+        {% for q in questions %}
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-body">
+
+                <!-- Question -->
+                <h5 class="fw-bold">
+                    Q{{ forloop.counter }}. {{ q.text }}
+                </h5>
+
+                <!-- Options -->
+                <div class="mt-3">
+
+                    {% for key, value in q.get_options.items %}
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" 
+                               type="radio" 
+                               name="q_{{ q.id }}" 
+                               value="{{ key }}" required>
+                        <label class="form-check-label">
+                            {{ key }}. {{ value }}
+                        </label>
+                    </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Submit -->
+        <div class="text-center">
+            <button type="submit" class="btn btn-success px-5 py-2 fw-bold">
+                Submit Exam
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+<!-- ========================= -->
+<!-- ⏱️ TIMER SCRIPT -->
+<!-- ========================= -->
+<script>
+    let timeLeft = 30 * 60; // 30 minutes
+
+    const timerDisplay = document.getElementById("timer");
+    const form = document.getElementById("examForm");
+
+    function updateTimer() {
+        let minutes = Math.floor(timeLeft / 60);
+        let seconds = timeLeft % 60;
+
+        timerDisplay.textContent =
+            String(minutes).padStart(2, '0') + ":" +
+            String(seconds).padStart(2, '0');
+
+        if (timeLeft <= 0) {
+            alert("Time is up! Submitting exam...");
+            form.submit();
+        }
+
+        timeLeft--;
+    }
+
+    setInterval(updateTimer, 1000);
+</script>
+
+<!-- ========================= -->
+<!-- 🔒 PREVENT ACCIDENTAL EXIT -->
+<!-- ========================= -->
+<script>
+    window.onbeforeunload = function () {
+        return "Your exam is in progress. Are you sure you want to leave?";
+    };
+
+    document.getElementById("examForm").onsubmit = function () {
+        window.onbeforeunload = null;
+    };
+</script>
+
+{% endblock %}

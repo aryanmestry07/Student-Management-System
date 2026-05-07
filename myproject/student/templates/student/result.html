@@ -1,0 +1,50 @@
+{% extends "student/base.html" %}
+{% block title %}Exam Result{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center">
+
+    <!-- Result Card -->
+    <div class="card shadow-lg p-5 mx-auto" style="max-width: 600px; border-radius: 15px;">
+
+        <!-- Title -->
+        <h2 class="fw-bold mb-3">{{ course.name }} - Result</h2>
+
+        <!-- Score -->
+        <h1 class="display-4 fw-bold text-primary">
+            {{ score }} / {{ total }}
+        </h1>
+
+        <!-- Status -->
+        {% if status == "pass" %}
+            <div class="alert alert-success mt-4 fw-bold">
+                🎉 Congratulations! You Passed
+            </div>
+        {% else %}
+            <div class="alert alert-danger mt-4 fw-bold">
+                ❌ You Failed. Try Again Later
+            </div>
+        {% endif %}
+
+        <!-- Info -->
+        <p class="text-muted mt-3">
+            Your performance has been recorded and sent to admin.
+        </p>
+
+        <!-- Buttons -->
+        <div class="mt-4 d-flex justify-content-center gap-3 flex-wrap">
+            <a href="{% url 'student:course_detail' course.id %}" class="btn btn-primary px-4">
+                Back to Course
+            </a>
+
+            {% if status == "pass" %}
+            <span class="btn btn-outline-success px-4 disabled">
+                Certificate will be provided by admin
+            </span>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

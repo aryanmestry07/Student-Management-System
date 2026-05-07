@@ -32,10 +32,11 @@ class StudentForm(forms.ModelForm):
 
     class Meta:
         model = Student
-        fields = ['phone', 'fees_status']
+        fields = ['phone', 'courses', 'total_fees', 'paid_amount']  # ✅ UPDATED
         widgets = {
             'phone': forms.TextInput(attrs={'class': 'form-control'}),
-            'fees_status': forms.Select(attrs={'class': 'form-control'}),
+            'total_fees': forms.NumberInput(attrs={'class': 'form-control'}),
+            'paid_amount': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
 
@@ -50,10 +51,11 @@ class StudentUpdateForm(forms.ModelForm):
 
     class Meta:
         model = Student
-        fields = ['phone', 'courses', 'fees_status']
+        fields = ['phone', 'courses', 'total_fees', 'paid_amount']  # ✅ UPDATED
         widgets = {
             'phone': forms.TextInput(attrs={'class': 'form-control'}),
-            'fees_status': forms.Select(attrs={'class': 'form-control'}),
+            'total_fees': forms.NumberInput(attrs={'class': 'form-control'}),
+            'paid_amount': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
 

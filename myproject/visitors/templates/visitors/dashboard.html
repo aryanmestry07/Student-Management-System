@@ -3,247 +3,575 @@
 
 {% block content %}
 <style>
-    /* HERO SECTION - ELITE REFINEMENT */
-    .hero-container {
+    /* ============================
+       PREMIUM HERO SECTION
+    ============================ */
+    .hero-section {
         position: relative;
-        background: radial-gradient(circle at top right, #f0f7ff, #ffffff);
-        border-radius: 40px;
-        padding: 100px 40px;
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        background-color: var(--ice-navy);
+        background-image: url('/media/hero_bg.png');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        color: white;
         overflow: hidden;
-        margin-bottom: 40px;
-        border: 1px solid rgba(0, 74, 173, 0.08);
-        transition: var(--transition);
+        margin-top: -82px; /* Pull up under navbar */
+        padding: 140px 0 120px 0; /* Add bottom padding to avoid collision with stats bar */
     }
 
-    .hero-container::before {
-        content: '';
+    .hero-overlay {
         position: absolute;
-        top: -20%; right: -10%;
-        width: 500px; height: 500px;
-        background: radial-gradient(circle, rgba(0, 74, 173, 0.03) 0%, transparent 70%);
-        z-index: 0;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(135deg, rgba(4,13,33,0.85) 0%, rgba(26,79,186,0.6) 100%);
+        z-index: 1;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 24px;
+        color: var(--ice-primary-light);
     }
 
     .hero-title {
-        font-size: 4rem;
+        font-size: 4.5rem;
         font-weight: 800;
+        line-height: 1.1;
         letter-spacing: -2px;
-        color: var(--ice-dark);
-        line-height: 1;
+        margin-bottom: 24px;
     }
 
-    /* STATS BAR */
-    .stats-bar {
+    .hero-title span {
+        background: linear-gradient(to right, #60a5fa, #c084fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        color: rgba(255,255,255,0.8);
+        font-weight: 400;
+        line-height: 1.7;
+        margin-bottom: 40px;
+        max-width: 600px;
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .btn-hero-primary {
         background: white;
-        border-radius: 20px;
-        padding: 25px;
+        color: var(--ice-primary) !important;
+        padding: 14px 32px;
+        border-radius: 14px;
+        font-weight: 700;
+        font-size: 1.05rem;
+        text-decoration: none;
+        transition: var(--transition);
+        display: flex; align-items: center; gap: 8px;
+    }
+    .btn-hero-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(255,255,255,0.3);
+    }
+
+    .btn-hero-secondary {
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(10px);
+        color: white !important;
+        padding: 14px 32px;
+        border-radius: 14px;
+        font-weight: 600;
+        font-size: 1.05rem;
+        text-decoration: none;
+        transition: var(--transition);
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+    .btn-hero-secondary:hover {
+        background: rgba(255,255,255,0.2);
+        transform: translateY(-3px);
+    }
+
+    /* ============================
+       STATS BAR
+    ============================ */
+    .stats-wrapper {
         margin-top: -60px;
         position: relative;
         z-index: 10;
-        box-shadow: 0 15px 35px rgba(0, 31, 77, 0.05);
-        border: 1px solid rgba(0, 0, 0, 0.03);
+        padding: 0 20px;
     }
 
-    .stat-item h3 {
-        color: var(--ice-primary);
+    .stats-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 30px 40px;
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        gap: 30px;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-number {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2.8rem;
         font-weight: 800;
-        margin-bottom: 0;
+        color: var(--ice-primary);
+        line-height: 1;
+        margin-bottom: 8px;
+        background: linear-gradient(135deg, var(--ice-primary) 0%, var(--ice-secondary) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
-    /* COURSE CARDS - GLASS EFFECT */
+    .stat-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--ice-muted);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+    }
+
+    /* ============================
+       FEATURED PROGRAMS
+    ============================ */
+    .programs-section {
+        padding: 120px 0;
+        background-color: var(--ice-bg);
+        position: relative;
+    }
+
+    .programs-section::before {
+        content: '';
+        position: absolute;
+        top: 0; right: 0;
+        width: 600px; height: 600px;
+        background: radial-gradient(circle, rgba(6,182,212,0.05) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
     .course-card {
-        background: #ffffff;
-        border: 1px solid rgba(0, 0, 0, 0.04);
-        border-radius: 24px;
-        padding: 20px;
+        background: var(--ice-surface);
+        border-radius: var(--radius-lg);
         height: 100%;
         transition: var(--transition);
+        border: 1px solid rgba(10,22,40,0.04);
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
         display: flex;
         flex-direction: column;
     }
 
-    .course-card:hover {
-        transform: translateY(-12px);
-        box-shadow: 0 30px 60px rgba(0, 74, 173, 0.12);
-        border-color: var(--ice-primary-light);
-    }
-
-    .course-icon-wrapper {
-        width: 50px;
-        height: 50px;
-        background: var(--ice-primary-light);
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--ice-primary);
-        margin-bottom: 20px;
-    }
-
-    /* FEATURE BLOCKS */
-    .feature-box {
-        background: white;
-        padding: 40px 30px;
-        border-radius: 24px;
+    .course-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--ice-primary), var(--ice-secondary));
+        opacity: 0;
         transition: var(--transition);
     }
-    
+
+    .course-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .course-card:hover::before {
+        opacity: 1;
+    }
+
+    .course-image-wrapper {
+        height: 200px;
+        overflow: hidden;
+    }
+
+    .course-image-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .course-card:hover .course-image-wrapper img {
+        transform: scale(1.05);
+    }
+
+    .course-category {
+        display: inline-block;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--ice-secondary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+        background: rgba(6,182,212,0.1);
+        padding: 4px 12px;
+        border-radius: 20px;
+    }
+
+    .course-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--ice-dark);
+        margin-bottom: 16px;
+        line-height: 1.3;
+    }
+
+    .course-desc {
+        color: var(--ice-muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 24px;
+        flex-grow: 1;
+    }
+
+    .course-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 20px;
+        border-top: 1px solid rgba(10,22,40,0.06);
+    }
+
+    .course-duration {
+        font-size: 0.85rem;
+        color: var(--ice-text);
+        font-weight: 600;
+        display: flex; align-items: center; gap: 6px;
+    }
+
+    .course-action {
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        background: var(--ice-bg);
+        color: var(--ice-primary);
+        display: flex; align-items: center; justify-content: center;
+        transition: var(--transition);
+    }
+
+    .course-card:hover .course-action {
+        background: var(--ice-primary);
+        color: white;
+        transform: rotate(-45deg);
+    }
+
+    /* ============================
+       FEATURES SECTION
+    ============================ */
+    .features-section {
+        padding: 100px 0;
+        background: white;
+        position: relative;
+    }
+
+    .feature-box {
+        padding: 40px;
+        border-radius: var(--radius-lg);
+        background: var(--ice-bg);
+        transition: var(--transition);
+        height: 100%;
+        border: 1px solid transparent;
+    }
+
     .feature-box:hover {
-        background: var(--ice-primary-light);
+        background: white;
+        border-color: rgba(26,79,186,0.1);
+        box-shadow: var(--shadow-lg);
         transform: translateY(-5px);
     }
 
-    /* CHATBOT REFINEMENT */
-    #chatbot-btn {
-        width: 65px; height: 65px;
-        background: linear-gradient(135deg, var(--ice-primary) 0%, var(--ice-secondary) 100%);
+    .feature-icon {
+        width: 64px; height: 64px;
+        background: linear-gradient(135deg, rgba(26,79,186,0.1) 0%, rgba(6,182,212,0.1) 100%);
+        color: var(--ice-primary);
         border-radius: 20px;
-        box-shadow: 0 10px 25px rgba(0, 74, 173, 0.3);
-        z-index: 1050;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.8rem;
+        margin-bottom: 24px;
     }
 
+    .feature-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--ice-dark);
+        margin-bottom: 16px;
+    }
+
+    .feature-desc {
+        color: var(--ice-muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    /* ============================
+       CHATBOT OVERRIDE
+    ============================ */
+    #chatbot-btn {
+        width: 60px; height: 60px;
+        background: linear-gradient(135deg, var(--ice-primary) 0%, var(--ice-secondary) 100%);
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(26,79,186,0.4);
+        z-index: 1050;
+        transition: var(--transition);
+        border: none;
+    }
+    #chatbot-btn:hover {
+        transform: scale(1.05) translateY(-5px);
+    }
+    
     #chatbot-box {
         width: 380px;
-        border-radius: 28px;
-        bottom: 110px !important;
+        border-radius: 24px;
+        bottom: 100px !important;
         right: 30px !important;
         z-index: 1050;
+        box-shadow: var(--shadow-xl) !important;
+        overflow: hidden;
+        border: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .chat-header {
+        background: linear-gradient(135deg, var(--ice-primary) 0%, var(--ice-primary-dark) 100%);
+        padding: 20px !important;
     }
 
     .chat-bubble {
         max-width: 85%;
-        padding: 12px 16px;
-        border-radius: 18px;
-        font-size: 0.9rem;
+        padding: 14px 18px;
+        border-radius: 20px;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
     }
 
-    .bot-message { background: #f0f2f5; color: #1c1e21; border-bottom-left-radius: 4px; }
-    .user-message { background: var(--ice-primary); color: white; border-bottom-right-radius: 4px; align-self: flex-end; }
+    .bot-message { 
+        background: #f1f5f9; 
+        color: var(--ice-text); 
+        border-bottom-left-radius: 4px; 
+    }
+    .user-message { 
+        background: var(--ice-primary); 
+        color: white; 
+        border-bottom-right-radius: 4px; 
+        align-self: flex-end; 
+    }
+
+    .quick-reply-btn {
+        background: white;
+        border: 1px solid var(--ice-primary);
+        color: var(--ice-primary);
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin: 4px;
+        transition: var(--transition);
+        cursor: pointer;
+    }
+    .quick-reply-btn:hover {
+        background: var(--ice-primary-light);
+    }
 </style>
 
-<div class="hero-container text-center">
-    <div style="position:relative; z-index:1;">
-        <h1 class="hero-title">Master the Skills<br><span class="brand-accent">That Matter.</span></h1>
-        <p class="lead text-muted my-4 mx-auto" style="max-width: 650px; font-size: 1.15rem;">
-            ICE Institute provides cutting-edge technical training and real-world project experience to launch your career in the digital era.
-        </p>
-        <div class="d-flex justify-content-center gap-3 mt-5">
-            <a href="#courses" class="btn btn-portal px-5 py-3">View All Programs</a>
-            <a href="#about" class="btn btn-outline-dark px-5 py-3 rounded-4 fw-bold shadow-none">Our Story</a>
-        </div>
-    </div>
-</div>
-
-<div class="container mb-5">
-    <div class="stats-bar">
-        <div class="row text-center g-4">
-            <div class="col-6 col-md-3 stat-item">
-                <h3>25+</h3>
-                <p class="text-muted small fw-bold mb-0 text-uppercase">Courses</p>
-            </div>
-            <div class="col-6 col-md-3 stat-item">
-                <h3>5000+</h3>
-                <p class="text-muted small fw-bold mb-0 text-uppercase">Graduates</p>
-            </div>
-            <div class="col-6 col-md-3 stat-item">
-                <h3>150+</h3>
-                <p class="text-muted small fw-bold mb-0 text-uppercase">Partners</p>
-            </div>
-            <div class="col-6 col-md-3 stat-item">
-                <h3>98%</h3>
-                <p class="text-muted small fw-bold mb-0 text-uppercase">Placements</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<section id="courses" class="py-5">
-    <div class="d-flex justify-content-between align-items-end mb-5">
-        <div>
-            <span class="text-primary fw-bold small text-uppercase" style="letter-spacing: 1px;">Top Rated</span>
-            <h2 class="fw-bold display-6 mb-0">Featured Programs</h2>
-        </div>
-        <a href="{% url 'visitors:all_courses' %}" class="btn btn-link text-decoration-none fw-bold text-dark p-0">
-    Explore Catalog →
-</a>
-    </div>
-    
-    <div class="row g-4">
-        {% for course in courses|slice:":3" %}
-        <div class="col-lg-4">
-            <div class="course-card">
-                <div class="course-icon-wrapper">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+<!-- HERO SECTION -->
+<section class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="container hero-content">
+        <div class="row align-items-center">
+            <div class="col-lg-8 col-xl-7">
+                <div class="hero-badge">
+                    <i class="bi bi-stars"></i> Next-Gen Tech Education
                 </div>
-                <span class="category-tag">{{ course.category }}</span>
-                <h4 class="fw-bold mb-2">{{ course.name }}</h4>
-                <p class="text-muted small flex-grow-1 lh-base">{{ course.description|truncatewords:15 }}</p>
-                <div class="mt-4 pt-4 border-top d-flex justify-content-between align-items-center">
-                  
+                <h1 class="hero-title">
+                    Master the Skills <br>That <span>Shape Tomorrow</span>.
+                </h1>
+                <p class="hero-subtitle">
+                    ICE Institute provides cutting-edge technical training, real-world project experience, and placement assistance to launch your career in the digital era.
+                </p>
+                <div class="hero-actions">
+                    <a href="#courses" class="btn-hero-primary">
+                        Explore Programs <i class="bi bi-arrow-right"></i>
+                    </a>
+                    <a href="#about" class="btn-hero-secondary">
+                        <i class="bi bi-play-circle"></i> Discover Our Story
+                    </a>
                 </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-</section>
-
-<section class="py-5">
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="feature-box h-100 shadow-sm">
-                <div class="mb-4 text-primary">
-                    <svg width="35" height="35" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"></path><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
-                </div>
-                <h5 class="fw-bold">Expert Mentors</h5>
-                <p class="small text-muted mb-0">Learn from professionals with real-world industry experience.</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="feature-box h-100 shadow-sm">
-                <div class="mb-4 text-primary">
-                    <svg width="35" height="35" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                </div>
-                <h5 class="fw-bold">Career Launchpad</h5>
-                <p class="small text-muted mb-0">Comprehensive placement support to land your dream job.</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="feature-box h-100 shadow-sm">
-                <div class="mb-4 text-primary">
-                    <svg width="35" height="35" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
-                </div>
-                <h5 class="fw-bold">Live Projects</h5>
-                <p class="small text-muted mb-0">Build actual products while you learn to master your craft.</p>
             </div>
         </div>
     </div>
 </section>
 
-<button id="chatbot-btn" class="position-fixed bottom-0 end-0 m-4 border-0 shadow-lg text-white d-flex align-items-center justify-content-center" onclick="toggleChat()">
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+<!-- STATS SECTION -->
+<div class="container stats-wrapper mb-5">
+    <div class="stats-card">
+        <div class="stat-item">
+            <div class="stat-number">25+</div>
+            <div class="stat-label">Programs</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">5K+</div>
+            <div class="stat-label">Graduates</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">150+</div>
+            <div class="stat-label">Hiring Partners</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">98%</div>
+            <div class="stat-label">Placement Rate</div>
+        </div>
+    </div>
+</div>
+
+<!-- COURSES SECTION -->
+<section id="courses" class="programs-section">
+    <div class="container">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-5 pb-3">
+            <div>
+                <span class="section-label"><i class="bi bi-award"></i> Top Rated</span>
+                <h2 class="display-5 fw-bold brand-font" style="letter-spacing: -1px;">Featured Programs</h2>
+                <div class="section-divider mb-0"></div>
+            </div>
+            <a href="{% url 'visitors:all_courses' %}" class="btn-nav-cta mt-4 mt-md-0" style="align-self: flex-start;">
+                View Catalog <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        
+        <div class="row g-4">
+            {% for course in courses|slice:":3" %}
+            <div class="col-lg-4 col-md-6">
+                <a href="{% url 'visitors:all_courses' %}" class="text-decoration-none">
+                    <div class="course-card">
+                        <div class="course-image-wrapper">
+                            <img src="/media/course_{{ forloop.counter }}.png" alt="{{ course.name }}">
+                        </div>
+                        <div class="p-4 d-flex flex-column flex-grow-1">
+                            <div>
+                                <span class="course-category">{{ course.category }}</span>
+                                <h4 class="course-title">{{ course.name }}</h4>
+                                <p class="course-desc">{{ course.description|truncatewords:15 }}</p>
+                            </div>
+                            <div class="course-meta mt-auto">
+                                <div class="course-duration">
+                                    <i class="bi bi-clock-history text-primary"></i> {{ course.duration }} Months
+                                </div>
+                                <div class="course-action">
+                                    <i class="bi bi-arrow-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+            {% if not courses %}
+            <div class="col-12 text-center py-5">
+                <p class="text-muted">Currently updating our program catalog. Check back soon.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- FEATURES SECTION -->
+<section class="features-section">
+    <div class="container">
+        <div class="text-center mb-5 pb-3">
+            <span class="section-label"><i class="bi bi-lightning-charge"></i> The ICE Advantage</span>
+            <h2 class="display-5 fw-bold brand-font" style="letter-spacing: -1px;">Why Choose Us?</h2>
+            <div class="section-divider mx-auto"></div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-box">
+                    <div class="feature-icon"><i class="bi bi-person-video3"></i></div>
+                    <h5 class="feature-title">Expert Mentors</h5>
+                    <p class="feature-desc">Learn directly from seasoned professionals with years of real-world industry experience and expertise.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-box">
+                    <div class="feature-icon"><i class="bi bi-rocket-takeoff"></i></div>
+                    <h5 class="feature-title">Career Launchpad</h5>
+                    <p class="feature-desc">Benefit from our comprehensive placement support to land your dream job at top tech companies.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-box">
+                    <div class="feature-icon"><i class="bi bi-code-slash"></i></div>
+                    <h5 class="feature-title">Live Projects</h5>
+                    <p class="feature-desc">Build actual production-ready applications while you learn to master your craft practically.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CHATBOT -->
+<button id="chatbot-btn" class="position-fixed bottom-0 end-0 m-4 d-flex align-items-center justify-content-center text-white" onclick="toggleChat()">
+    <i class="bi bi-chat-dots-fill fs-4"></i>
 </button>
 
-<div id="chatbot-box" class="position-fixed end-0 m-4 d-none bg-white shadow-lg overflow-hidden border-0">
-    <div class="chat-header text-white d-flex justify-content-between align-items-center" style="background: var(--ice-primary); padding: 20px;">
-        <div>
-            <h6 class="mb-0 fw-bold">ICE Assistant</h6>
-            <div class="d-flex align-items-center mt-1">
-                <div style="width: 8px; height: 8px; background: #4ade80; border-radius: 50%; margin-right: 6px;"></div>
-                <small class="opacity-75" style="font-size: 0.7rem;">Active Now</small>
+<div id="chatbot-box" class="position-fixed d-none bg-white">
+    <div class="chat-header text-white d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+            <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'Outfit'; font-weight: bold; font-size: 1.2rem;">I</div>
+            <div>
+                <h6 class="mb-0 fw-bold brand-font" style="font-size: 1.1rem; letter-spacing: 0.5px;">ICE Assistant</h6>
+                <div class="d-flex align-items-center mt-1">
+                    <div style="width: 8px; height: 8px; background: #4ade80; border-radius: 50%; margin-right: 6px;"></div>
+                    <small class="opacity-75" style="font-size: 0.75rem;">Online & ready to help</small>
+                </div>
             </div>
         </div>
         <button class="btn-close btn-close-white shadow-none" onclick="toggleChat()"></button>
     </div>
 
-    <div id="chatbot-messages" class="p-4 d-flex flex-column gap-3" style="height:350px; overflow-y:auto; background: #fff;">
+    <div id="chatbot-messages" class="p-4 d-flex flex-column gap-3" style="height:380px; overflow-y:auto; background: #f8fafc;">
         <div class="chat-bubble bot-message">Hello! 👋 Welcome to ICE Institute. How can I help you today?</div>
     </div>
 
-    <div class="p-3 border-top bg-light">
+    <div class="p-3 bg-white" style="border-top: 1px solid rgba(0,0,0,0.05);">
         <div class="input-group">
-            <input id="user-input" class="form-control border-0 bg-white rounded-start-4 px-3 shadow-none" placeholder="Type here...">
-            <button class="btn btn-primary rounded-end-4 px-3" onclick="sendMessage()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            <input id="user-input" class="form-control border bg-light px-3 py-2 shadow-none" style="border-radius: 20px 0 0 20px;" placeholder="Type your message...">
+            <button class="btn btn-primary px-3" style="border-radius: 0 20px 20px 0;" onclick="sendMessage()">
+                <i class="bi bi-send-fill"></i>
             </button>
         </div>
     </div>
@@ -253,73 +581,63 @@
 function toggleChat() {
     const box = document.getElementById("chatbot-box");
     box.classList.toggle("d-none");
-
-    // smooth open scroll
-    setTimeout(() => {
-        document.getElementById("chatbot-messages").scrollTop = 9999;
-    }, 200);
+    if (!box.classList.contains("d-none")) {
+        setTimeout(() => {
+            const msgs = document.getElementById("chatbot-messages");
+            msgs.scrollTop = msgs.scrollHeight;
+        }, 100);
+    }
 }
 
-// ✅ ENTER KEY SUPPORT
 document.getElementById("user-input").addEventListener("keypress", function(e){
     if(e.key === "Enter") sendMessage();
 });
 
-// 🔥 CSRF FIX
 function getCSRFToken() {
-    return document.cookie.split('; ')
-        .find(row => row.startsWith('csrftoken='))
-        ?.split('=')[1];
+    return document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
 }
 
-// 🔥 ADD MESSAGE FUNCTION (clean + reusable)
 function addMessage(text, type) {
     const chat = document.getElementById("chatbot-messages");
-
     let bubble = document.createElement("div");
     bubble.className = "chat-bubble " + (type === "user" ? "user-message" : "bot-message");
-
-    bubble.innerHTML = text;
+    
+    // Format text with basic markdown-like support for line breaks
+    let formattedText = text.replace(/\n/g, '<br>');
+    bubble.innerHTML = formattedText;
+    
     chat.appendChild(bubble);
-
-    // smooth scroll
     chat.scrollTop = chat.scrollHeight;
 }
 
-// 🔥 TYPING ANIMATION (professional)
 function showTyping() {
     const chat = document.getElementById("chatbot-messages");
-
     let typing = document.createElement("div");
     typing.id = "typing-indicator";
     typing.className = "chat-bubble bot-message";
     typing.innerHTML = `
-        <div style="display:flex; gap:5px;">
-            <span style="width:6px;height:6px;background:#999;border-radius:50%;animation: bounce 1s infinite;"></span>
-            <span style="width:6px;height:6px;background:#999;border-radius:50%;animation: bounce 1s infinite 0.2s;"></span>
-            <span style="width:6px;height:6px;background:#999;border-radius:50%;animation: bounce 1s infinite 0.4s;"></span>
+        <div class="d-flex align-items-center gap-1" style="height: 12px;">
+            <div class="spinner-grow spinner-grow-sm text-secondary" style="width: 6px; height: 6px;" role="status"></div>
+            <div class="spinner-grow spinner-grow-sm text-secondary" style="width: 6px; height: 6px; animation-delay: 0.2s;" role="status"></div>
+            <div class="spinner-grow spinner-grow-sm text-secondary" style="width: 6px; height: 6px; animation-delay: 0.4s;" role="status"></div>
         </div>
     `;
-
     chat.appendChild(typing);
     chat.scrollTop = chat.scrollHeight;
 }
 
-// 🔥 REMOVE TYPING
 function removeTyping() {
     const t = document.getElementById("typing-indicator");
     if (t) t.remove();
 }
 
-// 🔥 QUICK REPLIES
 function showQuickReplies() {
     const chat = document.getElementById("chatbot-messages");
-
     let container = document.createElement("div");
-    container.style.marginTop = "5px";
+    container.style.marginTop = "4px";
+    container.className = "d-flex flex-wrap gap-1";
 
-    const replies = ["MS-CIT", "Courses", "Fees", "Contact"];
-
+    const replies = ["Courses", "Fees", "Placement", "Contact"];
     replies.forEach(r => {
         let btn = document.createElement("button");
         btn.innerText = r;
@@ -327,23 +645,18 @@ function showQuickReplies() {
         btn.onclick = () => sendMessage(r);
         container.appendChild(btn);
     });
-
     chat.appendChild(container);
+    chat.scrollTop = chat.scrollHeight;
 }
 
-// 🚀 MAIN SEND FUNCTION
 function sendMessage(customMsg = null) {
     let input = document.getElementById("user-input");
     let msg = customMsg || input.value.trim();
     if (!msg) return;
 
     input.value = "";
-
-    // user message
     addMessage(msg, "user");
-
-    // show typing
-    setTimeout(showTyping, 300);
+    setTimeout(showTyping, 400);
 
     fetch("/chatbot/response/", {
         method: "POST",
@@ -355,26 +668,16 @@ function sendMessage(customMsg = null) {
     })
     .then(res => res.json())
     .then(data => {
-        // simulate smart delay (1.5s - feels human)
         setTimeout(() => {
             removeTyping();
-
             addMessage(data.reply, "bot");
-
             showQuickReplies();
-        }, 1500);
+        }, 1200);
     })
     .catch(() => {
         removeTyping();
-        addMessage("⚠️ Server error. Please try again.", "bot");
+        addMessage("⚠️ Service unavailable. Please call us at 9867914107.", "bot");
     });
 }
 </script>
-
-<style>
-@keyframes bounce {
-    0%, 80%, 100% { transform: translateY(0); }
-    40% { transform: translateY(-6px); }
-}
-</style>
 {% endblock %}

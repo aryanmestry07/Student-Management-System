@@ -1,213 +1,243 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Programs | ICE Institute</title>
+{% extends 'visitors/base.html' %}
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+{% block title %}All Programs | ICE Institute{% endblock %}
 
-    <style>
-        :root {
-            --ice-primary: #004aad;
-            --ice-primary-light: #e6effc;
-            --ice-dark: #001f4d;
-            --ice-text-muted: #64748b;
-            --ice-bg: #f8fbff;
-            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        }
+{% block content %}
+<style>
+    .catalog-hero {
+        background: var(--ice-navy);
+        background-image: url('/media/hero_bg.png');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        padding: 120px 0 80px;
+        position: relative;
+        color: white;
+        text-align: center;
+        margin-top: -82px;
+    }
 
-        body {
-            background-color: var(--ice-bg);
-            font-family: 'Inter', sans-serif;
-            color: var(--ice-dark);
-            line-height: 1.6;
-        }
+    .catalog-overlay {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(180deg, rgba(4,13,33,0.9) 0%, rgba(26,79,186,0.7) 100%);
+        z-index: 1;
+    }
 
-        h1, h2, h3, h4, h5, .course-name {
-            font-family: 'Outfit', sans-serif;
-            letter-spacing: -0.5px;
-        }
+    .catalog-hero-content {
+        position: relative;
+        z-index: 2;
+    }
 
-        /* Hero Header */
-        .courses-hero {
-            background: radial-gradient(circle at top right, #f0f7ff, #ffffff);
-            border-radius: 0 0 40px 40px;
-            padding: 80px 0;
-            border-bottom: 1px solid rgba(0, 74, 173, 0.08);
-            margin-bottom: 60px;
-            box-shadow: 0 10px 30px rgba(0, 31, 77, 0.03);
-        }
+    .btn-back-clean {
+        display: inline-flex; align-items: center; gap: 8px;
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 30px;
+        transition: var(--transition);
+        background: rgba(255,255,255,0.1);
+        padding: 8px 16px;
+        border-radius: 50px;
+        backdrop-filter: blur(5px);
+    }
+    .btn-back-clean:hover {
+        color: white;
+        background: rgba(255,255,255,0.2);
+        transform: translateX(-5px);
+    }
 
-        /* Back Button Elite */
-        .btn-back {
-            color: var(--ice-primary);
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: var(--transition);
-            margin-bottom: 20px;
-        }
-        .btn-back:hover {
-            transform: translateX(-5px);
-            color: var(--ice-dark);
-        }
+    .catalog-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 3.5rem;
+        font-weight: 800;
+        letter-spacing: -1.5px;
+        margin-bottom: 20px;
+    }
 
-        /* Premium Course Card */
-        .course-card {
-            background: #ffffff;
-            border: 1px solid rgba(0, 0, 0, 0.04);
-            border-radius: 28px;
-            padding: 30px;
-            height: 100%;
-            transition: var(--transition);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
+    .catalog-title span {
+        background: linear-gradient(to right, #60a5fa, #c084fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
 
-        .course-card:hover {
-            transform: translateY(-12px);
-            box-shadow: 0 30px 60px rgba(0, 74, 173, 0.12);
-            border-color: var(--ice-primary-light);
-        }
+    /* Course Grid */
+    .catalog-grid-section {
+        padding: 80px 0 120px;
+        background: var(--ice-bg);
+    }
 
-        .course-icon-wrapper {
-            width: 48px;
-            height: 48px;
-            background: var(--ice-primary-light);
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--ice-primary);
-            margin-bottom: 24px;
-        }
+    .course-card {
+        background: var(--ice-surface);
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        height: 100%;
+        transition: var(--transition);
+        border: 1px solid rgba(10,22,40,0.04);
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+    }
 
-        .category-badge {
-            display: inline-block;
-            padding: 4px 14px;
-            background: rgba(0, 74, 173, 0.06);
-            color: var(--ice-primary);
-            border-radius: 10px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 15px;
-        }
+    .course-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--ice-primary), var(--ice-secondary));
+        opacity: 0;
+        transition: var(--transition);
+    }
 
-        .price-tag {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--ice-primary);
-        }
+    .course-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-xl);
+    }
 
-        .course-name {
-            font-size: 1.35rem;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: var(--ice-dark);
-        }
+    .course-card:hover::before { opacity: 1; }
 
-        .footer-action {
-            margin-top: auto;
-            padding-top: 20px;
-            border-top: 1px solid #f1f5f9;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .course-icon {
+        width: 56px; height: 56px;
+        background: var(--ice-primary-light);
+        color: var(--ice-primary);
+        border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 24px;
+        transition: var(--transition);
+    }
 
-        .duration-label {
-            font-size: 0.85rem;
-            color: var(--ice-text-muted);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+    .course-card:hover .course-icon {
+        background: var(--ice-primary);
+        color: white;
+        transform: scale(1.1) rotate(5deg);
+    }
 
-        /* Action Circle */
-        .btn-circle {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: var(--ice-primary);
-            color: white;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-        }
-        .course-card:hover .btn-circle {
-            background: var(--ice-dark);
-            transform: rotate(-45deg);
-        }
-    </style>
-</head>
-<body>
+    .course-category {
+        display: inline-block;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--ice-secondary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+        background: rgba(6,182,212,0.1);
+        padding: 4px 12px;
+        border-radius: 20px;
+    }
 
-<header class="courses-hero">
-    <div class="container text-center">
-        <a href="/" class="btn-back">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-            Back to Website
+    .course-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--ice-dark);
+        margin-bottom: 16px;
+        line-height: 1.3;
+    }
+
+    .course-desc {
+        color: var(--ice-muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 24px;
+        flex-grow: 1;
+    }
+
+    .course-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 20px;
+        border-top: 1px solid rgba(10,22,40,0.06);
+    }
+
+    .course-duration {
+        font-size: 0.85rem;
+        color: var(--ice-text);
+        font-weight: 600;
+        display: flex; align-items: center; gap: 6px;
+    }
+
+    .course-action {
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        background: var(--ice-bg);
+        color: var(--ice-primary);
+        display: flex; align-items: center; justify-content: center;
+        transition: var(--transition);
+    }
+
+    .course-card:hover .course-action {
+        background: var(--ice-primary);
+        color: white;
+        transform: rotate(-45deg);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        background: white;
+        border-radius: var(--radius-xl);
+        border: 1px dashed rgba(10,22,40,0.1);
+    }
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--ice-primary-light);
+        margin-bottom: 20px;
+        display: block;
+    }
+</style>
+
+<div class="catalog-hero">
+    <div class="catalog-overlay"></div>
+    <div class="container catalog-hero-content">
+        <a href="{% url 'visitors:dashboard' %}" class="btn-back-clean">
+            <i class="bi bi-arrow-left"></i> Back to Website
         </a>
-        <div class="mt-3">
-            <span class="text-primary fw-bold small text-uppercase" style="letter-spacing: 2px;">Professional catalog</span>
-            <h1 class="display-4 fw-800 mt-2 mb-3">Our <span style="color: var(--ice-primary)">Certifications</span></h1>
-            <p class="text-muted mx-auto" style="max-width: 600px; font-size: 1.1rem;">
-                Industry-aligned programs in Bandra (East), Mumbai designed to turn students into certified experts.
-            </p>
-        </div>
+        <h1 class="catalog-title">Explore Our <span>Programs</span></h1>
+        <p style="font-size: 1.15rem; color: rgba(255,255,255,0.8); max-width: 600px; margin: 0 auto;">
+            Browse our complete catalog of industry-aligned certifications designed to launch your career.
+        </p>
     </div>
-</header>
+</div>
 
-<section class="pb-5">
+<div class="catalog-grid-section">
     <div class="container">
         <div class="row g-4">
             {% for course in courses %}
             <div class="col-lg-4 col-md-6">
                 <div class="course-card">
-                    
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div class="course-icon-wrapper">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+                    <div class="course-icon">
+                        <i class="bi bi-journal-code"></i>
+                    </div>
+                    <div>
+                        <span class="course-category">{{ course.category }}</span>
+                        <h3 class="course-title">{{ course.name }}</h3>
+                        <p class="course-desc">{{ course.description|truncatewords:20 }}</p>
+                    </div>
+                    <div class="course-meta mt-auto">
+                        <div class="course-duration">
+                            <i class="bi bi-clock-history text-primary"></i> {{ course.duration }} Months
+                        </div>
+                        <div class="course-action">
+                            <i class="bi bi-arrow-right"></i>
                         </div>
                     </div>
-
-                    <div class="content-body">
-                        <span class="category-badge">{{ course.category }}</span>
-                        <h3 class="course-name">{{ course.name }}</h3>
-                        <p class="text-muted small">
-                            {{ course.description|truncatewords:18 }}
-                        </p>
-                    </div>
-
-                    <div class="footer-action">
-                        <div class="duration-label">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                            {{ course.duration }} Months
-                        </div>
-                        
-                    </div>
-
                 </div>
             </div>
             {% empty %}
-            <div class="col-12 text-center py-5">
-                <div class="mb-4" style="font-size: 3rem;">🔍</div>
-                <h4 class="fw-bold">No Programs Found</h4>
-                <p class="text-muted">Please check back later or contact the Bandra campus for upcoming batch details.</p>
+            <div class="col-12">
+                <div class="empty-state">
+                    <i class="bi bi-search"></i>
+                    <h3 class="brand-font fw-bold">No Programs Found</h3>
+                    <p class="text-muted">We are currently updating our program catalog. Please check back later.</p>
+                </div>
             </div>
             {% endfor %}
         </div>
     </div>
-</section>
-
-</body>
-</html>
+</div>
+{% endblock %}

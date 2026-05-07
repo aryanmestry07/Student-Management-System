@@ -1,4 +1,4 @@
-{% extends 'myapp/index.html' %}
+{% extends 'myapp/index.html' %} 
 {% block content %}
 
 <style>
@@ -40,18 +40,20 @@
   .student-avatar {
     width: 38px;
     height: 38px;
-    background: var(--ice-primary-light);
-    color: var(--ice-primary);
+    background: var(--ice-primary-light, #e0e7ff);
+    color: var(--ice-primary, #4338ca);
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
     font-size: 0.8rem;
+    flex-shrink: 0; /* Prevents avatar from squishing on small screens */
   }
 
   /* STATUS BADGES */
   .badge-elite {
+    display: inline-block;
     padding: 6px 12px;
     border-radius: 8px;
     font-size: 0.7rem;
@@ -59,8 +61,18 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
-  .bg-pending { background: #fff1f2; color: #e11d48; }
-  .bg-completed { background: #ecfdf5; color: #059669; }
+  .bg-pending {
+    background: #fff1f2;
+    color: #e11d48;
+  }
+  .bg-completed {
+    background: #ecfdf5;
+    color: #059669;
+  }
+  .bg-partial {
+    background: #fffbeb;
+    color: #b45309;
+  }
 
   /* SEARCH BAR GLASS */
   .search-wrapper {
@@ -73,6 +85,7 @@
     top: 50%;
     transform: translateY(-50%);
     color: #94a3b8;
+    z-index: 5;
   }
   .search-input-elite {
     padding-left: 42px !important;
@@ -80,7 +93,7 @@
     background: #f8fafc !important;
     border: 1px solid #e2e8f0 !important;
     font-size: 0.85rem;
-    transition: var(--transition);
+    transition: all 0.3s ease;
   }
   .search-input-elite:focus {
     background: #fff !important;
@@ -94,22 +107,42 @@
     font-weight: 600;
     font-size: 0.75rem;
     padding: 8px 14px;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     border: none;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
   }
-  .btn-view { background: #f1f5f9; color: #475569; }
-  .btn-view:hover { background: #e2e8f0; transform: translateY(-2px); }
-  .btn-add-course { background: var(--ice-primary); color: white; }
-  .btn-add-course:hover { background: var(--ice-dark); color: white; transform: translateY(-2px); }
+  .btn-view {
+    background: #f1f5f9;
+    color: #475569;
+  }
+  .btn-view:hover {
+    background: #e2e8f0;
+    transform: translateY(-2px);
+    color: #1e293b;
+  }
+  .btn-add-course {
+    background: var(--ice-primary, #004aad);
+    color: white !important;
+  }
+  .btn-add-course:hover {
+    filter: brightness(90%);
+    transform: translateY(-2px);
+  }
 </style>
 
-<div class="d-flex justify-content-between align-items-end mb-4">
+<div class="d-flex justify-content-between align-items-center mb-4">
   <div>
-    <h2 class="h3 fw-800 mb-1" style="font-family: 'Outfit'; color: var(--ice-dark);">Student Registry</h2>
-    <p class="text-muted small mb-0">Manage enrollment and financial status of the Bandra cohort</p>
+    <h2 class="h3 fw-800 mb-1" style="font-family: 'Outfit', sans-serif; color: var(--ice-dark)">
+      Student Registry
+    </h2>
+    <p class="text-muted small mb-0">
+      Manage enrollment and financial status of the Bandra cohort
+    </p>
   </div>
 
-  <form method="GET" class="search-wrapper">
+  <form method="GET" action="{% url 'myapp:students' %}" class="search-wrapper">
     <i class="bi bi-search"></i>
     <input
       type="text"
@@ -123,16 +156,18 @@
 
 {% if query %}
 <div class="mb-3">
-  <span class="badge bg-light text-dark border py-2 px-3 rounded-pill" style="font-size: 0.75rem;">
+  <span class="badge bg-light text-dark border py-2 px-3 rounded-pill" style="font-size: 0.75rem">
     <i class="bi bi-filter me-1"></i> Results for: <strong>{{ query }}</strong>
-    <a href="{% url 'myapp:students' %}" class="text-danger ms-2"><i class="bi bi-x-circle-fill"></i></a>
+    <a href="{% url 'myapp:students' %}" class="text-danger ms-2 text-decoration-none">
+      <i class="bi bi-x-circle-fill"></i>
+    </a>
   </span>
 </div>
 {% endif %}
 
 <div class="student-table-card">
   <div class="table-responsive">
-    <table class="table">
+    <table class="table align-middle">
       <thead>
         <tr>
           <th>Student Profile</th>
@@ -143,40 +178,47 @@
         </tr>
       </thead>
       <tbody>
-
-        {% if students %}
+        {% if students %} 
           {% for student in students %}
           <tr>
             <td>
               <div class="d-flex align-items-center">
                 <div class="student-avatar me-3">
-                  {{ student.user.first_name|slice:":1"|upper }}{{ student.last_name|slice:":1"|upper }}
+                  {{ student.user.first_name|slice:":1"|upper }}{{ student.user.last_name|slice:":1"|upper }}
                 </div>
                 <div>
-                  <div class="fw-bold">{{ student.user.first_name }} {{ student.last_name }}</div>
-                  <div class="text-muted extra-small" style="font-size: 0.7rem;">Roll No: #{{ student.roll_number  }}</div>
+                  <div class="fw-bold">{{ student.user.get_full_name|default:student.user.username }}</div>
+                  <div class="text-muted" style="font-size: 0.7rem">Roll No: #{{ student.roll_number }}</div>
                 </div>
               </div>
             </td>
             <td>
-              <div style="font-size: 0.85rem;">{{ student.user.email }}</div>
+              <div style="font-size: 0.85rem">{{ student.user.email }}</div>
             </td>
             <td>
-              <code class="text-primary" style="font-size: 0.8rem;">@{{ student.user.username }}</code>
+              <code class="text-primary" style="font-size: 0.8rem">@{{ student.user.username }}</code>
             </td>
-
             <td>
-              {% if student.fees_status == "pending" %}
-                <span class="badge-elite bg-pending">
-                  <i class="bi bi-clock-history me-1"></i> Pending
-                </span>
-              {% else %}
-                <span class="badge-elite bg-completed">
-                  <i class="bi bi-check-circle-fill me-1"></i> Completed
-                </span>
-              {% endif %}
+              <div style="font-size: 0.8rem">
+                <div class="mb-1">
+                  <strong>₹{{ student.paid_amount }}</strong> <span class="text-muted">/ ₹{{ student.total_fees }}</span>
+                </div>
+                
+                {% if student.fees_status == "Paid" %}
+                  <span class="badge-elite bg-completed">
+                    <i class="bi bi-check-circle-fill me-1"></i> Paid
+                  </span>
+                {% elif student.fees_status == "Pending" %}
+                  <span class="badge-elite bg-pending">
+                    <i class="bi bi-clock-history me-1"></i> Pending
+                  </span>
+                {% else %}
+                  <span class="badge-elite bg-partial">
+                    <i class="bi bi-exclamation-circle me-1"></i> Partial
+                  </span>
+                {% endif %}
+              </div>
             </td>
-
             <td class="text-end">
               <div class="d-flex justify-content-end gap-2">
                 <a href="{% url 'myapp:student_detail' student.id %}" class="btn-mgmt btn-view text-decoration-none">
@@ -189,17 +231,17 @@
             </td>
           </tr>
           {% endfor %}
-
         {% else %}
           <tr>
             <td colspan="5" class="text-center py-5">
-              <div class="text-muted mb-2"><i class="bi bi-people-fill display-6"></i></div>
+              <div class="text-muted mb-2">
+                <i class="bi bi-people-fill display-6"></i>
+              </div>
               <h6 class="fw-bold">No students found</h6>
-              <p class="small text-muted">Try adjusting your search or enroll a new student.</p>
+              <p class="small text-muted mb-0">Try adjusting your search or enroll a new student.</p>
             </td>
           </tr>
         {% endif %}
-
       </tbody>
     </table>
   </div>

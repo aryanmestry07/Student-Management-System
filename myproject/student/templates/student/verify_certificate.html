@@ -1,0 +1,29 @@
+{% extends "student/base.html" %}
+{% block title %}Verify Certificate{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+    <h3 class="fw-bold mb-4">Verify Certificate</h3>
+
+    <form method="GET">
+        <input type="text" name="certificate_id" placeholder="Enter Certificate ID"
+               class="form-control mb-3" required>
+        <button class="btn btn-primary">Verify</button>
+    </form>
+
+    {% if certificate %}
+        <div class="alert alert-success mt-4">
+            ✅ Valid Certificate <br><br>
+            <strong>Name:</strong> {{ certificate.student.full_name }} <br>
+            <strong>Course:</strong> {{ certificate.course.name }} <br>
+            <strong>ID:</strong> {{ certificate.certificate_id }}
+        </div>
+    {% elif request.GET.certificate_id %}
+        <div class="alert alert-danger mt-4">
+            ❌ Invalid Certificate
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
