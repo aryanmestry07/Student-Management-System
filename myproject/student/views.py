@@ -570,7 +570,7 @@ def mark_attendance(request, topic_id):
     if distance > ALLOWED_RADIUS:
         messages.error(
             request,
-            f"You are outside campus ({round(distance*1000)} meters). Attendance denied.",
+            f"Location Verification Failed: You are {round(distance*1000)} meters away from the campus. Please connect from within the classroom to mark your attendance.",
             extra_tags="attendance"
         )
         return redirect("student:topic_detail", topic_id=topic.id)
@@ -593,7 +593,9 @@ def mark_attendance(request, topic_id):
     else:
         messages.success(request, "Attendance marked successfully.", extra_tags="attendance")
 
-    return redirect("student:topic_detail", topic_id=topic.id)@student_login_required
+    return redirect("student:topic_detail", topic_id=topic.id)
+
+@student_login_required
 def notice_board(request):
     notices = Notice.objects.filter(is_active=True).order_by('-is_pinned', '-created_at')
     return render(request, "student/notice_board.html", {"notices": notices})

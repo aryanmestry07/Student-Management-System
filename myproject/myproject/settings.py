@@ -143,5 +143,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # 📍 College Location
 COLLEGE_LAT = 19.13612587284456   # change to real class latitude
-COLLEGE_LNG = 72.85886213097895  # change to  real class longitude
-ALLOWED_RADIUS_KM = 0.3  # 100 meters
+COLLEGE_LNG = 72.85886213097895  # change to real class longitude
+ALLOWED_RADIUS_KM = 0.05  # 50 meters for strict checking

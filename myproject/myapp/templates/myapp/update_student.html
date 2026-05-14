@@ -133,13 +133,18 @@
                     </div>
 
                     <!-- ACTION BUTTONS -->
-                    <div class="d-flex align-items-center justify-content-end gap-3 mb-5">
-                        <a href="{% url 'myapp:student_detail' student.id %}" class="btn btn-light rounded-pill px-4 fw-medium text-muted">
-                            Cancel Changes
+                    <div class="d-flex align-items-center justify-content-between mb-5">
+                        <a href="{% url 'myapp:reset_student_password' student.id %}" class="btn btn-outline-danger rounded-pill px-4 fw-medium">
+                            <i class="bi bi-key me-2"></i> Reset Password
                         </a>
-                        <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold shadow">
-                            Save & Update Profile
-                        </button>
+                        <div class="d-flex gap-3">
+                            <a href="{% url 'myapp:student_detail' student.id %}" class="btn btn-light rounded-pill px-4 fw-medium text-muted">
+                                Cancel Changes
+                            </a>
+                            <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold shadow">
+                                Save & Update Profile
+                            </button>
+                        </div>
                     </div>
 
                 </form>

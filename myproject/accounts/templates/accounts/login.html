@@ -270,6 +270,18 @@
         </h3>
         <p class="opacity-75 small mt-2">Bandra (East) Admin Portal</p>
 
+        <div class="my-4 text-center">
+            <img src="/media/admin_security_orb.png" alt="Security Core" style="width: 140px; height: 140px; border-radius: 50%; box-shadow: 0 15px 45px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); animation: floatOrb 6s ease-in-out infinite;">
+        </div>
+
+        <style>
+            @keyframes floatOrb {
+                0% { transform: translateY(0px); }
+                50% { transform: translateY(-10px); }
+                100% { transform: translateY(0px); }
+            }
+        </style>
+
         <div class="mt-auto">
           <div
             style="
@@ -290,7 +302,16 @@
           <p class="text-muted-elite">Secure access to EduManage Cloud</p>
         </div>
 
-      
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert-elite shadow-sm" role="alert">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-exclamation-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+                    </svg>
+                    <div>{{ message }}</div>
+                </div>
+            {% endfor %}
+        {% endif %}
 
         <form method="post">
           {% csrf_token %}

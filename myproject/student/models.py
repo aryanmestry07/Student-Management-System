@@ -53,11 +53,19 @@ class Student(models.Model):
         if not self.roll_number:
             year = now().year
 
-            count = Student.objects.filter(
+            last_student = Student.objects.filter(
                 roll_number__startswith=f"RN{year}"
-            ).count() + 1
+            ).order_by('roll_number').last()
 
-            self.roll_number = f"RN{year}{count:03d}"
+            if last_student and last_student.roll_number:
+                try:
+                    last_count = int(last_student.roll_number[6:])
+                except ValueError:
+                    last_count = 0
+            else:
+                last_count = 0
+
+            self.roll_number = f"RN{year}{last_count + 1:03d}"
 
         super().save(*args, **kwargs)
 
