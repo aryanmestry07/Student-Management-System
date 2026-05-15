@@ -9,10 +9,11 @@ from django.contrib.auth import update_session_auth_hash
 from django.db.models import Count
 from django.db.models.functions import ExtractMonth
 from django.db.models import Q
-
-from .models import Course, Topic, Assignment,Quiz, Question,Notice
+# pyrefly: ignore [missing-import]
+from .models import Course, Topic,Assignment,Quiz, Question,Notice
 
 from student.models import Student
+# pyrefly: ignore [missing-import]
 from .forms import (
     CourseForm, StudentForm, StudentUpdateForm, UserUpdateForm,
     TopicForm, AssignmentForm, QuizForm,NoticeForm

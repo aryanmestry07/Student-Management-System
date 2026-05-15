@@ -24,24 +24,95 @@
 
         <div class="p-4 p-lg-5 pt-4 overflow-auto">
 
-            <!-- ✅ FINAL EXAM BUTTON (UPDATED LOGIC) -->
-            {% if all_topics_completed %}
-            <div class="alert alert-success d-flex justify-content-between align-items-center">
-                <div>
-                    🎉 All topics completed!
+            <!-- COURSE PROGRESS & FINAL EXAM COMPONENT -->
+            <div class="glass-card mb-5 p-4 border-0 position-relative overflow-hidden" style="background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.95) 100%); border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.04); border: 1px solid rgba(255,255,255,0.8) !important;">
+                
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center position-relative z-1">
+                    <div class="mb-4 mb-md-0 flex-grow-1 pe-md-5">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-800 text-ice-dark font-outfit mb-0 d-flex align-items-center" style="letter-spacing: -0.5px;">
+                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 42px; height: 42px;">
+                                    <i class="bi bi-trophy-fill fs-5"></i>
+                                </div>
+                                Course Progress
+                            </h5>
+                            {% with completed_count=completed_topic_ids|length total_count=topics|length %}
+                            <span class="fw-800 text-primary font-outfit fs-5">
+                                {% if total_count > 0 %}
+                                    {% widthratio completed_count total_count 100 %}%
+                                {% else %}
+                                    0%
+                                {% endif %}
+                            </span>
+                        </div>
+                        
+                        <div class="progress shadow-sm" style="height: 12px; border-radius: 20px; background-color: rgba(0,74,173,0.08);">
+                            {% if total_count > 0 %}
+                                {% widthratio completed_count total_count 100 as progress_percent %}
+                                <div id="course-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated rounded-pill" role="progressbar" style="background: linear-gradient(90deg, var(--ice-primary), #00d2ff);" data-progress="{{ progress_percent }}" aria-valuenow="{{ progress_percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                <script>
+                                    document.getElementById('course-progress-bar').style.width = document.getElementById('course-progress-bar').getAttribute('data-progress') + '%';
+                                </script>
+                            {% else %}
+                                <div class="progress-bar rounded-pill" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-2">
+                            <div class="text-muted small fw-600">
+                                <i class="bi bi-journal-check me-1 text-primary"></i>
+                                {{ completed_count }} of {{ total_count }} topics completed
+                            </div>
+                            {% if all_topics_completed %}
+                            <div class="text-success small fw-bold">
+                                <i class="bi bi-check2-all me-1"></i> Ready for final exam!
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endwith %}
+                    </div>
+                    
+                    {% if all_topics_completed %}
+                        <div class="ms-md-3 mt-3 mt-md-0 text-center text-md-end border-md-start ps-md-4" style="border-color: rgba(0,0,0,0.05) !important;">
+                            {% if exam_completed %}
+                                <button class="btn btn-success px-4 py-3 rounded-4 fw-bold font-outfit shadow-sm d-flex align-items-center w-100 justify-content-center" disabled style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none;">
+                                    <i class="bi bi-patch-check-fill me-2 fs-5"></i> Exam Completed
+                                </button>
+                                <div class="text-muted small mt-2 fw-600">You've successfully finished this course!</div>
+                            {% else %}
+                                <a href="{% url 'student:start_exam' course.id %}" class="btn btn-primary px-4 py-3 rounded-4 fw-bold font-outfit shadow-sm d-flex align-items-center w-100 justify-content-center pulse-btn" style="background: linear-gradient(135deg, var(--ice-primary) 0%, var(--ice-dark) 100%); border: none; position: relative; overflow: hidden;">
+                                    <i class="bi bi-play-circle-fill me-2 fs-5 position-relative z-1"></i> 
+                                    <span class="position-relative z-1">Start Final Exam</span>
+                                    <div class="position-absolute w-100 h-100 top-0 start-0 bg-white opacity-25 pulse-animation"></div>
+                                </a>
+                                <div class="text-muted small mt-2 fw-600 text-center">Unlock your certificate</div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
                 </div>
-
-                {% if exam_completed %}
-                    <button class="btn btn-success" disabled>
-                        ✅ Exam Completed
-                    </button>
-                {% else %}
-                    <a href="{% url 'student:start_exam' course.id %}" class="btn btn-success">
-                        Start Final Exam
-                    </a>
-                {% endif %}
+                
+                <!-- Decorative BG Elements -->
+                <div class="position-absolute" style="top: -60px; right: -30px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(0,74,173,0.04) 0%, transparent 60%); border-radius: 50%; z-index: 0; pointer-events: none;"></div>
+                <div class="position-absolute" style="bottom: -40px; left: -20px; width: 150px; height: 150px; background: radial-gradient(circle, rgba(0,210,255,0.04) 0%, transparent 60%); border-radius: 50%; z-index: 0; pointer-events: none;"></div>
             </div>
-            {% endif %}
+
+            <style>
+                .pulse-animation {
+                    animation: pulseBg 2s infinite;
+                }
+                @keyframes pulseBg {
+                    0% { transform: scale(0.95); opacity: 0; }
+                    50% { opacity: 0.15; }
+                    100% { transform: scale(1.5); opacity: 0; }
+                }
+                .pulse-btn {
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                }
+                .pulse-btn:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 10px 25px rgba(0, 74, 173, 0.3) !important;
+                }
+            </style>
 
             <div class="d-flex align-items-center mb-4">
                 <div class="brand-dot-mini me-2"></div>

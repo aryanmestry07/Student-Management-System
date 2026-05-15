@@ -3,6 +3,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
+# pyrefly: ignore [missing-import]
 from myapp.models import Course, Topic, Assignment
 
 

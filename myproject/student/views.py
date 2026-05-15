@@ -1,23 +1,23 @@
+import math
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.contrib.auth.models import User
 from django.db.models import Q
-
-from myapp.models import Course, Topic, Assignment, Quiz, Question, QuizSubmission
-from .models import Student, Attendance, Submission
-from .forms import StudentSignupForm, AssignmentUploadForm
-from .decorators import student_login_required
-
-from myapp.models import Notice
 from django.utils.timezone import now
-from myapp.models import StudentAnswer
-from .models import QuizAttempt, FinalExam, Result, Certificate
-
 from django.http import FileResponse
+from django.conf import settings
+# pyrefly: ignore [missing-import]  
+from myapp.models import Course, Topic, Assignment, Quiz, Question, QuizSubmission, Notice, StudentAnswer
+# pyrefly: ignore [missing-import]
+from .models import Student, Attendance, Submission, QuizAttempt, FinalExam, Result, Certificate
+# pyrefly: ignore [missing-import]
+from .forms import AssignmentUploadForm
+# pyrefly: ignore [missing-import]
+from .decorators import student_login_required
+# pyrefly: ignore [missing-import]
 from .utils import generate_certificate
-
 
 # ----------------------------
 # HOME + AUTH
@@ -47,9 +47,12 @@ def student_dashboard(request):
     except Student.DoesNotExist:
         student = None
 
-    assignments = Assignment.objects.filter(
-        course__in=student.courses.all()
-    ).order_by('-due_date')[:5]
+    if student:
+        assignments = Assignment.objects.filter(
+            course__in=student.courses.all()
+        ).order_by('-due_date')[:5]
+    else:
+        assignments = Assignment.objects.none()
 
     notices = Notice.objects.filter(
         is_active=True
@@ -78,15 +81,27 @@ def student_logout(request):
 @student_login_required
 def enroll_in_course(request, course_id):
     course = get_object_or_404(Course, id=course_id)
-    student = request.user.student_profile
-    student.courses.add(course)
-    messages.success(request, f"You have successfully enrolled in {course.name}.")
+    try:
+        student = request.user.student_profile
+    except Student.DoesNotExist:
+        return redirect("student:student_login")
+
+    if course in student.courses.all():
+        messages.info(request, f"You are already enrolled in {course.name}.")
+    else:
+        student.courses.add(course)
+        messages.success(request, f"You have successfully enrolled in {course.name}.")
+        
     return redirect("student:my_courses")
 
 
 @student_login_required
 def my_courses(request):
-    student = request.user.student_profile
+    try:
+        student = request.user.student_profile
+    except Student.DoesNotExist:
+        return redirect("student:student_login")
+
     query = request.GET.get('q')
 
     courses = student.courses.all()
@@ -111,21 +126,17 @@ def my_courses(request):
 @student_login_required
 def course_detail(request, course_id):
     student = request.user.student_profile
-    course = get_object_or_404(Course, id=course_id, id__in=student.courses.all())
+    course = get_object_or_404(student.courses, id=course_id)
 
     topics = course.topics.all()
     assignments = course.assignments.all()
 
     submissions = Submission.objects.filter(student=student, assignment__course=course)
-    submission_dict = {s.assignment.id: s for s in submissions}
+    submission_dict = {s.assignment_id: s for s in submissions}
 
     form = AssignmentUploadForm()
 
-    # ----------------------------
     # ✅ QUIZ COMPLETION
-    # ----------------------------
-    from .models import QuizAttempt, FinalExam
-
     completed_attempts = QuizAttempt.objects.filter(
         student=student,
         is_completed=True,
@@ -139,18 +150,15 @@ def course_detail(request, course_id):
 
     all_topics_completed = (total_topics > 0 and total_topics == completed_count)
 
-    # ----------------------------
-    # ✅ FINAL EXAM CHECK (NEW)
-    # ----------------------------
+    # ✅ FINAL EXAM CHECK
     exam = FinalExam.objects.filter(
         student=student,
         course=course,
         is_completed=True
     ).first()
 
-    exam_completed = True if exam else False
+    exam_completed = exam is not None
 
-    # ----------------------------
     return render(
         request,
         "student/course_detail.html",
@@ -160,12 +168,8 @@ def course_detail(request, course_id):
             "assignments": assignments,
             "submission_dict": submission_dict,
             "form": form,
-
-            # ✅ Existing
             "completed_topic_ids": list(completed_topic_ids),
             "all_topics_completed": all_topics_completed,
-
-            # ✅ NEW
             "exam_completed": exam_completed,
         },
     )
@@ -176,7 +180,7 @@ def course_detail(request, course_id):
 @student_login_required
 def course_topics(request, course_id):
     student = request.user.student_profile
-    course = get_object_or_404(Course, id=course_id, id__in=student.courses.all())
+    course = get_object_or_404(student.courses, id=course_id)
     topics = course.topics.all()
     return render(
         request,
@@ -185,13 +189,15 @@ def course_topics(request, course_id):
     )
 
 
-from django.utils.timezone import now
-from django.db.models import Q
-
 @student_login_required
 def topic_detail(request, topic_id):
     topic = get_object_or_404(Topic, id=topic_id)
     student = request.user.student_profile
+    
+    if topic.course not in student.courses.all():
+        messages.error(request, "You are not enrolled in this course.")
+        return redirect("student:student_dashboard")
+
     today = now().date()
 
     # ✅ Attendance check
@@ -209,16 +215,13 @@ def topic_detail(request, topic_id):
         Q(course=topic.course) & (Q(topic=topic) | Q(topic__isnull=True))
     ).distinct()
 
-    # ✅ NEW: Quiz completion logic
-    from .models import QuizAttempt
-
+    # ✅ Quiz completion logic
     completed_quiz = QuizAttempt.objects.filter(
         student=student,
         topic=topic,
         is_completed=True
     ).exists()
 
-    # ✅ Send topic id if completed
     completed_quiz_ids = [topic.id] if completed_quiz else []
 
     return render(
@@ -229,8 +232,6 @@ def topic_detail(request, topic_id):
             "quizzes": quizzes,
             "attendance_marked": attendance_marked,
             "lecture_type": lecture_type,
-
-            # ✅ NEW CONTEXT
             "completed_quiz_ids": completed_quiz_ids,
         },
     )
@@ -239,13 +240,15 @@ def topic_detail(request, topic_id):
 # QUIZZES
 # ----------------------------
 
-
-
 @student_login_required
 def take_quiz(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id)
+    student_profile = request.user.student_profile
 
-    # ✅ FIX: force correct order
+    if quiz.course not in student_profile.courses.all():
+        messages.error(request, "You are not enrolled in this course.")
+        return redirect("student:student_dashboard")
+
     questions = list(quiz.questions.all().order_by("id"))
     total = len(questions)
 
@@ -265,7 +268,6 @@ def take_quiz(request, quiz_id):
     index = max(0, min(index, total - 1))
 
     student_user = request.user
-    student_profile = request.user.student_profile
 
     # ✅ Quiz Submission (existing)
     submission, _ = QuizSubmission.objects.get_or_create(
@@ -274,16 +276,16 @@ def take_quiz(request, quiz_id):
         defaults={'score': 0}
     )
 
-    # 🔒 Quiz Attempt (NEW - lock system)
-    quiz_attempt, created = QuizAttempt.objects.get_or_create(
-        student=student_profile,
-        topic=quiz.topic
-    )
-
-    # ❌ If already completed → block access
-    if quiz_attempt.is_completed:
-        messages.warning(request, "You have already completed this quiz.")
-        return redirect("student:topic_detail", topic_id=quiz.topic.id)
+    # 🔒 Quiz Attempt
+    quiz_attempt = None
+    if quiz.topic:
+        quiz_attempt, _ = QuizAttempt.objects.get_or_create(
+            student=student_profile,
+            topic=quiz.topic
+        )
+        if quiz_attempt.is_completed:
+            messages.warning(request, "You have already completed this quiz.")
+            return redirect("student:topic_detail", topic_id=quiz.topic.id)
 
     # =========================
     # HANDLE POST
@@ -313,6 +315,7 @@ def take_quiz(request, quiz_id):
 
             # ❗ Remove old answers (safety)
             submission.answers.all().delete()
+            student_answers_to_create = []
 
             for q in questions:
                 selected_ans = answers.get(str(q.id))
@@ -325,17 +328,22 @@ def take_quiz(request, quiz_id):
 
                 # ✅ Save to DB
                 if selected_ans:
-                    StudentAnswer.objects.create(
-                        submission=submission,
-                        question=q,
-                        selected_answer=selected_ans,
-                        is_correct=is_correct
+                    student_answers_to_create.append(
+                        StudentAnswer(
+                            submission=submission,
+                            question=q,
+                            selected_answer=selected_ans,
+                            is_correct=is_correct
+                        )
                     )
 
                 review_data[q] = {
                     "selected": selected_ans,
                     "correct": correct,
                 }
+
+            if student_answers_to_create:
+                StudentAnswer.objects.bulk_create(student_answers_to_create)
 
             # ✅ Percentage score
             percentage = (score / total) * 100 if total > 0 else 0
@@ -344,9 +352,10 @@ def take_quiz(request, quiz_id):
             submission.save()
 
             # ✅ NEW: Mark quiz as completed
-            quiz_attempt.is_completed = True
-            quiz_attempt.score = score
-            quiz_attempt.save()
+            if quiz_attempt:
+                quiz_attempt.is_completed = True
+                quiz_attempt.score = score
+                quiz_attempt.save()
 
             # ✅ Clear session
             request.session.pop(index_key, None)
@@ -376,22 +385,22 @@ def take_quiz(request, quiz_id):
         "total": total,
         "saved_answer": saved_answer,
     })
+
 # ----------------------------
 # ASSIGNMENTS
 # ----------------------------
 
 @student_login_required
 def course_assignments(request, course_id):
-    course = get_object_or_404(Course, id=course_id)
     student = request.user.student_profile
+    course = get_object_or_404(student.courses, id=course_id)
 
-    assignments = course.assignments.all()
+    assignments = list(course.assignments.all())
+    submissions = Submission.objects.filter(student=student, assignment__in=assignments)
+    submission_dict = {sub.assignment_id: sub for sub in submissions}
 
     for assignment in assignments:
-        assignment.submission = Submission.objects.filter(
-            assignment=assignment,
-            student=student
-        ).first()
+        assignment.submission = submission_dict.get(assignment.id)
 
     form = AssignmentUploadForm()
 
@@ -413,6 +422,10 @@ def course_assignments(request, course_id):
 def submit_assignment(request, assignment_id):
     assignment = get_object_or_404(Assignment, id=assignment_id)
     student = request.user.student_profile
+
+    if assignment.course not in student.courses.all():
+        messages.error(request, "You are not enrolled in this course.")
+        return redirect("student:student_dashboard")
 
     if request.method == "POST":
         form = AssignmentUploadForm(request.POST, request.FILES)
@@ -453,15 +466,18 @@ def topic_assignments(request, topic_id):
     topic = get_object_or_404(Topic, id=topic_id)
     student = request.user.student_profile
 
+    if topic.course not in student.courses.all():
+        messages.error(request, "You are not enrolled in this course.")
+        return redirect("student:student_dashboard")
+
     # Get assignments under this topic
-    assignments = Assignment.objects.filter(topic=topic)
+    assignments = list(Assignment.objects.filter(topic=topic))
+    submissions = Submission.objects.filter(student=student, assignment__in=assignments)
+    submission_dict = {sub.assignment_id: sub for sub in submissions}
 
     # Attach submission info
     for assignment in assignments:
-        assignment.submission = Submission.objects.filter(
-            assignment=assignment,
-            student=student
-        ).first()
+        assignment.submission = submission_dict.get(assignment.id)
 
     form = AssignmentUploadForm()
 
@@ -482,23 +498,23 @@ def all_assignments(request):
     student = request.user.student_profile
 
     # Get all courses of this student
-    courses = student.courses.all()
+    courses = student.courses.prefetch_related('assignments')
+    submissions = Submission.objects.filter(student=student)
+    submission_dict = {sub.assignment_id: sub for sub in submissions}
 
     assignments_data = []
 
     for course in courses:
-        assignments = course.assignments.all()
+        assignments = list(course.assignments.all())
 
         for assignment in assignments:
-            assignment.submission = Submission.objects.filter(
-                assignment=assignment,
-                student=student
-            ).first()
+            assignment.submission = submission_dict.get(assignment.id)
 
-        assignments_data.append({
-            "course": course,
-            "assignments": assignments
-        })
+        if assignments:
+            assignments_data.append({
+                "course": course,
+                "assignments": assignments
+            })
 
     return render(
         request,
@@ -514,16 +530,16 @@ def all_assignments(request):
 # ----------------------------
 # ATTENDANCE
 # ----------------------------
-import math
-from django.conf import settings
-from django.utils.timezone import now
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib import messages
 
 @student_login_required
 def mark_attendance(request, topic_id):
     topic = get_object_or_404(Topic, id=topic_id)
     student = request.user.student_profile
+    
+    if topic.course not in student.courses.all():
+        messages.error(request, "You are not enrolled in this course.", extra_tags="attendance")
+        return redirect("student:student_dashboard")
+
     today = now().date()
 
     # ✅ Get location
@@ -544,10 +560,10 @@ def mark_attendance(request, topic_id):
         messages.error(request, "Invalid location data.", extra_tags="attendance")
         return redirect("student:topic_detail", topic_id=topic.id)
 
-    # ✅ College location
-    COLLEGE_LAT = settings.COLLEGE_LAT
-    COLLEGE_LNG = settings.COLLEGE_LNG
-    ALLOWED_RADIUS = settings.ALLOWED_RADIUS_KM
+    # ✅ College location safely from settings
+    COLLEGE_LAT = getattr(settings, 'COLLEGE_LAT', 0.0)
+    COLLEGE_LNG = getattr(settings, 'COLLEGE_LNG', 0.0)
+    ALLOWED_RADIUS = getattr(settings, 'ALLOWED_RADIUS_KM', 0.5)
 
     # ✅ Haversine
     def calculate_distance(lat1, lon1, lat2, lon2):
@@ -602,7 +618,10 @@ def notice_board(request):
 
 @student_login_required
 def id_card(request):
-    student = request.user.student_profile
+    try:
+        student = request.user.student_profile
+    except Student.DoesNotExist:
+        return redirect("student:student_login")
     return render(request, "student/id_card.html", {"student": student})
 
 
@@ -611,10 +630,7 @@ def id_card(request):
 @student_login_required
 def start_exam(request, course_id):
     student = request.user.student_profile
-    course = get_object_or_404(Course, id=course_id)
-
-    from .models import QuizAttempt, FinalExam
-    from myapp.models import Question
+    course = get_object_or_404(student.courses, id=course_id)
 
     # ✅ Check all topics completed
     total_topics = course.topics.count()
@@ -624,12 +640,12 @@ def start_exam(request, course_id):
         topic__course=course
     ).count()
 
-    if total_topics == 0 or completed != total_topics:
+    if total_topics == 0 or completed < total_topics:
         messages.error(request, "Complete all quizzes first!")
         return redirect("student:course_detail", course_id=course.id)
 
     # 🔒 Check if already attempted
-    exam, created = FinalExam.objects.get_or_create(
+    exam, _ = FinalExam.objects.get_or_create(
         student=student,
         course=course
     )
@@ -638,9 +654,13 @@ def start_exam(request, course_id):
         return redirect("student:exam_result", course_id=course.id)
 
     # ✅ Get questions from all topics
-    questions = Question.objects.filter(
+    questions = list(Question.objects.filter(
         topic__course=course
-    ).order_by('?')[:50]   # random 50 questions
+    ).order_by('?')[:50])   # random 50 questions
+    
+    if not questions:
+        messages.warning(request, "No questions available for this exam.")
+        return redirect("student:course_detail", course_id=course.id)
 
     request.session['exam_questions'] = [q.id for q in questions]
 
@@ -654,16 +674,32 @@ def start_exam(request, course_id):
 @student_login_required
 def exam_result(request, course_id):
     student = request.user.student_profile
-    course = get_object_or_404(Course, id=course_id)
+    course = get_object_or_404(student.courses, id=course_id)
 
-    from myapp.models import Question
-    from .models import FinalExam, Result, Certificate
+    if request.method != "POST":
+        exam = FinalExam.objects.filter(student=student, course=course).first()
+        if exam and exam.is_completed:
+            result = Result.objects.filter(student=student, course=course).first()
+            if result:
+                return render(request, "student/result.html", {
+                    "course": course,
+                    "score": result.marks,
+                    "total": result.total_marks,
+                    "percentage": int(result.percentage),
+                    "status": result.status
+                })
+        messages.warning(request, "You must complete the exam first.")
+        return redirect("student:start_exam", course_id=course.id)
 
     question_ids = request.session.get('exam_questions', [])
+    if not question_ids:
+        messages.error(request, "Exam session expired or invalid.")
+        return redirect("student:course_detail", course_id=course.id)
+
     questions = Question.objects.filter(id__in=question_ids)
 
     score = 0
-    total = questions.count()   # ✅ dynamic total
+    total = len(question_ids)   # ✅ dynamic total based on session
 
     # ----------------------------
     # CALCULATE SCORE
@@ -681,7 +717,7 @@ def exam_result(request, course_id):
     # ----------------------------
     # SAVE FINAL EXAM
     # ----------------------------
-    exam = FinalExam.objects.get(student=student, course=course)
+    exam, _ = FinalExam.objects.get_or_create(student=student, course=course)
     exam.obtained_marks = score
     exam.total_marks = total   # ✅ NEW (important)
     exam.is_completed = True
@@ -712,6 +748,9 @@ def exam_result(request, course_id):
             course=course,
             defaults={"generated": False}
         )
+        
+    # Clear session
+    request.session.pop('exam_questions', None)
 
     # ----------------------------
     return render(request, "student/result.html", {
@@ -722,12 +761,16 @@ def exam_result(request, course_id):
         "status": status
     })
 
-def generate_certificate_view(request, student_id, course_id):
-    from .models import Certificate, Student
-    from myapp.models import Course
 
+@login_required
+def generate_certificate_view(request, student_id, course_id):
     student = get_object_or_404(Student, id=student_id)
     course = get_object_or_404(Course, id=course_id)
+
+    # Ensure the user requesting is either the student themselves or an admin
+    if not request.user.is_staff and hasattr(request.user, 'student_profile') and request.user.student_profile != student:
+        messages.error(request, "You are not authorized to view this certificate.")
+        return redirect("student:student_dashboard")
 
     certificate, _ = Certificate.objects.get_or_create(
         student=student,
@@ -736,24 +779,33 @@ def generate_certificate_view(request, student_id, course_id):
 
     # Generate if not already
     if not certificate.certificate_file:
-        file_path = generate_certificate(student, course)
+        file_path = generate_certificate(student, course, certificate)
         certificate.certificate_file = file_path
         certificate.generated = True
         certificate.save()
+        
+    if not certificate.certificate_file:
+        messages.error(request, "Failed to generate certificate.")
+        return redirect("student:student_dashboard")
 
-    return FileResponse(open(certificate.certificate_file.path, 'rb'), content_type='application/pdf')
+    try:
+        return FileResponse(certificate.certificate_file.open('rb'), content_type='application/pdf')
+    except Exception:
+        messages.error(request, "Certificate file not found.")
+        return redirect("student:my_certificates")
 
 
 @student_login_required
 def my_certificates(request):
-    student = request.user.student_profile
-
-    from .models import Certificate
+    try:
+        student = request.user.student_profile
+    except Student.DoesNotExist:
+        return redirect("student:student_login")
 
     certificates = Certificate.objects.filter(
         student=student,
         certificate_file__isnull=False   # ✅ only those having file
-    ).select_related("course").order_by("-generated_at")
+    ).exclude(certificate_file='').select_related("course").order_by("-generated_at")
 
     return render(request, "student/my_certificates.html", {
         "certificates": certificates
@@ -765,7 +817,6 @@ def verify_certificate(request):
     query = request.GET.get("certificate_id")
 
     if query:
-        from .models import Certificate
         certificate = Certificate.objects.filter(certificate_id=query, generated=True).first()
 
     return render(request, "student/verify_certificate.html", {
